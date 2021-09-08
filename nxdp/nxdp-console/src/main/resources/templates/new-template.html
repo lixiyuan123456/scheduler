@@ -1,0 +1,58 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+<link href="/slideout-1.0.1/slideout.css" rel="stylesheet" type="text/css">
+<link href="/AdminLTE-2.4.10/css/AdminLTE.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+.modal {
+  background-color: #ffffff;
+}
+</style>
+</head>
+<!-- END HEAD -->
+
+<body>
+  <!-- BEGIN HEADER -->
+  <div th:replace="common :: common-page-header"></div>
+  <!-- END HEADER -->
+
+  <div class="content">
+    <section class="content-header">
+      <h1>
+        Blank page
+        <small></small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"></a><span class="divider">/</span></li>
+        <li><a href="#"></a><span class="divider">/</span></li>
+        <li class="active"></li>
+      </ol>
+    </section>
+    <section class="content">
+      <div class="box box-default">
+        <div class="box-header with-border">
+          <h3 class="box-title">Title</h3>
+        </div>
+        <div class="box-body">
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- BEGIN PRE-FOOTER -->
+  <div th:include="common :: common-page-footer"></div>
+  <!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+<script src="/AdminLTE-2.4.10/js/adminlte.js" type="text/javascript"></script>
+
+</html>
+
+
+

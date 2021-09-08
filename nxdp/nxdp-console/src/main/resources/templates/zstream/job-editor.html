@@ -1,0 +1,1013 @@
+<html>
+<body>
+<div class="nav-tabs-custom">
+    <ul class="nav nav-tabs" id="jobEditorTab">
+        <!-- <ul class="nav nav-tabs nav-justified"> -->
+        <li class="active"><a data-toggle="tab" href="#tab_1"><h5>基本信息</h5></a></li>
+        <li><a data-toggle="tab" href="#tab_2"><h5>SQL</h5></a></li>
+        <li><a data-toggle="tab" href="#tab_3"><h5>参数</h5></a></li>
+        <li id="jobRunHistoryLogTab" style="display:none;"><a data-toggle="tab" href="#tab_4"><h5>运行历史</h5></a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="tab_1">
+            <form class="form-horizontal center-block" id="jobBasicInfoForm">
+                <input name="id" type="hidden"/>
+                <div class="box" style="height: 100%;">
+                    <div class="box-body">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-1 control-label">任务名称：</label>
+                                <div class="col-xs-11">
+                                    <input class="form-control" id="jobName" name="name" placeholder="任务名" required
+                                           type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label">负责人：</label>
+                                <div class="col-xs-10">
+                                    <!-- <select class="form-control" id="jobCreatorSelector" name="creator" readonly required>
+                                      <option value="0"></option>
+                                    </select> -->
+                                    <input class="form-control" id="jobCreator" name="creator" readonly required
+                                           type="text"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label">接警人：</label>
+                                <div class="col-xs-10">
+                                    <select class="form-control" id="jobReceiversSelector" multiple name="receivers"
+                                            required>
+                                        <option value="0"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-1 control-label">任务描述：</label>
+                                <div class="col-xs-11">
+                                    <textarea class="form-control" name="description" required rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <button class="btn btn-default" onclick="toJobList()" type="button">返回任务管理</button>
+                        <button class="btn btn-primary pull-right" onclick="saveJob()" type="button">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="tab-pane" id="tab_2">
+            <div class="box" style="height:700px;">
+                <div class="box-header with-border">
+                    <div class="form-horizontal" id="sqlTemplateSeletor" style="display: none;">
+                        <div class="col-xs-3">
+                            <div class="form-group">
+                                <label class="control-label">自定义函数：</label>
+                                <select class="form-control" id="udxSqlTemplateSelector">
+                                    <option value="0"></option>
+                                    <option value="UDF">UDF</option>
+                                    <option value="UDAF">UDAF</option>
+                                    <option value="UDTF">UDTF</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-3">
+                            <div class="form-group">
+                                <label class="control-label">source table：</label>
+                                <select class="form-control" id="sourceTableSqlTemplateSelector">
+                                    <option value="0"></option>
+                                    <option value="Kafka_JSON">Kafka_JSON</option>
+                                    <option value="Kafka_Text">Kafka_Text</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-3">
+                            <div class="form-group">
+                                <label class="control-label">维度表：</label>
+                                <select class="form-control" id="dimensionTableSqlTemplateSelector">
+                                    <option value="0"></option>
+                                    <option value="Cassandra">Cassandra</option>
+                                    <option value="HBase">HBase</option>
+                                    <option value="Mongo">Mongo</option>
+                                    <option value="MySQL">MySQL</option>
+                                    <option value="Redis">Redis</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-3">
+                            <div class="form-group">
+                                <label class="control-label">sink table：</label>
+                                <select class="form-control" id="sinkTableSqlTemplateSelector">
+                                    <option value="0"></option>
+                                    <option value="Cassandra">Cassandra</option>
+                                    <option value="ES">ES</option>
+                                    <option value="HBase">HBase</option>
+                                    <option value="Mongo">Mongo</option>
+                                    <option value="MySQL">MySQL</option>
+                                    <option value="Redis">Redis</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="checkSqlGrammarArea" style="display: inline;">
+                        <button class="btn btn-danger" id="checkSqlGrammarBtn" onclick="checkSqlGrammar();"
+                                type="button">校验SQL语法
+                        </button>
+                        <p class="help-block" style="display: inline;">提示：若SQL中使用到了UDX函数，请提前引入对应的UDX函数，再校验。</p>
+                    </div>
+                    <button class="btn btn-danger pull-right" id="enableSqlTemplateBtn" type="button">使用SQL模板</button>
+                    <div class="pull-right" id="sqlTemplateSeletorBtnArea" style="display: none;margin-right: 10px;">
+                        <button class="btn btn-primary" onclick="quickBuildSqlFromTemplates()" type="button">快速生成模板代码
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body" style="height: 600px;">
+                    <div class="col-xs-10">
+                        <div class="box">
+                            <div class="box-body" id="sqlEditor" style="height: 90%;"></div>
+                        </div>
+                    </div>
+                    <div class="col-xs-2">
+                        <div class="box">
+                            <div class="box-body">
+                                <button class="btn btn-danger btn-block" onclick="openUdxModal()" type="button">
+                                    引用UDX自定义函数文件
+                                </button>
+                                <p class="help-block">SQL中的自定义函数必须要引入对应的函数文件，若不存在请上传。</p>
+                                <form id="jobImportedUdxsForm">
+                                    <div class="box">
+                                        <div class="box-body" id="importedUdxListArea"></div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <button class="btn btn-default" onclick="toJobList()" type="button">返回任务管理</button>
+                    <button class="btn btn-primary pull-right" onclick="saveJob()" type="button">保存</button>
+                </div>
+                <div class="overlay hidden" id="tab2LoadingShadow">
+                    <i class="fa fa-refresh fa-spin"></i>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab_3">
+            <div class="box" style="height: 100%;">
+                <div class="box-body">
+                    <form class="form-horizontal center-block" id="jobSettingsForm">
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">集群：</label>
+                                <div class="col-xs-8">
+                                    <select class="form-control" name="cluster" required>
+                                        <option value="flink-1.6">flink-1.6</option>
+                                        <option value="flink-2.0">flink-2.0</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">队列：</label>
+                                <div class="col-xs-8">
+                                    <select class="form-control" name="queue" required></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">TaskManager内存(M)：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" min="0" name="taskmanager.memory.mb" required
+                                           type="number" value="1024"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">TaskManager个数：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" min="0" name="taskmanager.num" required type="number"
+                                           value="2"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">slots/TaskManager：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" min="0" name="taskmanager.slots" required type="number"
+                                           value="5"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">并行度：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" min="0" name="sql.env.parallelism" required
+                                           type="number" value="10"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">TimeCharacteristic：</label>
+                                <div class="col-xs-8">
+                                    <select class="form-control" name="time.characteristic" required>
+                                        <option value="ProcessingTime">ProcessingTime</option>
+                                        <option value="IngestionTime">IngestionTime</option>
+                                        <option value="EventTime">EventTime</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">重试：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" max="3" min="0" name="retry" required type="number"
+                                           value="0"/>
+                                    <p class="help-block"><a href="/goshawk/workorder/application"
+                                                             target="_blank">延迟报警</a></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="toggleCheckpointSettingsCheckbox" name="useCheckpoint"
+                                                   type="checkbox" value="true"/><span>开启Checkpoint：</span>
+                                        </label>
+                                    </div>
+                                </label>
+                                <div class="col-xs-8">
+                                    <div class="row hidden" id="checkpointSettingsArea">
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <label class="col-xs-4 control-label">Checkpoint间隔(s)：</label>
+                                                <div class="col-xs-8">
+                                                    <input class="form-control" min="10"
+                                                           name="sql.checkpoint.interval" type="number"/>
+                                                    <p class="help-block">建议：30-120秒左右。</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <div class="form-group">
+                                                <label class="col-xs-4 control-label">Checkpoint模式：</label>
+                                                <div class="col-xs-8">
+                                                    <select class="form-control" name="sql.checkpoint.mode">
+                                                        <option value="EXACTLY_ONCE">EXACTLY_ONCE</option>
+                                                        <option value="AT_LEAST_ONCE">AT_LEAST_ONCE</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="box-footer">
+                    <button class="btn btn-default" onclick="toJobList()" type="button">返回任务管理</button>
+                    <button class="btn btn-primary pull-right" onclick="saveJob()" type="button">保存</button>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab_4">
+            <div class="box" style="height: 100%;">
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-advance table-striped text-nowrap" style="width:100%;">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>监控</th>
+                                <th>启动时间</th>
+                                <th>状态</th>
+                                <th>运行时长</th>
+                                <th>结束时间</th>
+                            </tr>
+                            </thead>
+                            <tbody id="jobRunHistoryLogTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal container fade" id="udxModal" tabindex="-1">
+    <div class="modal-header">
+        <button aria-hidden="true" class="close" data-dismiss="modal" type="button">×</button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div id="udxContent"></div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal" type="button">关闭</button>
+    </div>
+</div>
+
+<div style="display: none;">
+    <div id="udxSqlTemplateSelector_UDF">
+        CREATE scala FUNCTION getLength WITH com.zz.GetLengthUDF;
+    </div>
+
+    <div id="udxSqlTemplateSelector_UDAF">
+        CREATE aggregate FUNCTION avgLength WITH com.zz.GetAVGLengthUDAF;
+    </div>
+
+    <div id="udxSqlTemplateSelector_UDTF">
+        CREATE table FUNCTION zz_split WITH com.zz.SplitUDTF;
+    </div>
+
+    <div id="sourceTableSqlTemplateSelector_Kafka_JSON">
+        CREATE TABLE APACHE_LOGS(
+        STATUS varchar,
+        LOCAL_IP varchar,
+        REMOTE_IP varchar
+        )WITH(
+        type ='kafka11',
+        kafka.bootstrap.servers ='ip:port',
+        kafka.zookeeper.quorum ='zkHost:zkPort/zzkafka',
+        kafka.auto.offset.reset ='latest',
+        kafka.topic ='xxTopic',
+        kafka.group.id = 'xxGroupId',
+        parallelism ='10'
+        );
+    </div>
+
+    <div id="sourceTableSqlTemplateSelector_Kafka_Text">
+        CREATE TABLE kafka_log(
+        _topic varchar,
+        _messageKey varchar,
+        _message varchar,
+        _partition INT,
+        _offset BIGINT
+        )WITH(
+        type ='kafka11',
+        kafka.bootstrap.servers ='ip:port',
+        kafka.zookeeper.quorum ='zkHost:zkPort/zzkafka',
+        kafka.auto.offset.reset ='latest',
+        kafka.topic ='xxTopic',
+        parallelism ='10',
+        kafka.group.id = 'xxGroupId',
+        sourcedatatype='text'
+        );
+    </div>
+
+    <div id="dimensionTableSqlTemplateSelector_Cassandra">
+        create table sideTable(
+        CHANNEL varchar,
+        XCCOUNT int,
+        PRIMARY KEY(channel),
+        PERIOD FOR SYSTEM_TIME
+        )WITH(
+        type ='cassandra',
+        address ='ip1:port1,ip2:port2',
+        database ='test',
+        tableName ='sidetest',
+        cache ='LRU',
+        parallelism ='1',
+        partitionedJoin='false'
+        );
+    </div>
+
+    <div id="dimensionTableSqlTemplateSelector_HBase">
+        CREATE TABLE sideTable(
+        cf:name varchar as name,
+        cf:info int as info,
+        PRIMARY KEY(md5(name) + 'test'),
+        PERIOD FOR SYSTEM_TIME
+        )WITH(
+        type ='hbase',
+        zookeeperQuorum ='rdos1:2181',
+        zookeeperParent ='/hbase',
+        tableName ='workerinfo',
+        cache ='LRU',
+        cacheSize ='10000',
+        cacheTTLMs ='60000',
+        parallelism ='1',
+        partitionedJoin='true'
+        );
+    </div>
+
+    <div id="dimensionTableSqlTemplateSelector_Mongo">
+        create table sideTable(
+        CHANNEL varchar,
+        XCCOUNT int,
+        PRIMARY KEY(channel),
+        PERIOD FOR SYSTEM_TIME
+        )WITH(
+        type ='mongo',
+        address ='ip1:port1,ip2:port2',
+        database ='test',
+        tableName ='sidetest',
+        cache ='LRU',
+        parallelism ='1',
+        partitionedJoin='false'
+        );
+    </div>
+
+    <div id="dimensionTableSqlTemplateSelector_MySQL">
+        create table sideTable(
+        channel varchar,
+        xccount int,
+        PRIMARY KEY(channel),
+        PERIOD FOR SYSTEM_TIME
+        )WITH(
+        type='mysql',
+        url='jdbc:mysql://xx.xx.xx.xx:xx/xx?charset=utf8',
+        userName='xx',
+        password='xx',
+        tableName='xx',
+        cache ='LRU',
+        cacheSize ='10000',
+        cacheTTLMs ='60000',
+        parallelism ='1',
+        partitionedJoin='false'
+        );
+    </div>
+
+    <div id="dimensionTableSqlTemplateSelector_Redis">
+        create table sideTable(
+        channel varchar,
+        xccount varchar,
+        PRIMARY KEY(channel),
+        PERIOD FOR SYSTEM_TIME
+        )WITH(
+        type='redis',
+        url='ip:port',
+        password='xx',
+        database='0',
+        tableName='xx',
+        cache = 'LRU',
+        cacheTTLMs='10000'
+        );
+    </div>
+
+    <div id="sinkTableSqlTemplateSelector_Cassandra">
+        CREATE TABLE MyResult(
+        channel VARCHAR,
+        pv VARCHAR
+        )WITH(
+        type ='cassandra',
+        address ='ip1:port1,ip2:port2',
+        userName ='xx',
+        password ='xx',
+        database ='xx',
+        tableName ='xx',
+        parallelism ='1'
+        );
+    </div>
+
+    <div id="sinkTableSqlTemplateSelector_ES">
+        CREATE TABLE MyResult(
+        aa INT,
+        bb INT
+        )WITH(
+        type ='elasticsearch',
+        address ='ip:port',
+        cluster='es_47_menghan',
+        estype ='type1',
+        index ='xc_es_test',
+        id ='0,1',
+        parallelism ='1'
+        );
+    </div>
+
+    <div id="sinkTableSqlTemplateSelector_HBase">
+        CREATE TABLE MyResult(
+        cf:channel varchar,
+        cf:pv BIGINT
+        )WITH(
+        type ='hbase',
+        zookeeperQuorum ='ip:port',
+        tableName ='xx',
+        rowKey ='cf:channel',
+        parallelism ='1',
+        zookeeperParent ='/hbase'
+        );
+    </div>
+
+    <div id="sinkTableSqlTemplateSelector_Mongo">
+        CREATE TABLE MyResult(
+        channel VARCHAR,
+        pv VARCHAR
+        )WITH(
+        type ='mongo',
+        address ='ip1:port1,ip2:port2',
+        userName ='xx',
+        password ='xx',
+        database ='xx',
+        tableName ='xx',
+        parallelism ='1'
+        );
+    </div>
+
+    <div id="sinkTableSqlTemplateSelector_MySQL">
+        CREATE TABLE MyResult(
+        channel VARCHAR,
+        pv VARCHAR
+        )WITH(
+        type ='mysql',
+        url ='jdbc:mysql://xx.xx.xx.xx:xx/xx?charset=utf8',
+        userName ='xx',
+        password ='xx',
+        tableName ='xx',
+        parallelism ='1'
+        );
+    </div>
+
+    <div id="sinkTableSqlTemplateSelector_Redis">
+        CREATE TABLE MyResult(
+        channel varchar,
+        pv varchar,
+        PRIMARY KEY(channel)
+        )WITH(
+        type='redis',
+        url='ip:port',
+        password='xx',
+        database='0',
+        tableName='sinktoredis',
+        );
+    </div>
+</div>
+
+
+<div id="dynamicOverwriteJavaScript4OpenUdxModal" style="display: none;">
+    //重写index.html的toUdx()方法
+    function toUdx(){
+    $.ajaxSettings.async = false;
+    $('#udxContent').load('/zstream/udx');
+    $.ajaxSettings.async = true;
+    $('#udxContent').find('#udxDeletableCssArea').remove();
+    }
+    //重写index.html的toUdxUploader()方法
+    function toUdxUploader(){
+    $('#udxContent').load('/zstream/udx/uploader');
+    }
+</div>
+<div id="dynamicOverwriteJavaScript4CloseUdxModal" style="display: none;">
+    function toUdx(){
+    $('#mainBody').load('/zstream/udx');
+    }
+    function toUdxUploader(){
+    $('#mainBody').load('/zstream/udx/uploader');
+    }
+</div>
+
+
+<div id="dynamicOverwriteCss4OpenUdxModal">
+    <style type="text/css">
+.hide-in-modal {
+  display: none;
+}
+
+    </style>
+</div>
+</body>
+
+
+<script>
+var editCurrentJobId = '[[${jobId}]]';
+var currentAction = '[[${action}]]';
+
+</script>
+
+<script type="text/javascript">
+var aceSqlEditor;
+function configSqlEditor(){
+  ace.require("ace/ext/language_tools");
+  var aceSqlEditor = ace.edit('sqlEditor', {
+    mode: 'ace/mode/sql',
+    selectionStyle: 'line',
+    showPrintMargin: false,
+    animatedScroll: true,
+    highlightActiveLine: true,
+    highlightSelectedWord: true,
+    fixedWidthGutter: true,
+    fontSize: 20,
+    fontFamily: 'Consolas',
+    useSoftTabs: true,
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion: true,
+    enableSnippets: true,
+  })
+  return aceSqlEditor;
+}
+function convertSelect2Selectpicker(){
+  $('#udxSqlTemplateSelector').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $('#sourceTableSqlTemplateSelector').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $('#dimensionTableSqlTemplateSelector').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $('#sinkTableSqlTemplateSelector').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $('#jobSettingsForm select[name="cluster"]').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $('#jobSettingsForm select[name="queue"]').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+}
+function toggleSqlTemplateSelector(){
+  $('#enableSqlTemplateBtn').toggle(
+    function(){
+      $('#sqlTemplateSeletor').css('display','inline');
+      $('#sqlTemplateSeletorBtnArea').css('display','inline');
+    },
+    function(){
+      $('#sqlTemplateSeletor').css('display','none');
+      $('#sqlTemplateSeletorBtnArea').css('display','none');
+    }
+  )
+}
+function doQuickBuildSqlFromTemplates(){
+  var udx = $('#udxSqlTemplateSelector').selectpicker('val');
+  var udxSql = $('#udxSqlTemplateSelector_'+udx).text();
+  
+  var sourceTable = $('#sourceTableSqlTemplateSelector').selectpicker('val');
+  var sourceTableSql = $('#sourceTableSqlTemplateSelector_'+sourceTable).text();
+  
+  var dimensionTable = $('#dimensionTableSqlTemplateSelector').selectpicker('val');
+  var dimensionTableSql = $('#dimensionTableSqlTemplateSelector_'+dimensionTable).text();
+  
+  var sinkTable = $('#sinkTableSqlTemplateSelector').selectpicker('val');
+  var sinkTableSql = $('#sinkTableSqlTemplateSelector_'+sinkTable).text();
+  
+  var text = udxSql+sourceTableSql+dimensionTableSql+sinkTableSql;
+  console.log(text);
+  aceSqlEditor.insert(text);
+}
+function quickBuildSqlFromTemplates(){
+  if(aceSqlEditor.getValue().trim() != ''){
+    bootbox.confirm("该操作会覆盖SQL编辑器内的内容，确定要覆盖吗？", function(result){
+      if(result){
+        aceSqlEditor.setValue('',0);
+        doQuickBuildSqlFromTemplates();
+      }
+    })
+  }else{
+    doQuickBuildSqlFromTemplates();
+  }
+}
+
+function openUdxModal(){
+  //动态加载#dynamicOverwriteJavaScript4OpenUdxModal的js
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.appendChild(document.createTextNode($('#dynamicOverwriteJavaScript4OpenUdxModal').html()));
+  document.body.appendChild(script);
+  $.ajaxSettings.async = false;
+  $('#udxContent').load('/zstream/udx');
+  $.ajaxSettings.async = true;
+  $('#udxContent').find('#udxDeletableCssArea').remove();
+  $('#udxForm').children('div').removeClass('row').children('div').removeClass('col-xs-4').addClass('col-xs-6');
+  $('#udxModal').modal('show');
+}
+
+//引用UDX文件
+function importUdxFiles4Sql(udxId){
+  $.get('/zstream/udx/find-by-id.do',{id:udxId},function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.message,'引入失败');
+      return false;
+    }
+    var udx = re.data;
+    if($('#importedUdx_'+udx.id).length > 0){
+      toastr.error('自定义函数文件['+udx.name+']已经被引入过了，不允许多次被引用');
+      return false;
+    }
+    var html = '<p class="text-success" id="importedUdx_'+udx.id+'"><span>'+udx.name+'</span>';
+    html += '<input type="hidden" name="udxIds[]" value="'+udx.id+'" data-url="'+udx.url+'"/>';
+    html += '&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-xs btn-danger" onclick="removeThisUdxNode('+udx.id+')">删除</button>';
+    html += '</p>';
+    $('#importedUdxListArea').append(html);
+    toastr.success('自定义函数文件引入成功');
+    //自动插入函数
+    aceSqlEditor.navigateFileStart();
+    var language = '';
+    if(udx.type == 1){//udf
+      language = ' scala ';
+    }else if(udx.type == 2){//udaf
+      language = ' aggregate ';
+    }else if(udx.type == 3){//udtf
+      language = ' table ';
+    }
+    aceSqlEditor.insert('CREATE'+ language + 'FUNCTION'+' '+ udx.functionAlias + ' ' + 'WITH' + ' ' + udx.functionClass + ';' + '\n\n\n');
+  })
+}
+
+function removeThisUdxNode(udxId){
+  $('#importedUdx_'+udxId).remove();
+}
+
+function saveJob(){
+  if(!$('#jobBasicInfoForm').valid()){
+    $('#jobEditorTab a[href="#tab_1"]').tab('show');
+    return false;
+  }
+  if(aceSqlEditor.getValue().trim() == ''){
+    $('#jobEditorTab a[href="#tab_2"]').tab('show');
+    aceSqlEditor.gotoLine(1);
+    toastr.error('SQL代码不允许为空');
+    return false;
+  }
+  if(!$('#jobSettingsForm').valid()){
+    $('#jobEditorTab a[href="#tab_3"]').tab('show');
+    return false;
+  }
+  var form = $('#jobBasicInfoForm').serialize();
+  form += '&jobConfig.sql=' + encodeURIComponent(aceSqlEditor.getValue());
+  if($('#jobImportedUdxsForm').serializeJSON().udxIds && $('#jobImportedUdxsForm').serializeJSON().udxIds.length > 0){
+    form += '&' + $('#jobImportedUdxsForm').serialize();
+  }
+  console.log($('#jobSettingsForm').serializeJSON());
+  form += '&jobConfig.settings=' + JSON.stringify($('#jobSettingsForm').serializeJSON());
+  $.post('/zstream/job/save.do',form,function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.message,'保存失败');
+      return false;
+    }
+    var job = re.data;
+    $('#jobBasicInfoForm input[name="id"]').val(job.id);
+    $('#checkSqlGrammarArea').removeClass('hidden');
+    toastr.success('保存成功，请到任务管理页查看');
+  })
+  /* $.ajax({
+    url: '/zstream/job/save.do',
+    
+  }); */
+}
+
+function checkSqlGrammar(){
+  toastr.info('耗时较长，请耐心等待！！！');
+  $('#tab2LoadingShadow').removeClass('hidden');
+  //var jobId = $('#jobBasicInfoForm input[name="id"]').val();
+  var udxsArr = [];
+  $('#importedUdxListArea input[name="udxIds[]"]').each(function(){
+    udxsArr.push($(this).attr('data-url'));
+  })
+  var req = {
+    sql: aceSqlEditor.getValue(),
+    udxs: JSON.stringify(udxsArr),
+  }
+  $.post('/zstream/job/check_sql.do',req,function(re){
+    $('#tab2LoadingShadow').addClass('hidden');
+    if(re.status != 'ok'){
+      toastr.error(re.message);
+      return false;
+    }
+    if(re.data.code == '2'){
+      bootbox.alert('<pre>'+re.data.message+'</pre>');
+    }else if(re.data.code == '3'){
+      bootbox.alert('恭喜你，SQL语法校验通过。');
+    }else{
+      bootbox.alert('可能发生了未知的错误，请联系zzdp负责人。');
+    }
+  })
+}
+
+function listJobRunLogs(){
+  $.get('/zstream/job/list_job_logs.do',{jobId:editCurrentJobId},function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.message);
+      return false;
+    }
+    var html = '';
+    $.each(re.data,function(i,log){
+      html += '<tr>';
+      html += '<td>' + log.id + '</td>';
+      html += '<td>' + '<a href="'+log.dashboardUrl+'" target="_blank">任务监控</a>'; + '</td>';
+      html += '<td>' + log.createTime + '</td>';
+      var jobStatus = '';
+      if(log.status == 0){
+        jobStatus = '<span class="label label-default">新建</span>';
+      }
+      if(log.status == 1){
+        jobStatus = '<span class="label label-success">正在运行</span>';
+      }
+      if(log.status == 2){
+        jobStatus = '<span class="label label-danger">启动失败</span>';
+      }
+      if(log.status == 3){
+        jobStatus = '<span class="label label-danger">运行时失败</span>';
+      }
+      if(log.status == 9){
+        jobStatus = '<span class="label label-info">启动中</span>';
+      }
+      if(log.status == -1){
+        jobStatus = '<span class="label label-warning">KILL</span>';
+      }
+      html += '<td>' + jobStatus + '</td>';
+      var aliveTime = '';
+      if(log.createTime == log.modifyTime){
+        aliveTime = moment(moment() - moment(log.createTime, "YYYY-MM-DD HH:mm:ss")).format('HH:mm:ss');
+      }else{
+        var s = moment(log.createTime, "YYYY-MM-DD HH:mm:ss");
+        var e = moment(log.modifyTime, "YYYY-MM-DD HH:mm:ss");
+        aliveTime = moment(e-s).format('HH:mm:ss');
+      }
+      html += '<td>' + aliveTime + '</td>';
+      html += '<td>' + (log.createTime == log.modifyTime ? '' : log.modifyTime) + '</td>';
+      html += '</tr>';
+    });
+    $('#jobRunHistoryLogTableBody').empty();
+    $('#jobRunHistoryLogTableBody').append(html);
+  });
+}
+
+
+(function(){
+  aceSqlEditor = configSqlEditor();
+  toggleSqlTemplateSelector();
+  convertSelect2Selectpicker();
+  /* $('#sqlTemplatesContainer').load('/zstream/job/sql-templates'); */
+  $('#jobBasicInfoForm input[name="creator"]').val(currentUserPyName);
+  /* $.get('/user/api/list-user',function(data){
+    if(data.userList){
+      $.each(data.userList,function(i,user){
+        $('#jobCreatorSelector').append('<option value="'+user.userName+'">'+user.trueName+'('+user.userName+')'+'</option>');
+      })
+    }
+    $('#jobCreatorSelector').selectpicker('val',currentUserPyName);
+    $('#jobCreatorSelector').selectpicker('refresh');
+  }) */
+  $('#jobBasicInfoForm input[id="jobCreator"]').val(currentUserPyName);
+  $('#jobBasicInfoForm').validate({
+    errorClass: 'text-danger',
+    ignore: ".ignore",
+  });
+  $('#jobSettingsForm').validate({
+    errorClass: 'text-danger',
+    ignore: ".ignore",
+  });
+  $('#jobReceiversSelector').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $('#jobSettingsForm select[name="time.characteristic"]').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $('#jobSettingsForm select[name="sql.checkpoint.mode"]').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $.ajaxSettings.async = false;
+  $.get('/user/api/list-user',function(data){
+    if(data.userList){
+      $.each(data.userList,function(i,user){
+        $('#jobReceiversSelector').append('<option value="'+user.pyName+'">'+user.name+'('+user.pyName+')'+'</option>');
+      })
+    }
+    $('#jobReceiversSelector').selectpicker('val',currentUserPyName);
+    $('#jobReceiversSelector').selectpicker('refresh');
+  })
+  $.get('/hadoop/api/getHadoopQueueByDept',function(data){
+    if(data){
+      var queues = JSON.parse(data);
+      $.each(queues,function(i,e){
+        $('#jobSettingsForm select[name="queue"]').append('<option value="'+e.name+'">'+e.name+'</option>');
+      })
+      if(currentUserProxyCode == 'zdp'){
+        $('#jobSettingsForm select[name="queue"]').selectpicker('val','root.online.dp');
+      }else if(currentUserProxyCode == 'algo'){
+        $('#jobSettingsForm select[name="queue"]').selectpicker('val','root.online.algo');
+      }
+      $('#jobSettingsForm select[name="queue"]').selectpicker('refresh');
+    }
+  })
+  $.ajaxSettings.async = true;
+  $('#udxModal').on('hide.bs.modal',function(){
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.appendChild(document.createTextNode($('#dynamicOverwriteJavaScript4CloseUdxModal').html()));
+    document.body.appendChild(script);
+  });
+  $('#toggleCheckpointSettingsCheckbox').change(function(){
+    $(this).prop('checked',function(){
+      $('#checkpointSettingsArea').toggleClass('hidden');
+    })
+    if($(this).attr('checked')){
+      $('#jobSettingsForm input[name="sql.checkpoint.interval"]').attr('required',true);
+      $('#jobSettingsForm select[name="sql.checkpoint.mode"]').attr('required',true);
+    }else{
+      $('#jobSettingsForm input[name="sql.checkpoint.interval"]').attr('required',false);
+      $('#jobSettingsForm select[name="sql.checkpoint.mode"]').attr('required',false);
+    }
+  });
+})();
+
+</script>
+
+
+<script>
+if(editCurrentJobId != ''){
+  $('#checkSqlGrammarArea').removeClass('hidden');
+  $.get('/zstream/job/find.do',{jobId:editCurrentJobId},function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.message,'保存失败');
+      return false;
+    }
+    var job = re.data;
+    //tab_1
+    $('#jobBasicInfoForm input[name="id"]').val(job.id);
+    $('#jobBasicInfoForm input[name="name"]').val(job.name);
+    $('#jobBasicInfoForm input[name="creator"]').val(job.creator);
+    if(job.receivers != ''){
+      var receiversArr = job.receivers.split(',');
+      $('#jobReceiversSelector').selectpicker('val',receiversArr);
+    }
+    $('#jobBasicInfoForm textarea[name="description"]').val(job.description);
+    //tab_2
+    if(job.jobConfig && job.jobConfig.sql){
+      aceSqlEditor.insert(job.jobConfig.sql);
+    }
+    if(job.udxs && job.udxs.length > 0){
+      var html = '';
+      $.each(job.udxs,function(i,udx){
+        html += '<p class="text-success" id="importedUdx_'+udx.id+'"><span>'+udx.name+'</span>';
+        html += '<input type="hidden" name="udxIds[]" value="'+udx.id+'" data-url="'+udx.url+'"/>';
+        html += '&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-xs btn-danger" onclick="removeThisUdxNode('+udx.id+')">删除</button>';
+        html += '</p>';
+      })
+      $('#importedUdxListArea').append(html);
+    }
+    //tab_3
+    if(job.jobConfig && job.jobConfig.settings){
+      var settings = JSON.parse(job.jobConfig.settings);
+      $('#jobSettingsForm select[name="cluster"]').selectpicker('val',settings.cluster);
+      $('#jobSettingsForm select[name="queue"]').selectpicker('val',settings.queue);
+      $('#jobSettingsForm input[name="taskmanager.memory.mb"]').val(settings['taskmanager.memory.mb']);
+      $('#jobSettingsForm input[name="taskmanager.num"]').val(settings['taskmanager.num']);
+      $('#jobSettingsForm input[name="taskmanager.slots"]').val(settings['taskmanager.slots']);
+      $('#jobSettingsForm input[name="sql.env.parallelism"]').val(settings['sql.env.parallelism']);
+      $('#jobSettingsForm select[name="time.characteristic"]').selectpicker('val',settings['time.characteristic']);
+      $('#jobSettingsForm input[name="retryTimes"]').val(settings.retryTimes);
+      if(settings.useCheckpoint == 'true'){
+        $('#jobSettingsForm input[name="useCheckpoint"]').attr('checked',true);
+        $('#jobSettingsForm input[name="useCheckpoint"]').trigger('change');
+      }
+      $('#jobSettingsForm input[name="sql.checkpoint.interval"]').val(settings['sql.checkpoint.interval']);
+      $('#jobSettingsForm select[name="sql.checkpoint.mode"]').selectpicker('val',settings['sql.checkpoint.mode']);
+    }
+    if(currentAction == 'copy'){
+      $('#jobBasicInfoForm input[name="id"]').val('');
+      $('#jobBasicInfoForm input[name="name"]').val(job.name+'_duplicated');
+      $('#jobBasicInfoForm input[name="creator"]').val(currentUserPyName);
+      $('#jobReceiversSelector').selectpicker('val',currentUserPyName);
+    }
+    if(currentAction == 'view'){
+      $('input').attr('disabled',true);
+      $('select').attr('disabled',true);
+      $('textarea').attr('disabled',true);
+      $('button').attr('disabled',true);
+      aceSqlEditor.setReadOnly(true);
+      //加载运行历史
+      listJobRunLogs();
+      $('#jobRunHistoryLogTab').show();
+    }
+  })
+}
+
+</script>
+
+</html>

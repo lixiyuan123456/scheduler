@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<!-- <configuration scan="true" debug="true"> -->
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder charset="UTF-8"
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%date [%thread] %level %logger %replace(%caller{1}){'\r\n', ''} %message %n</Pattern>
+		</encoder>
+	</appender>
+
+	<appender name="ERROR"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<!-- <fileNamePattern>${catalina.home}/logs/mars/debug.log.%d{yyyy-MM-dd}.log</fileNamePattern> -->
+			<fileNamePattern>/opt/web/skynet/logs/error.log.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history capped at 3GB total size -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%date [%thread] %level %logger %replace(%caller{1}){'\r\n', ''} %message %n</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="INFO"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<!-- <fileNamePattern>${catalina.home}/logs/mars/debug.log.%d{yyyy-MM-dd}.log</fileNamePattern> -->
+			<fileNamePattern>/opt/web/skynet/logs/info.log.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history capped at 3GB total size -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%date [%thread] %level %logger %replace(%caller{1}){'\r\n', ''} %message %n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="DEBUG"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>ACCEPT</onMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<!-- <fileNamePattern>${catalina.home}/logs/mars/debug.log.%d{yyyy-MM-dd}.log</fileNamePattern> -->
+			<fileNamePattern>/opt/web/skynet/logs/debug.log.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<!-- keep 30 days' worth of history capped at 3GB total size -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%date [%thread] %level %logger %replace(%caller{1}){'\r\n', ''} %message %n</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="com.naixue" level="DEBUG" addtivity="false">
+		<appender-ref ref="INFO" />
+		<appender-ref ref="DEBUG" />
+	</logger>
+	
+	<!-- hibernate -->
+	<logger name="org.hibernate.SQL" level="TRACE" addtivity="false">
+		<appender-ref ref="DEBUG" />
+	</logger>
+	<logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" addtivity="false">
+		<appender-ref ref="DEBUG" />
+	</logger>
+	<!-- <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="TRACE" addtivity="false"/> -->  
+    
+  <!-- JdbcTemplate -->
+  <logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG" addtivity="false">
+  	<appender-ref ref="DEBUG" />
+  </logger>
+
+	<root level="ERROR">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="ERROR" />
+	</root>
+
+</configuration>

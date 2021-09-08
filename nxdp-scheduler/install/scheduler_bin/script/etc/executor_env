@@ -1,0 +1,8 @@
+#export HADOOP_HOME=/opt/hadoop/
+#export HIVE_HOME=/opt/hive/
+#export SQOOP_HOME=/opt/soft/zdp/sqoop
+#export HBASE_HOME=/opt/hbase/
+#export PATH={$PATH}:$SQOOP_HOME/bin:
+#export PATH={$PATH}:$HADOOP_HOME/bin:$HIVE_HOME/bin:$SQOOP_HOME/bin:$HBASE_HOME/bin
+#
+#export HADOOP_USER_NAME=algo

@@ -1,0 +1,59 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header">
+<div layout:fragment="html-title"></div>
+</head>
+<!-- END HEAD -->
+
+
+<!-- BEGIN BODY -->
+<body>
+
+
+  <!-- BEGIN PAGE HEADER -->
+  <div th:replace="common :: common-page-header"></div>
+  <!-- END PAGE HEADER -->
+
+
+  <!-- BEGIN PAGE CONTAINER -->
+  <div class="page-container">
+    <!-- BEGIN PAGE CONTENT -->
+    <div class="page-content">
+      <!-- BEGIN CONTAINER -->
+      <div class="container">
+        <div th:replace="common :: common-page-breadcrumb"></div>
+
+        <div layout:fragment="page-portlet-light"></div>
+
+
+      </div>
+      <!-- END CONTAINER -->
+
+      <div layout:fragment="dialog"></div>
+
+    </div>
+    <!-- END PAGE CONTENT -->
+  </div>
+  <!-- END PAGE CONTAINER -->
+
+
+  <!-- BEGIN FOOTER -->
+  <div th:replace="common :: common-page-footer"></div>
+  <!-- END FOOTER -->
+
+
+  <!-- BEGIN JAVASCRIPT -->
+  <div th:replace="common :: common-html-javascripts"></div>
+  <!-- END JAVASCRIPT -->
+
+
+  <!-- BEGIN PAGE JAVASCRIPT -->
+  <div layout:fragment="extra-javascripts"></div>
+  <!-- END PAGE JAVASCRIPT -->
+
+
+</body>
+<!-- END BODY -->
+</html>

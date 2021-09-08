@@ -1,0 +1,1346 @@
+
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en" class="no-js">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+<meta charset="utf-8">
+<title>首页</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta content="" name="description">
+<meta content="" name="author">
+<!-- BEGIN GLOBAL MANDATORY STYLES -->
+<link href="/assets/global/css/googleapis_font.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css">
+<link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css">
+<!-- END GLOBAL MANDATORY STYLES -->
+<!-- BEGIN PAGE LEVEL PLUGIN STYLES -->
+<link href="/assets/page/css/info-coding-c40b75e0aa.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css">
+<!-- END PAGE LEVEL PLUGIN STYLES -->
+<!-- BEGIN PAGE STYLES -->
+
+<!-- END PAGE STYLES -->
+<!-- BEGIN THEME STYLES -->
+<!-- DOC: To use 'rounded corners' style just load 'components-rounded.css' stylesheet instead of 'components.css' in the below style tag -->
+<link href="/assets/global/css/components-rounded.css" id="style_components" rel="stylesheet" type="text/css">
+<link href="/assets/global/css/plugins.css" rel="stylesheet" type="text/css">
+<link href="/assets/layout/css/layout.css" rel="stylesheet" type="text/css">
+<link href="/assets/layout/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color">
+<link href="/assets/layout/css/custom.css" rel="stylesheet" type="text/css">
+<!-- END THEME STYLES -->
+<link rel="shortcut icon" href="/template/favicon.ico">
+<style type="text/css">
+  .select2-container .select2-selection--single {
+    height: 34px !important;
+  }
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 33px !important;
+  }
+  .page-header {
+    height: auto !important;
+  }
+  .breadcrumb {
+    padding: 10px 0 15px 0 !important;
+  }
+  
+  .dashboard-stat .details .number {
+    padding-top: 13px;
+    text-align: right;
+    font-size: 25px;
+    line-height: 36px;
+    letter-spacing: -1px;
+    margin-bottom: 2px;
+    font-weight: 300;
+	}
+  .dashboard-stat .details .desc {
+    text-align: right;
+    font-size: 16px;
+    letter-spacing: 0px;
+    margin-bottom: 2px;
+    /* font-weight: 300; */
+	}
+</style>
+</head>
+<!-- END HEAD -->
+<!-- BEGIN BODY -->
+<!-- DOC: Apply "page-header-menu-fixed" class to set the mega menu fixed  -->
+<!-- DOC: Apply "page-header-top-fixed" class to set the top menu fixed  -->
+<body>
+
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+  <div class="page-content">
+    <!-- BEGIN PAGE HEAD -->
+    <div class="container">
+  <style>
+    .deptJobsChart {
+      width: 100%;
+      height: 300px;
+    }
+    
+    .miniChart {
+      width: 100%;
+      height: 250px;
+    }
+    
+    .portlet > .portlet-title > .actions .btn-icon-only.btn-default.fullscreenX {
+	    font-family: FontAwesome;
+	    color: #a0a0a0;
+	    padding-top: 3px;
+	}
+    .portlet > .portlet-title > .actions .btn-icon-only.btn-default.fullscreenX:before {
+    	content: "\f065";
+	}
+    
+    .portlet > .portlet-title > .actions .btn-icon-only.btn-default.fullscreenX.on:before {
+    	content: "\f066";
+	}
+  </style>
+  
+  <!-- Page Content BEGIN -->
+    <div class="container-fluid">
+        <div class="page-content">
+        
+          <div class="row">
+          <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <a class="dashboard-stat dashboard-stat-light green-soft" href="javascript:;" id="hdfsUsedBox">
+            <div class="visual">
+              <i class="fa "></i>
+            </div>
+            <div class="details">
+              <div class="number" id="hdfsUsed_num">
+              </div>
+              <div class="desc" id="hdfsUsed_desc">
+              </div>
+              <div class="desc">
+              hdfs使用量
+              </div>
+            </div>
+            </a>
+          </div>
+          <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <a class="dashboard-stat dashboard-stat-light " href="javascript:;" id="littleDirBox">
+            <div class="visual">
+              <i class="fa "></i>
+            </div>
+            <div class="details">
+              <div class="number" id="littleDir_num">
+              </div>
+              <div class="desc" id="littleDir_desc">
+              </div>
+              <div class="desc">
+              	小文件总量
+              </div>
+            </div>
+            </a>
+          </div>
+          <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <a class="dashboard-stat dashboard-stat-light green-soft" href="javascript:;" id="hdfsIncreBox">
+            <div class="visual">
+              <i class="fa "></i>
+            </div>
+            <div class="details">
+              <div class="number" id="hdfsIncre_num">
+              </div>
+               <div class="desc" id="hdfsIncre_desc">
+              </div>
+                <div class="desc">
+                hdfs日增量
+              </div>
+            </div>
+            </a>
+          </div>
+          </div>
+          
+          <div class="row">
+          <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <a class="dashboard-stat dashboard-stat-light" href="javascript:;" id="appBox">
+            <div class="visual">
+              <i class= ></i>
+            </div>
+            <div class="details">
+              <div class="number" id="appBox_num">
+              </div>
+               <div class="desc" id="appBox_desc1">
+              </div>
+                <div class="desc">
+                App日运行量
+              </div>
+            </div>
+            </a>
+          </div>
+          <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <a class="dashboard-stat dashboard-stat-light " href="javascript:;" id="longTimeBox">
+            <div class="visual">
+              <i class="fa "></i>
+            </div>
+            <div class="details">
+              <div class="number" id="longTimeBox_num">
+              </div>
+               <div class="desc" id="longTimeBox_desc">
+              </div>
+                <div class="desc">
+                	超长任务数量
+              </div>
+            </div>
+            </a>
+          </div>
+          <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <a class="dashboard-stat dashboard-stat-light " href="javascript:;" id="longTaskBox">
+            <div class="visual">
+              <i class="fa "></i>
+            </div>
+            <div class="details">
+              <div class="number" id="longTaskBox_num">
+              </div>
+               <div class="desc" id="longTaskBox_desc">
+              </div>
+                <div class="desc">
+                	task过多任务数
+              </div>
+            </div>
+            </a>
+          </div>
+          <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <a class="dashboard-stat dashboard-stat-light " href="javascript:;" id="longResourceBox">
+            <div class="visual">
+              <i class="fa "></i>
+            </div>
+            <div class="details">
+              <div class="number" id="longResourceBox_num">
+              </div>
+               <div class="desc" id="longResourceBox_desc">
+              </div>
+                <div class="desc">
+                	资源过多任务数
+              </div>
+            </div>
+            </a>
+          </div>
+          <!-- <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <a class="dashboard-stat dashboard-stat-light purple-soft" href="javascript:;">
+            <div class="visual">
+              <i class="fa fa-th"></i>
+            </div>
+            <div class="details">
+              <div class="number">
+              </div>
+              <div class="desc">
+              </div>
+            </div>
+            </a>
+          </div> -->
+        </div>
+        
+        
+        <div class="row">
+            <div class="col-md-6" id="chart1_div">
+              <!-- BEGIN Portlet PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase font-red-sunglo">hdfs使用量</span>
+                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+                </div>
+                <div class="actions">
+                  <!-- <a href="javascript:void" data-value="showDPRunJobStatus:3" class="btn btn-circle btn-default btn-sm" onclick="getCountData()"><i class="icon-user"></i> 总趋势 </a>
+                  <a href="javascript:void" data-value="showDPRunJobStatus:2" class="btn btn-circle btn-default btn-sm"><i class="icon-users"></i> 各组趋势 </a> -->
+                  <a href="javascript:void" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart1">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="runJobStatusChart" class="CSSAnimationChart"></div>
+              </div>
+            </div>
+            <!-- END PORTLET-->
+            </div>
+            
+            <div class="col-md-6" id="chart2_div">
+              <!-- BEGIN PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption">
+                  <span class="caption-subject bold uppercase font-red-sunglo">hdfs各组使用量</span>
+                  <!-- <span class="caption-helper">不同类型上线任务数量统计</span> -->
+                </div>
+                <div class="actions">
+                  <a href="javascript:void" data-value="showDPTaskTypeJobsBar:" class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart2">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="jobNumsByTypeChart" class="mapChart"></div>
+              </div>
+            </div>
+            <!-- END PORTLET-->
+            </div>
+            
+          </div>
+          
+           <div class="row">
+           
+           <!-- <div class="col-md-6" id="chart4_div">
+              BEGIN PORTLET
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption">
+                  <span class="caption-subject bold uppercase font-red-sunglo">hdfs各组增量</span>
+                  <span class="caption-helper">不同类型上线任务数量统计</span>
+                </div>
+                <div class="actions">
+                  <a href="javascript:void" data-value="showDPTaskTypeJobsBar:" class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart4">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="dayUp" class="mapChart"></div>
+              </div>
+            </div>
+            </div> -->
+            
+            <div class="col-md-6" id="chart3_div">
+              <!-- BEGIN Portlet PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase font-red-sunglo">小文件增长趋势</span>
+                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+                </div>
+                <div class="actions">
+                  <a href="javascript:getLittleCountData(0)"  class="btn btn-circle btn-default btn-sm" onclick="getCountData()"><i class="icon-user"></i>总趋势 </a>
+                  <a href="javascript:getLittleCountData(1)"  class="btn btn-circle btn-default btn-sm"><i class="icon-users"></i>各组趋势 </a>
+                  <a href="javascript:void"  class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart3">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="littleDir" class="CSSAnimationChart"></div>
+              </div>
+            </div>
+            <!-- END PORTLET-->
+            </div>
+            
+            <div class="col-md-6" id="chart6_div">
+              <!-- BEGIN Portlet PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase font-red-sunglo">运行时间超长任务统计</span>
+                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+                </div>
+                <div class="actions">
+                  <!-- <a href="javascript:void" data-value="showDPRunJobStatus:3" class="btn btn-circle btn-default btn-sm" onclick="getCountData()"><i class="icon-user"></i>总趋势 </a>
+                  <a href="javascript:void" data-value="showDPRunJobStatus:2" class="btn btn-circle btn-default btn-sm"><i class="icon-users"></i>各组趋势 </a> -->
+                  <a href="javascript:void" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart6">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="langTask" class="CSSAnimationChart"></div>
+              </div>
+            </div>
+            <!-- END PORTLET-->
+            </div>
+            
+          </div>
+          
+         <!--  <div class="row">
+           
+           <div class="col-md-6" id="chart5_div">
+              BEGIN PORTLET
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption">
+                  <span class="caption-subject bold uppercase font-red-sunglo">APP日运行量统计</span>
+                  <span class="caption-helper">不同类型上线任务数量统计</span>
+                </div>
+                <div class="actions">
+                  <a href="javascript:void" data-value="showDPTaskTypeJobsBar:" class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart5">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="appCount" class="mapChart"></div>
+              </div>
+            </div>
+            </div>
+            
+            
+          </div> -->
+          
+           <div class="row">
+           
+           <div class="col-md-6" id="chart7_div">
+              <!-- BEGIN PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption">
+                  <span class="caption-subject bold uppercase font-red-sunglo">task过多任务统计</span>
+                  <!-- <span class="caption-helper">不同类型上线任务数量统计</span> -->
+                </div>
+                <div class="actions">
+                  <a href="javascript:void" data-value="showDPTaskTypeJobsBar:" class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart7">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="taskCount" class="mapChart"></div>
+              </div>
+            </div>
+            <!-- END PORTLET-->
+            </div>
+            
+            <div class="col-md-6" id="chart8_div">
+              <!-- BEGIN Portlet PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase font-red-sunglo">资源过多任务统计</span>
+                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+                </div>
+                <div class="actions">
+                  <!-- <a href="javascript:void" data-value="showDPRunJobStatus:3" class="btn btn-circle btn-default btn-sm" onclick="getCountData()"><i class="icon-user"></i>总趋势 </a>
+                  <a href="javascript:void" data-value="showDPRunJobStatus:2" class="btn btn-circle btn-default btn-sm"><i class="icon-users"></i>各组趋势 </a> -->
+                  <a href="javascript:void" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart8">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="resourceCount" class="CSSAnimationChart"></div>
+              </div>
+            </div>
+            <!-- END PORTLET-->
+            </div>
+          </div>
+          
+          
+          
+          
+          <div class="row">
+            <div class="col-md-6" id="chart9_div">
+              <!-- BEGIN Portlet PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase font-red-sunglo">昨日任务运行时长统计</span>
+                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+                </div>
+                <div class="actions">
+                  <a href="javascript:getPieCountData(0)"  class="btn btn-circle btn-default btn-sm"> 所有任务 </a>
+                  <a href="javascript:getPieCountData(1)"  class="btn btn-circle btn-default btn-sm"> 调度任务 </a>
+                  <a href="javascript:getPieCountData(2)"  class="btn btn-circle btn-default btn-sm"> 非调度任务 </a>
+                  <a href="javascript:void"  class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart9">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="runTimeCount" class="CSSAnimationChart"></div>
+              </div>
+            </div>
+            <!-- END PORTLET-->
+            </div>
+            
+            <div class="col-md-6" id="chart10_div">
+              <!-- BEGIN Portlet PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase font-red-sunglo">任务总数统计</span>
+                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+                </div>
+                <div class="actions">
+                  <!-- <a href="javascript:void" data-value="showDPRunJobStatus:3" class="btn btn-circle btn-default btn-sm"><i class="icon-user"></i> 我的 </a>
+                  <a href="javascript:void" data-value="showDPRunJobStatus:2" class="btn btn-circle btn-default btn-sm"><i class="icon-users"></i> 部门 </a>
+                  <a href="javascript:void" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-default btn-sm"><i class="icon-globe"></i> 平台 </a> -->
+                  <a href="javascript:void" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart10">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="taskNumCount" class="CSSAnimationChart"></div>
+              </div>
+            </div>
+            <!-- END PORTLET-->
+            </div>
+            
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6" id="chart11_div">
+              <!-- BEGIN Portlet PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase font-red-sunglo">任务提交统计</span>
+                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+                </div>
+                <div class="actions">
+                  <!-- <a href="javascript:void" data-value="showDPRunJobStatus:3" class="btn btn-circle btn-default btn-sm"><i class="icon-user"></i> 我的 </a>
+                  <a href="javascript:void" data-value="showDPRunJobStatus:2" class="btn btn-circle btn-default btn-sm"><i class="icon-users"></i> 部门 </a>
+                  <a href="javascript:void" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-default btn-sm"><i class="icon-globe"></i> 平台 </a> -->
+                  <a href="javascript:void" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart11">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="submitTaskCount" class="CSSAnimationChart"></div>
+              </div>
+            </div>
+            </div>
+            
+            
+            <div class="col-md-6" id="chart12_div">
+              <!-- BEGIN Portlet PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase font-red-sunglo">各队列任务任务数统计</span>
+                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+                </div>
+                <div class="actions">
+                  <!-- <a href="javascript:getPieCountData(0)"  class="btn btn-circle btn-default btn-sm"> 所有任务 </a>
+                  <a href="javascript:getPieCountData(1)"  class="btn btn-circle btn-default btn-sm"> 调度任务 </a>
+                  <a href="javascript:getPieCountData(2)"  class="btn btn-circle btn-default btn-sm"> 非调度任务 </a>-->
+                  <a href="javascript:void"  class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart12">
+                  </a> 
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="queueTaskCount" class="CSSAnimationChart"></div>
+              </div>
+            </div>
+            <!-- END PORTLET-->
+            </div>
+            </div>
+            
+            
+             <div class="row">
+            <div class="col-md-6" id="chart13_div">
+              <!-- BEGIN Portlet PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase font-red-sunglo">24小时任务数统计</span>
+                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+                </div>
+                <div class="actions">
+                  <a href="javascript:get24HourTaskCount(0)" data-value="showDPRunJobStatus:3" class="btn btn-circle btn-default btn-sm"> 全部 </a>
+                  <a href="javascript:get24HourTaskCount(1)" data-value="showDPRunJobStatus:2" class="btn btn-circle btn-default btn-sm"> 任务类型 </a>
+                  <a href="javascript:get24HourTaskCount(2)" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-default btn-sm"> 运行类型 </a>
+                  <a href="javascript:void" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart13">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="hour24TaskCount" class="CSSAnimationChart"></div>
+              </div>
+            </div>
+            </div>
+            
+            <div class="col-md-6" id="chart14_div">
+              <!-- BEGIN Portlet PORTLET-->
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase font-red-sunglo">各部门JOB数统计</span>
+                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+                </div>
+                <div class="actions">
+                  <a href="javascript:getDeptJobData(0)"  class="btn btn-circle btn-default btn-sm"> 全部 </a>
+                  <a href="javascript:getDeptJobData(1)"  class="btn btn-circle btn-default btn-sm"> MR </a>
+                  <a href="javascript:getDeptJobData(2)"  class="btn btn-circle btn-default btn-sm"> SPARK </a>
+                  <a href="javascript:getDeptJobData(3)"  class="btn btn-circle btn-default btn-sm"> 调度 </a>
+                  <a href="javascript:getDeptJobData(4)"  class="btn btn-circle btn-default btn-sm"> 非调度 </a>
+                  <a href="javascript:void"  class="btn btn-circle btn-icon-only btn-default fullscreenX" id="chart14">
+                  </a> 
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="deptJobCount" class="CSSAnimationChart"></div>
+              </div>
+            </div>
+            <!-- END PORTLET-->
+            </div>
+            </div>
+            
+            <!-- <div class="col-md-6">
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption caption-md font-red-sunglo">
+                  <i class="icon-bar-chart theme-font hide"></i>
+                  <span class="caption-subject theme-font bold uppercase font-red-sunglo">当日出错任务列表</span>
+                </div>
+                <div class="actions">
+                  <div class="btn-group btn-group-devided" data-toggle="buttons">
+                    <label class="btn btn-transparent grey-salsa btn-circle btn-sm active">
+                    <input type="radio" name="errorJobsRadio" data-value="showDPErrorJobs:3" class="toggle" id="option1">我的</label>
+                    <label class="btn btn-transparent grey-salsa btn-circle btn-sm">
+                    <input type="radio" name="errorJobsRadio" data-value="showDPErrorJobs:2" class="toggle" id="option2">部门</label>
+                    <label class="btn btn-transparent grey-salsa btn-circle btn-sm">
+                    <input type="radio" name="errorJobsRadio" data-value="showDPErrorJobs:1" class="toggle" id="option2">平台</label>
+                  </div>
+                </div>
+              </div>
+              <div class="portlet-body">
+                <div class="table-scrollable table-scrollable-borderless">
+                  <div style="overflow:scroll; height:480px; width: 100%;">
+                  <table id="errorJobs" class="table table-hover table-light">
+                  <thead>
+                  <tr class="uppercase">
+                    <th>
+                                                            任务名
+                    </th>
+                    <th>
+                                                            负责人
+                    </th>
+                    <th>
+                                                            调度类型
+                    </th>
+                    <th>
+                                                             执行时间
+                    </th>
+                  </tr>
+                  </thead>
+                  </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> -->
+            
+          </div>
+          
+     </div>
+  </div>
+
+  <hr/>
+    </div>
+    <!-- END PAGE CONTENT -->
+  </div>
+</div>
+<!-- END PAGE CONTAINER -->
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+
+
+<!-- BEGIN JAVASCRIPTS (Load javascripts at bottom, this will reduce page load time) -->
+<!-- BEGIN CORE PLUGINS -->
+<!--[if lt IE 9]>
+<script src="/assets/global/plugins/respond.min.js"></script>
+<script src="/assets/global/plugins/excanvas.min.js"></script> 
+<![endif]-->
+<script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-migrate.min.js" type="text/javascript"></script>
+<!-- IMPORTANT! Load jquery-ui.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
+<script src="/assets/global/plugins/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.cokie.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
+<script src="/assets/global/scripts/underscore-min.js"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
+<script src="/assets/global/plugins/messager/bootbox.js"></script>
+<!-- END CORE PLUGINS -->
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+<script src="/assets/global/plugins/amcharts/amcharts.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/amcharts/serial.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/amcharts/themes/light.js" type="text/javascript"></script>
+<script src="/assets/page/scripts/bakery.min.js" type="text/javascript"></script>
+<script src="/assets/global/scripts/echarts.common.min.js" type="text/javascript"></script>
+<!-- END PAGE LEVEL PLUGINS -->
+<!-- BEGIN PAGE LEVEL SCRIPTS -->
+<script src="/assets/global/scripts/metronic.js" type="text/javascript"></script>
+<script src="/assets/global/scripts/custom.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/layout.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/quick-sidebar.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/demo.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/user-message.js" type="text/javascript"></script>
+<!-- END PAGE LEVEL SCRIPTS -->
+<script>
+jQuery(document).ready(function() {   
+   Metronic.init(); // init metronic core componets
+   Layout.init(); // init layout
+   Demo.init(); // init demo(theme settings page)
+   QuickSidebar.init(); // init quick sidebar
+   UserMessage.init({
+          contextPath: ''
+   });
+   //Index.init(); // init index page
+   //Tasks.initDashboardWidget(); // init tash dashboard widget
+   getCountData();
+   getPieCountData(0);
+   getHdfsPostCountData();
+   getLittleCountData(0);
+   getQueueTaskData();
+   get24HourTaskCount(0);
+   getDeptJobData(0);
+   //全局的ajax访问，处理ajax清求时session超时
+   $.ajaxSetup({
+       	contentType:"application/x-www-form-urlencoded;charset=utf-8",
+       	error: function(jqXHR, textStatus, errorThrown){  
+       		var message;
+            switch (jqXHR.status){
+                case(500):  
+                    message = "服务器系统内部错误";  
+                    break;  
+                case(401):  
+                    message = "未登录";  
+                    break;  
+                case(403):  
+                    message = "无权限执行此操作";  
+                    break;  
+                case(408):  
+                    message = "请求超时";  
+                    break;  
+                default:  
+                    message = "未知错误";
+            }  
+            bootbox.alert(message+"!请重新刷新试试，并联系管理员");
+        },
+           complete:function(XMLHttpRequest,textStatus){
+             //通过XMLHttpRequest取得响应头，sessionstatus，
+         	 var sessionstatus=XMLHttpRequest.getResponseHeader("sessionstatus");
+	         if(sessionstatus=="timeout"){
+	             //如果超时就处理 ，指定要跳转的页面(比如登陆页)
+	             //window.location.replace("/login/index.php");
+	             bootbox.confirm({
+				    message: "当前会话过期! 需要重新刷新当前页面吗?",
+				    buttons: {
+				        confirm: {
+				            label: 'Yes',
+				            className: 'btn-success'
+				        },
+				        cancel: {
+				            label: 'No',
+				            className: 'btn-danger'
+				        }
+				    },
+				    callback: function (result) {
+				        if(result){
+				        	 window.location.reload();
+				        }
+				    }
+				 });
+	         }
+        }
+    });
+});
+
+</script>
+<!-- END JAVASCRIPTS -->
+</body>
+<!-- END BODY -->
+</html>
+
+<script> 
+  
+  //获取曲线图
+  function getGraphOption(xData,yDate,unitStr){
+	  var option = {
+			  	tooltip: {
+			        trigger: 'axis'
+			    },
+			    xAxis: {
+			        type: 'category',
+			        boundaryGap: false,
+			        data: xData
+			    },
+			    yAxis: {
+			        type: 'value',
+			        axisLabel:{
+			        	formatter:unitStr
+			        }
+			    },
+			    series: [{
+			        data: yDate,
+			        type: 'line',
+			        smooth: true
+			    }]
+			};
+	  return option;
+  }
+  
+  //折线图
+   function getBrokenLineOption(xData,legendData,seriesData){
+	  var option = {
+			    tooltip: {
+			        trigger: 'axis'
+			    },
+			    legend: {
+			        data:legendData
+			    },
+			    grid: {
+			        left: '3%',
+			        right: '4%',
+			        bottom: '3%',
+			        containLabel: true
+			    },
+			    toolbox: {
+			        feature: {
+			            saveAsImage: {}
+			        }
+			    },
+			    xAxis: {
+			        type: 'category',
+			        boundaryGap: false,
+			        data: xData
+			    },
+			    yAxis: {
+			        type: 'value'
+			    },
+			    series: seriesData
+			};
+	  return option;
+  }
+  
+  //获取柱状图
+  function getColumnarOption(xData,yDate){
+	  var option = {
+			    color: ['#3398DB'],
+			    tooltip : {
+			        trigger: 'axis',
+			        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+			            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+			        }
+			    },
+			    grid: {
+			        left: '3%',
+			        right: '4%',
+			        bottom: '3%',
+			        containLabel: true 
+			    },
+			    xAxis : [
+			        {
+			            type : 'category',
+			            data : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+			            axisTick: {
+			                alignWithLabel: true
+			            }
+			        }
+			    ],
+			    yAxis : [
+			        {
+			            type : 'value'
+			        }
+			    ],
+			    series : [
+			        {
+			            name:'直接访问',
+			            type:'bar',
+			            barWidth: '60%',
+			            data:[10, 52, 200, 334, 390, 330, 220]
+			        }
+			    ]
+			};
+	  return option;
+  }
+  
+  //获取柱状图-多柱子
+  function getColumnarsOption(titleStr,colorList,xData,seriesData,unitStr){
+	  var option = {
+			  //color: colorList,//, '#e5323e'
+			  title : {
+			        text: titleStr,
+			        //subtext: '纯属虚构',
+			        //x:'center'
+			    },
+			    tooltip : {
+			        trigger: 'axis',
+			        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+			            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+			        }
+			    },
+			    grid: {
+			        left: '3%',
+			        right: '4%',
+			        bottom: '3%',
+			        containLabel: true
+			    },
+			    xAxis : [
+			        {
+			            type : 'category',
+			            data : xData,
+			            axisTick: {
+			                alignWithLabel: true
+			            }
+			        }
+			    ],
+			    yAxis : [
+			        {
+			            type : 'value',
+			            axisLabel:{
+				        	formatter:unitStr
+				        }
+			        }
+			    ],
+			    series : seriesData
+			};
+	  return option;
+  }
+  
+  //获取饼状图
+  function getPieOption(titleStr,nameData,valueData){
+	  var option = {
+			    	title : {
+			        text: titleStr,
+			        //subtext: '纯属虚构',
+			        x:'center'
+			    },
+			    tooltip : {
+			        trigger: 'item',
+			        formatter: "{a} <br/>{b} : {c} ({d}%)"
+			    },
+			    legend: {
+			        orient: 'vertical',
+			        left: 'left',
+			        data: nameData
+			    },
+			    series : [
+			         {
+			            name: '任务数',
+			            type: 'pie',
+			            radius : '55%',
+			            center: ['50%', '60%'],
+			           /*  label: {
+			                normal: {
+			                    show: true,
+			                    position: 'inside',
+			                    formatter: '{d}%',//模板变量有 {a}、{b}、{c}、{d}，分别表示系列名，数据名，数据值，百分比。{d}数据会根据value值计算百分比
+
+			                   textStyle : {                   
+			                    align : 'center',
+			                    baseline : 'middle',
+			                    fontFamily : '微软雅黑',
+			                    fontSize : 15,
+			                    fontWeight : 'bolder'
+			                 }
+			                },
+			            }, */
+			            data:valueData,
+			            itemStyle: {
+			                emphasis: {
+			                    shadowBlur: 10,
+			                    shadowOffsetX: 0,
+			                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+			                }
+			            }
+			        } 
+			    ]
+			}; 
+	  return option;
+  }
+  
+  var myChart1;
+  var myChart2;
+  var myChart3;
+  var myChart4;
+  var myChart5; 
+  var myChart6; 
+  var myChart7; 
+  var myChart8; 
+  var myChart9; 
+  var myChart10; 
+  var myChart11; 
+  var myChart12; 
+  var myChart13; 
+  var myChart14; 
+  //var myChart6 = echarts.init(document.getElementById('langTask')); 
+  //var myChart7 = echarts.init(document.getElementById('taskCount'));  
+  //var myChart8 = echarts.init(document.getElementById('resourceCount')); 
+  //var myChart9 = echarts.init(document.getElementById('runTimeCount'));
+  //var myChart10 = echarts.init(document.getElementById('taskNumCount')); 
+  //var myChart11 = echarts.init(document.getElementById('submitTaskCount')); 
+  
+  jQuery(document).ready(function() {
+	  
+	  //myChart1 = echarts.init(document.getElementById('runJobStatusChart'));
+	  //myChart2 = echarts.init(document.getElementById('jobNumsByTypeChart'));
+	  //myChart3 = echarts.init(document.getElementById('littleDir')); 
+	  //myChart4 = echarts.init(document.getElementById('dayUp')); 
+	  //myChart5 = echarts.init(document.getElementById('appCount'));  
+	  //var myChart6 = echarts.init(document.getElementById('langTask')); 
+	  //var myChart7 = echarts.init(document.getElementById('taskCount'));  
+	  //var myChart8 = echarts.init(document.getElementById('resourceCount')); 
+	  //var myChart9 = echarts.init(document.getElementById('runTimeCount'));
+	  //var myChart10 = echarts.init(document.getElementById('taskNumCount')); 
+	  //var myChart11 = echarts.init(document.getElementById('submitTaskCount')); 
+	  //myChart1.setOption(getGraphOption());
+	  //myChart2.setOption(getColumnarOption());
+	  //myChart3.setOption(getGraphOption());
+	  //myChart4.setOption(getColumnarOption());
+	  //myChart5.setOption(getGraphOption());
+	  //myChart6.setOption(getGraphOption());
+	  //myChart7.setOption(getGraphOption());
+	  //myChart8.setOption(getGraphOption());
+	  //myChart9.setOption(getPieOption());
+	  //myChart10.setOption(getBrokenLineOption("[[${xData}]]",[[${allData}]],[[${ddData}]],[[${fddData}]]));
+	  //myChart11.setOption(getColumnarsOption());
+	  //getColumnarsOption
+	  
+	  $('.fullscreenX').bind('click',function(){
+		  var divId = $(this).attr('id')+"_div";
+		  var divClass = $("#"+divId).attr("class");
+		  
+		  if(divClass == 'col-md-6'){
+			  //放大
+			  divClass = 'col-md-12';
+			  $(this).addClass('on');
+		  }else{
+			  divClass = 'col-md-6';
+			  $(this).removeClass('on');
+		  }
+		  $("#"+divId).attr("class",divClass);
+		  if(divId == 'chart1_div'){
+			  myChart1.resize();
+		  }else if(divId == 'chart2_div'){
+			  myChart2.resize();
+		  }else if(divId == 'chart3_div'){
+			  myChart3.resize();
+		  }else if(divId == 'chart4_div'){
+			  myChart4.resize();
+		  }else if(divId == 'chart5_div'){
+			  myChart5.resize();
+		  }else if(divId == 'chart6_div'){
+			  myChart6.resize();
+		  }else if(divId == 'chart7_div'){
+			  myChart7.resize();
+		  }else if(divId == 'chart8_div'){
+			  myChart8.resize();
+		  }else if(divId == 'chart9_div'){
+			  myChart9.resize();
+		  }else if(divId == 'chart10_div'){
+			  myChart10.resize();
+		  }else if(divId == 'chart11_div'){
+			  myChart11.resize();
+		  }else if(divId == 'chart12_div'){
+			  myChart12.resize();
+		  }else if(divId == 'chart13_div'){
+			  myChart13.resize();
+		  }else if(divId == 'chart14_div'){
+			  myChart14.resize();
+		  }
+		  location.href = "#"+divId;
+	  });
+   });
+  
+  
+  function getCountData(countId,dataId){
+		  $.ajax({
+				"type":"POST",
+				"url":"/goshawk/getIndexReportData.do",
+				success:function (res) {
+					var data = res.data;
+					//任务总数统计
+					myChart10 = echarts.init(document.getElementById('taskNumCount')); 
+					var lengend10 = new Array();
+					lengend10[0] = '所有任务';
+					lengend10[1] = '调度任务';
+					lengend10[2] = '非调度任务';
+					
+					var series10 = new Array();
+					var series_1 = {};
+					series_1.name = '所有任务';
+					series_1.type = 'line';
+					series_1.data = data.allData;
+					series10[0] = series_1;
+					
+					var series_2 = {};
+					series_2.name = '调度任务';
+					series_2.type = 'line';
+					series_2.data = data.ddData;
+					series10[1] = series_2;
+					
+					var series_3 = {};
+					series_3.name = '非调度任务';
+					series_3.type = 'line';
+					series_3.data = data.fddData;
+					series10[2] = series_3;
+					var option10 = getBrokenLineOption(data.xData,lengend10,series10);
+					myChart10.setOption(option10);
+					
+					//mr、spark任务统计
+					myChart11 = echarts.init(document.getElementById('submitTaskCount')); 
+					var seriesData = new Array();
+					var mrData = {};
+					mrData.name = "MR任务";
+					mrData.type = "bar";
+					mrData.barGap = 0;
+					mrData.data = data.mrData;
+					seriesData[0] = mrData;
+					
+					var spData = {};
+					spData.name = "SPARK任务";
+					spData.type = "bar";
+					spData.barGap = 0;
+					spData.data = data.spData;
+					seriesData[1] = spData;
+					
+					var option11 = getColumnarsOption("",data.colorList,data.xData,seriesData,'{value}');
+					myChart11.setOption(option11);
+					$("#appBox").addClass(data.app_color);
+					
+					$("#appBox_num").html("日环比："+data.app_rate);
+					$("#appBox_desc1").html("昨日运行量："+data.app_yesNum);
+					
+					//超长任务
+					$("#longTimeBox").addClass(data.time_color);
+					$("#longTimeBox_num").html("日环比："+data.time_rate);
+					$("#longTimeBox_desc").html("昨日任务数："+data.time_yes);
+					myChart6 = echarts.init(document.getElementById('langTask'));
+					var option6 = getGraphOption(data.xData,data.longTimeData,'{value}');
+					myChart6.setOption(option6);
+					
+					//task过多
+					$("#longTaskBox").addClass(data.task_color);
+					$("#longTaskBox_num").html("日环比："+data.task_rate);
+					$("#longTaskBox_desc").html("昨日任务数："+data.task_yes);
+					myChart7 = echarts.init(document.getElementById('taskCount'));
+					var option7 = getGraphOption(data.xData,data.longTaskData,'{value}');
+					myChart7.setOption(option7);
+					
+					//资源过多
+					$("#longResourceBox").addClass(data.resource_color);
+					$("#longResourceBox_num").html("日环比："+data.resource_rate);
+					$("#longResourceBox_desc").html("昨日任务数："+data.resource_yes);
+					myChart8 = echarts.init(document.getElementById('resourceCount'));
+					var option8 = getGraphOption(data.xData,data.longResourceData,'{value}');
+					myChart8.setOption(option8);
+				},
+				error:function() {
+					alert("未知错误");
+				}
+			});
+  }
+  
+  
+  function getPieCountData(type){
+	  $.ajax({
+			"type":"POST",
+			"data":{
+				pieType:type
+			},
+			"url":"/goshawk/getIndexPieData.do",
+			success:function (res) {
+				var data = res.data;
+				//任务运行时长饼图
+				myChart9 = echarts.init(document.getElementById('runTimeCount'));
+				var option9 = getPieOption(data.titleStr,data.nameData,data.runTimeData);
+				myChart9.setOption(option9,true);
+			},
+			error:function() {
+				alert("未知错误");
+			}
+		});
+	}
+  
+  function getHdfsPostCountData(){
+	  $.ajax({
+			"type":"POST",
+			/* "data":{
+				pieType:type
+			}, */
+			"url":"/goshawk/getHdfsPostCountData.do",
+			success:function (res) {
+				var data = res.data;
+				//hdfs box图
+				$("#hdfsUsed_num").html("hdfs使用量："+data.hdfsUseRate);
+				$("#hdfsUsed_desc").html("hdfs总量："+data.hdfsTotal);
+				
+				//hdfs各组使用量统计
+				myChart2 = echarts.init(document.getElementById('jobNumsByTypeChart'));
+				var seriesData = new Array();
+				for(var i=0;i<data.hdfsPostData.length;i++){
+					var mrData = {};
+					mrData.name = data.teamData[i];
+					mrData.type = "bar";
+					mrData.barGap = 0;
+					mrData.data = data.hdfsPostData[i];
+					seriesData[i] = mrData;
+				}
+				var option2 = getColumnarsOption('',"",data.xData,seriesData,'{value}(GB)');
+				myChart2.setOption(option2);
+				
+				//hdfs总使用量统计
+				myChart1 = echarts.init(document.getElementById('runJobStatusChart'));
+				var option1 = getGraphOption(data.xData,data.hdfsUsedTotalData,'{value}(TB)');
+				myChart1.setOption(option1);
+				
+				//hdfs日增量 
+				$("#hdfsIncre_num").html("日环比："+data.hdfsIncrRate);
+				$("#hdfsIncre_desc").html("昨日增长："+data.hdfsIncrData);
+				
+			},
+			error:function() {
+				alert("未知错误");
+			}
+		});
+	}
+  
+  
+  
+  function getLittleCountData(type){
+	  $.ajax({
+			"type":"POST",
+			"data":{
+				dataType:type
+			},
+			"url":"/goshawk/getHdfsLittleData.do",
+			success:function (res) {
+				var data = res.data;
+				//小文件统计
+				myChart3 = echarts.init(document.getElementById('littleDir')); 
+				var seriesData = new Array();
+				for(var i=0;i<data.littleDataList.length;i++){
+					var mrData = {};
+					mrData.name = data.teamData[i];
+					mrData.type = "line";
+					//mrData.barGap = 0;
+					mrData.data = data.littleDataList[i];
+					seriesData[i] = mrData;
+				}
+				var option3 = getBrokenLineOption(data.xData,data.teamData,seriesData);
+				myChart3.setOption(option3);
+				
+				//小文件box 
+				$("#littleDirBox").addClass(data.littDirColor);
+				$("#littleDir_num").html("小文件占比："+data.littRate);
+				$("#littleDir_desc").html("昨日小文数："+data.yesLittleData);
+				
+			},
+			error:function() {
+				alert("未知错误");
+			}
+		});
+	}
+  
+  
+  function getQueueTaskData(){
+	  $.ajax({
+			"type":"POST",
+			"data":{
+				pieType:""
+			},
+			"url":"/goshawk/getTaskQueueData.do",
+			success:function (res) {
+				var data = res.data;
+				//任务运行时长饼图
+				myChart12 = echarts.init(document.getElementById('queueTaskCount'));
+				var option12 = getPieOption("",data.queueNameData,data.queueTaskData);
+				myChart12.setOption(option12);
+			},
+			error:function() {
+				alert("未知错误");
+			}
+		});
+	}
+  
+  //hour24TaskCount 
+  function get24HourTaskCount(reprotType){
+	  $.ajax({
+			"type":"POST",
+			"data":{
+				reprotType:reprotType
+			},
+			"url":"/goshawk/get24HourTaskData.do",
+			success:function (res) {
+				var data = res.data;
+				myChart13 = echarts.init(document.getElementById('hour24TaskCount'));
+				var seriesData = new Array();
+				
+				if(reprotType==0){
+					//全部任务统计
+					var mrData = {};
+					mrData.name = "所有任务";
+					mrData.type = "bar";
+					mrData.barGap = 0;
+					mrData.data = data.dataList;
+					seriesData[0] = mrData;
+					var option13 = getColumnarsOption("全部任务","",data.xData,seriesData,'{value}');
+				}else if(reprotType == 1){
+					//任务类型
+					var mrData = {};
+					mrData.name = "MR任务";
+					mrData.type = "bar";
+					mrData.barGap = 0;
+					mrData.data = data.dataList;
+					seriesData[0] = mrData;
+					
+					var spData = {};
+					spData.name = "SPARK任务";
+					spData.type = "bar";
+					spData.barGap = 0;
+					spData.data = data.dataList2;
+					seriesData[1] = spData;
+					
+					var option13 = getColumnarsOption("任务类型","",data.xData,seriesData,'{value}');
+				}else if(reprotType == 2){
+					//运行类型
+					var mrData = {};
+					mrData.name = "调度任务";
+					mrData.type = "bar";
+					mrData.barGap = 0;
+					mrData.data = data.dataList;
+					seriesData[0] = mrData;
+					
+					var spData = {};
+					spData.name = "非调度任务";
+					spData.type = "bar";
+					spData.barGap = 0;
+					spData.data = data.dataList2;
+					seriesData[1] = spData;
+					
+					var option13 = getColumnarsOption("运行类型","",data.xData,seriesData,'{value}');
+				}
+				myChart13.setOption(option13,true);
+			},
+			error:function() {
+				alert("未知错误");
+			}
+		});
+	}
+  
+  
+  function getDeptJobData(reprotType){
+	  $.ajax({
+			"type":"POST",
+			"data":{
+				reprotType:reprotType
+			},
+			"url":"/goshawk/getDeptTaskData.do",
+			success:function (res) {
+				var data = res.data;
+				//任务运行时长饼图
+				myChart14 = echarts.init(document.getElementById('deptJobCount'));
+				var option14 = getPieOption(data.title,data.deptNameData,data.deptTaskData);
+				myChart14.setOption(option14,true);
+			},
+			error:function() {
+				alert("未知错误");
+			}
+		});
+	}
+  
+  
+  
+</script>

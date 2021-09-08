@@ -1,0 +1,445 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<!-- END HEAD -->
+
+
+
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a href="/goshawk/index">苍鹰系统</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <a>HDFS管理</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li class="active">小文件管理
+                </li>
+            </ul>
+
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span>小文件信息</span>
+                    </div>
+                </div>
+
+                <div class="portlet-body">
+                    <!-- search  form -->
+                    <form role="form" class="alert alert-success alert-borderless">
+                        <div class="row form-group">
+                            <div class="col-md-3">
+                                <label class="control-label">小文件Dir：</label>
+                                <input id="cold_dir" name="cold_dir" class="form-control" style="width: 100%"
+                                        />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="control-label">状态：</label>
+                                <input id="cold_status" name="cold_status" class="form-control" style="width: 100%"
+                                       data-placeholder="选择状态" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="control-label">合并中目录个数：</label>
+                                <input disabled="disabled" class="form-control" style="width: 100%" th:attr="value=${waitMergeData}" />
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="control-label">&nbsp;&nbsp;&nbsp;</label>
+                                <!-- <span class="input-group-btn">
+                                        <button type="button" id="doSearch" class="btn green-haze">查找 &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
+                                </span> -->
+                                <span class="input-group-btn">
+                                        <button type="button" onclick="reRunThisJob(3,12312312)" class="btn green-haze">拉取小文件 &nbsp; <!-- <i class="m-icon-swapright m-icon-white"></i> --></button>
+                                </span>
+                                 <span class="input-group-btn">
+                                        <button type="button" onclick="delColdData()" class="btn red-haze">合并小文件 &nbsp; <!-- <i class="m-icon-swapright m-icon-white"></i> --></button>
+                                </span>
+                            </div>
+                            <!-- <div class="col-md-2">
+                             	<label class="control-label">&nbsp;&nbsp;&nbsp; </label>
+                               		<span class="input-group-btn">
+                                        <button type="button" id="doSearch" class="btn green-haze">查找 &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
+                                    </span>
+                            </div> -->
+                            <!-- <div class="col-md-2">
+                                <label class="control-label">其他筛选：</label>
+                                <input id="otherFilter" name="otherFilter" class="form-control" style="width: 100%"
+                                       data-placeholder="选择其他" />
+                            </div> -->
+                        </div>
+                        <div class="row form-group">
+                            <!-- <div class="col-md-6">
+                                <label class="control-label">标签<span>（<a class="font-red" id="addLabel">点击添加</a>）</span>：</label>
+                                <input id="labels" name="labels" class="form-control" style="width: 100%"
+                                       data-placeholder="选择标签" />
+                            </div> -->
+                            <!-- <div class="col-md-6"> -->
+                            <!-- <div class="col-md-11">
+                                <label class="control-label">&nbsp;</label>
+                                <div class="input-group">
+                                    <div class="input-cont">
+                                        <input type="text" id="kw" placeholder="输入任务关键词" class="form-control">
+                                    </div>
+                                    <span class="input-group-btn">
+                                        <button type="button" id="doSearch" class="btn green-haze">查找 &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
+                                    </span>
+                                    &nbsp;
+                                    <span class="input-group-btn">
+                                        <button type="button" id="doSearch" class="btn green-haze">拉取冷数据 &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
+                                    </span>
+                                </div>
+                            </div> -->
+                        </div>
+                    </form>
+                    <!-- end form -->
+                    <div class="table-responsive">
+                      <table class="table table-hover table-advance table-striped text-nowrap" id="dataTable" style="width:100%;">
+                          <thead>
+                            <tr>
+                              <th><input type="checkbox" class="group-checkable" title="全选" onclick="clickedAll(this)"/></th>
+                              <th>目录</th>
+                              <th>小文件个数</th>
+                              <th>总文件个数</th>
+                              <th>小文件占比</th>
+                              <th>状态</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tableTbody">
+                          </tbody>
+                      </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+<!-- BEGIN FOOTER -->
+
+<!-- END FOOTER -->
+
+</body>
+
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+
+<!-- END BODY -->
+<script th:inline="javascript">
+    jQuery(document).ready(function() {
+        initJobLevel();
+        initTables();
+    });
+    var waitDelData = [[${waitMergeData}]];
+    var reRunThisJob = function(schedulerId) {
+    	/* if(waitDelData!=0){
+    		alert("拉取失败，目前有还有"+waitDelData+"条小文件正在删除，请稍候操作");
+    		return; 
+    	} */
+    	var sure = confirm('是否确定拉取小文件目录？');
+    	if(sure){
+    		$.ajax({
+                type : "POST",
+                url  : "/goshawk/getLittleDataByTask.do",
+                async: false,
+                /* data : {
+                  "coldTime" : result.trim()
+                }, */
+                dataType : 'json',
+                success : function(data) {
+                  
+                  if (data.errorCode == 0) {
+                    toastr['success']('操作成功', '提示');
+                    /* var page = self.oTable.page.info().page;
+                    self.oTable.page(page).draw(false); */
+                  } else {
+                    toastr['error']('', data.message);
+                  }
+                },
+                error: function(e) {
+                  toastr['error']('运行失败' + e.statusText, '错误');
+                }
+              });
+    	}
+    	
+        /* bootbox.prompt({
+          title: '<i class="icon-speedometer font-blue"></i> 请选择日期',
+          inputType: 'datetime',
+          callback: function(result){
+            if(!_.isNull(result)) {
+              var details = {
+                runMode: 0,
+                runDateTime: result.trim(),
+              };
+              
+
+            }
+          }
+        }); */
+      }
+    
+    var oTable;
+    var initTables = function() {
+    	var table = $('#dataTable');
+    	var data = {};
+    	var cold_dir = $("#cold_dir").val();
+    	var cold_status = $("#cold_status").val();
+    	if(cold_status == -1){
+    		cold_status = "";
+    	}
+    	data.dirStr = cold_dir;
+    	data.isMerge = cold_status;
+    	
+    	$.ajax({
+			"type":"POST",
+			"url":"/goshawk/searchLittleDirList.do",
+			"data":data,
+			success:function (data) {
+				//加载列表数据
+				var tableStr = "";
+				for(var i = 0;i<data.data.length;i++){
+					var tableData = data.data[i];
+					tableStr += "<tr>";//<input type='checkbox'  data-set='" + data.id + "' data-status='"+data.is_del+"' class='checkboxes' style='width: 15px; height: 15px;' />
+					tableStr += "<td><input type='checkbox'  data-set='"+tableData.id+"' data-status='"+tableData.is_merge+"' class='checkboxes' style='width: 15px; height: 15px;' /></td>";
+					tableStr += "<td class='text-left'>"+tableData.dir+"</td>";
+					tableStr += "<td>"+tableData.num+"</td>";
+					tableStr += "<td>"+tableData.file_num+"</td>";
+					tableStr += "<td>"+tableData.fileRate+"</td>";
+					
+					var innerHtml = "";
+	                if (tableData.is_merge == 0) {
+	                  innerHtml = "<span class='label bg-yellow'>未合并</span>"
+	                } else if (tableData.is_merge == 2) {
+	                  innerHtml = "<span class='label bg-green'>合并成功</span>"
+	                } else if (tableData.is_merge == 3) {
+	                  innerHtml = "<span class='label bg-red' style='cursor: pointer' title='错误提示："+tableData.error+"' >合并失败</span>"
+	                } else if (tableData.is_merge == 1) {
+	                  innerHtml = "<span class='label bg-grey'>合并中</span>"
+	                }
+					tableStr += "<td>"+innerHtml+"</td>";
+					tableStr += "</tr>";
+				}
+				$("#tableTbody").html(tableStr);
+				if(oTable==undefined){
+					oTable = $('#dataTable').dataTable({
+						/* "sScrollX":"100%",
+			            "sScrollXInner":"100%",
+						"bLengthChange":true, 
+						"bSort":false ,
+					  	"bPaginage":true,
+					  	"bFilter":true,
+					  	"paging" : true,
+					  	"info":true,
+					  	"scrollY":"400px" */
+					    ordering: false,
+					    searching: false,
+					    lengthChange: true,
+					    lengthMenu: [ 50, 100, 200, 500, 1000 ],
+					});					
+				}
+			},
+			error:function() {
+				alert("未知错误");
+			}
+		});
+    	
+        /* oTable = table.DataTable({
+          'serverSide' : true,
+          'ordering' : false,
+          'searching' : false,
+          'scrollX' : true,
+          'ajax' : {
+            url : '/goshawk/search-colddata.do',
+            data : function(d){
+              d.columns = null;
+              d.search = null;
+              d['isDel'] = $("#cold_status").val();
+              d['coldDir'] = $("#cold_dir").val();
+            },
+            dataSrc : function(rs) {
+              return rs.data;
+            },
+          },
+          'columns' : [
+            { data: null,
+              render: function(data, type, full, meta){
+                var innerHtml = "<input type='checkbox'  data-set='" + data.id + "' data-status='"+data.is_del+"' class='checkboxes' style='width: 15px; height: 15px;' />";
+                return innerHtml;
+              }
+            },
+            { data : null,
+              className : 'text-left',
+              render: function(data, type, full, meta) {
+                var dir = data.dir;
+                return dir;
+              }
+            },
+            { data : "atimeStr"},
+            { data : null,
+              render: function(data, type, full, meta) {
+                var innerHtml = "";
+                if (data.is_del == 0) {
+                  innerHtml = "<span class='label bg-yellow'>未删除</span>"
+                } else if (data.is_del == 2) {
+                  innerHtml = "<span class='label bg-green'>删除成功</span>"
+                } else if (data.is_del == 3) {
+                  innerHtml = "<span class='label bg-red' style='cursor: pointer' title='错误提示："+data.error+"' >删除失败</span>"
+                } else if (data.is_del == 1) {
+                  innerHtml = "<span class='label bg-grey'>删除中</span>"
+                }
+                return innerHtml;
+              }
+            },
+          ]
+        }); */
+        
+      };
+      
+      //0未删除 1删除中 2 删除成功 3删除失败
+      var initJobLevel = function() {
+    	    self.jobLevels = [{id: -1, text: '全部'}, {id: 0, text: '未合并'}, {id: 1, text: '合并中'},
+    	                    {id: 2, text: '合并成功'},{id: 3, text: '合并失败'}];
+    	    $('#cold_status').select2({
+    	      minimumResultsForSearch:-1,
+    	      "language": {
+    	        "noResults": function() {
+    	          return "无搜索结果";
+    	        }
+    	      },
+    	      placeholder: '选择冷数据状态',
+    	      data: self.jobLevels
+    	    }).on('change', function(item) {
+    	      /* self.searchForm.jobLevel = $(this).val();
+    	      self.oTable.ajax.reload(); */
+    	    });
+    	    $('#cold_status').val(-1).trigger('change');
+    	  };
+    	  
+    var clickedAll = function(obj){
+    	
+    	var isChe = $(obj).attr("checked");
+    	if(isChe == "checked"){
+    		//选中所有
+    		$(".checkboxes").each(function(){
+    			$(this).attr("checked", 'checked');
+    		});
+    	}else{
+    		//取消选中
+    		$(".checkboxes").each(function(){
+    			$(this).prop("checked", false);
+    		});
+    	}
+    }
+    
+    var delColdData = function() {
+    	
+    	//先判断是否有录入dir，有的话先合并dir
+    	var cold_dir = $("#cold_dir").val();
+    	if(cold_dir!=""){
+    		var sure = confirm('是否确定合并该小文件目录['+cold_dir+']？(如想合并选中的目录，请清空\'小文件Dir\'输入框内容)');
+    		if(sure){
+	    		$.ajax({
+	    			"type":"POST",
+	    			"data":{
+	    				dir:cold_dir
+	    			},
+	    			"url":"/goshawk/mergeLittleDir.do",
+	    			success:function (data) {
+	    				if(data.errorCode==0){
+	    					toastr['success']('合并成功，请稍候刷新页面查看合并结果!', '提示');
+	    					oTable.ajax.reload();
+	    				}else{
+	    					toastr['error'](data.message, '提示');
+	    					oTable.ajax.reload();
+	    				}
+	    				
+	    			},
+	    			error:function() {
+	    				alert("未知错误");
+	    			}
+	    		});
+    		}
+    		
+    	}else{
+    		var delIds = "";
+        	var flag = true;
+        	
+        	$(".checkboxes").each(function(){
+    			var chex = $(this).attr("checked");
+    			if(chex == "checked"){
+    				//选中了
+    				var status = $(this).attr("data-status");
+    				if(status!=0 && status != 3){
+    					flag = false;
+    					return;
+    				}
+    				delIds += $(this).attr("data-set")+",";
+    			}
+    		});
+        	
+        	if(!flag){
+        		alert('合并失败，请勿合并合并中或合并成功的小文件目录');
+        		return;
+        	}
+        	
+        	if(delIds==""){
+        		alert("请选择选中要合并的小文件目录");
+        		return;
+        	}
+        	var sure = confirm('是否确定合并选中的小文件目录？');
+        	if(sure){
+        		$.ajax({
+        			"type":"POST",
+        			"data":{
+        				ids:delIds
+        			},
+        			"url":"/goshawk/mergeLittleDir.do",
+        			success:function (data) {
+        				if(data.errorCode==0){
+        					toastr['success']('合并成功，请稍候刷新页面查看合并结果!', '提示');
+        					//oTable.ajax.reload();
+        					initTables();
+        				}else{
+        					toastr['error'](data.message, '提示');
+        					//oTable.ajax.reload();
+        					initTables();
+        				}
+        				
+        			},
+        			error:function() {
+        				alert("未知错误");
+        			}
+        		});
+        	}
+    	}
+    }
+    
+    
+
+</script>
+</html>
+

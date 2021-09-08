@@ -1,0 +1,405 @@
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<!-- END HEAD -->
+
+
+<body>
+  <!-- BEGIN HEADER -->
+  <div th:replace="common :: common-page-header"></div>
+  <!-- END HEADER -->
+
+  <!-- BEGIN PAGE CONTAINER -->
+  <div class="page-container">
+    <div class="page-content">
+      <!-- BEGIN PAGE HEAD -->
+      <div class="container">
+
+        <!-- Page Content BEGIN -->
+        <div class="container-fluid">
+          <div class="page-content">
+
+            <div class="row">
+              <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <a class="dashboard-stat dashboard-stat-light blue-soft" href="javascript:;">
+                  <div class="visual">
+                    <i class="fa fa-users"></i>
+                  </div>
+                  <div class="details">
+                    <div class="number"></div>
+                    <div class="desc"></div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <a class="dashboard-stat dashboard-stat-light red-soft" href="javascript:;">
+                  <div class="visual">
+                    <i class="fa fa-table"></i>
+                  </div>
+                  <div class="details">
+                    <div class="number"></div>
+                    <div class="desc"></div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <a class="dashboard-stat dashboard-stat-light green-soft" href="javascript:;">
+                  <div class="visual">
+                    <i class="fa fa-tasks"></i>
+                  </div>
+                  <div class="details">
+                    <div class="number"></div>
+                    <div class="desc"></div>
+                  </div>
+                </a>
+              </div>
+              <!-- <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <a class="dashboard-stat dashboard-stat-light purple-soft" href="javascript:;">
+            <div class="visual">
+              <i class="fa fa-th"></i>
+            </div>
+            <div class="details">
+              <div class="number">
+              </div>
+              <div class="desc">
+              </div>
+            </div>
+            </a>
+          </div> -->
+            </div>
+
+
+            <div class="row">
+              <div class="col-md-6">
+                <!-- BEGIN Portlet PORTLET-->
+                <div class="portlet light">
+                  <div class="portlet-title">
+                    <div class="caption font-dark">
+                      <span class="caption-subject bold uppercase">任务运行状态</span> <span class="caption-helper">当日上线任务运行状态</span>
+                    </div>
+                    <div class="actions">
+                      <a href="javascript:void" data-value="showDPRunJobStatus:3" class="btn btn-circle btn-default btn-sm"><i class="icon-user"></i> 我的 </a> <a href="javascript:void" data-value="showDPRunJobStatus:2" class="btn btn-circle btn-default btn-sm"><i class="icon-users"></i> 部门 </a> <a href="javascript:void" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-default btn-sm"><i class="icon-globe"></i> 平台 </a> <a href="javascript:void" data-value="showDPRunJobStatus:1" class=""> </a>
+                    </div>
+                  </div>
+                  <div class="portlet-body">
+                    <div id="runJobStatusChart" class="CSSAnimationChart"></div>
+                  </div>
+                </div>
+                <!-- END PORTLET-->
+              </div>
+
+              <div class="col-md-6">
+                <!-- BEGIN PORTLET-->
+                <div class="portlet light">
+                  <div class="portlet-title">
+                    <div class="caption">
+                      <span class="caption-subject bold uppercase font-red-sunglo">任务数量统计</span> <span class="caption-helper">不同类型上线任务数量统计</span>
+                    </div>
+                    <div class="actions">
+                      <a href="javascript:void" data-value="showDPTaskTypeJobsBar:" class=""> </a>
+                    </div>
+                  </div>
+                  <div class="portlet-body">
+                    <div id="jobNumsByTypeChart" class="mapChart"></div>
+                  </div>
+                </div>
+                <!-- END PORTLET-->
+              </div>
+
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <!-- BEGIN PORTLET-->
+                <div class="portlet light">
+                  <div class="portlet-title">
+                    <div class="caption caption-md font-red-sunglo">
+                      <i class="icon-bar-chart theme-font hide"></i> <span class="caption-subject theme-font bold uppercase">当日出错任务列表</span>
+                    </div>
+                    <div class="actions">
+                      <div class="btn-group btn-group-devided" data-toggle="buttons">
+                        <label class="btn btn-transparent grey-salsa btn-circle btn-sm active"> <input type="radio" name="errorJobsRadio" data-value="showDPErrorJobs:3" class="toggle" id="option1">我的
+                        </label> <label class="btn btn-transparent grey-salsa btn-circle btn-sm"> <input type="radio" name="errorJobsRadio" data-value="showDPErrorJobs:2" class="toggle" id="option2">部门
+                        </label> <label class="btn btn-transparent grey-salsa btn-circle btn-sm"> <input type="radio" name="errorJobsRadio" data-value="showDPErrorJobs:1" class="toggle" id="option2">平台
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="portlet-body">
+                    <div class="table-scrollable table-scrollable-borderless">
+                      <div style="overflow: scroll; height: 300px; width: 100%;">
+                        <table id="errorJobs" class="table table-hover table-light">
+                          <thead>
+                            <tr class="uppercase">
+                              <th>任务名</th>
+                              <th>负责人</th>
+                              <th>调度类型</th>
+                              <th>执行时间</th>
+                            </tr>
+                          </thead>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- END PORTLET-->
+              </div>
+
+              <div class="col-md-6">
+                <!-- BEGIN PORTLET-->
+                <div class="portlet light">
+                  <div class="portlet-title">
+                    <div class="caption caption-md font-red-sunglo">
+                      <i class="icon-bar-chart theme-font hide"></i> <span class="caption-subject theme-font bold uppercase">用户上线任务排名</span> <span class="caption-helper hide"></span>
+                    </div>
+                    <div class="actions">
+                      <div class="btn-group btn-group-devided" data-toggle="buttons">
+                        <label class="btn btn-transparent grey-salsa btn-circle btn-sm active"> <input type="radio" name="userJobsRank" data-value="showDPUserJobsRank:2" class="toggle" id="option1">部门
+                        </label> <label class="btn btn-transparent grey-salsa btn-circle btn-sm"> <input type="radio" name="userJobsRank" data-value="showDPUserJobsRank:1" class="toggle" id="option2">平台
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="portlet-body">
+                    <div class="table-scrollable table-scrollable-borderless">
+                      <div style="overflow: scroll; height: 300px; width: 100%;">
+                        <table id="userJobsRank" class="table table-hover table-light">
+                          <thead>
+                            <tr class="uppercase">
+                              <th>用户名</th>
+                              <th>所属部门</th>
+                              <th>任务数</th>
+                              <th>排名</th>
+                            </tr>
+                          </thead>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- END PORTLET-->
+              </div>
+            </div>
+
+            <!-- <div class="row">
+            <div class="col-md-12">
+              BEGIN Portlet PORTLET
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase">调度实时运行监控</span>
+                  <span class="caption-helper">最近七天实时运行数据</span>
+                </div>
+                <div class="actions">
+                  <a href="javascript:void" data-value="showDPRunningJobs:0" class="btn btn-circle btn-default btn-sm">
+                  <i class="fa fa-calendar"></i> Today </a>
+                  <a href="javascript:void" data-value="showDPRunningJobs:2" class="btn btn-circle btn-default btn-sm">
+                  <i class="fa fa-calendar"></i> 3 Days</a>
+                  <a href="javascript:void" data-value="showDPRunningJobs:7" class="btn btn-circle btn-default btn-sm">
+                  <i class="fa fa-calendar"></i> 1 Week</a>
+                  <a href="javascript:void" data-value="showDPRunningJobs:1" class="">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="runningJobsChart" class="deptJobsChart"></div>
+              </div>
+            </div>
+            END PORTLET
+            </div>
+          </div> -->
+
+            <div class="row">
+              <div class="col-md-12">
+                <!-- BEGIN PORTLET-->
+                <div class="portlet light">
+                  <div class="portlet-title">
+                    <div class="caption">
+                      <span class="caption-subject bold uppercase font-red-sunglo">调度任务统计数据</span> <span class="caption-helper">每日调度数量统计</span>
+                    </div>
+                    <div class="actions">
+                      <a href="javascript:void" data-value="showDPSchedulerSummary:" class=""> </a>
+                    </div>
+                  </div>
+                  <div class="portlet-body">
+                    <div id="schedulerSummaryChart" class="deptJobsChart" style="width:100%;height:250px;"></div>
+                  </div>
+                </div>
+                <!-- END PORTLET-->
+              </div>
+
+            </div>
+
+            <!-- <div class="row">
+            <div class="col-md-12">
+              BEGIN Portlet PORTLET
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase">事业部任务数</span>
+                  <span class="caption-helper">从高到底排列</span>
+                </div>
+                <div class="actions">
+                  <a href="javascript:void" data-value="showDPGroupJobs:" class="">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="groupJobsChart" class="deptJobsChart"></div>
+              </div>
+            </div>
+            END PORTLET
+            </div>
+          </div> -->
+
+
+
+            <!-- <div class="row">
+            <div class="col-md-12">
+              BEGIN Portlet PORTLET
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption font-dark">
+                  <span class="caption-subject bold uppercase">部门任务数</span>
+                  <span class="caption-helper">从高到底排列</span>
+                </div>
+                <div class="actions">
+                  <a href="javascript:void" data-value="showDPDeptJobs:" class="">
+                  </a>
+                </div>
+              </div>
+              <div class="portlet-body">
+                  <div id="deptJobsChart" class="deptJobsChart"></div>
+              </div>
+            </div>
+            END PORTLET
+            </div>
+          </div> -->
+
+
+            <div class="row">
+              <div class="col-md-6">
+                <!-- BEGIN Portlet PORTLET-->
+                <div class="portlet light">
+                  <div class="portlet-title">
+                    <div class="caption">
+                      <span class="caption-subject bold uppercase font-red-sunglo">任务类型分布图</span> <span class="caption-helper">不同上线任务类型数量分布</span>
+                    </div>
+                    <div class="actions">
+                      <a href="javascript:void" data-value="showDPTaskTypeRadar:" class=""> </a>
+                    </div>
+                  </div>
+                  <div class="portlet-body">
+                    <div id="jobRadarChart" class="mapChart"></div>
+                  </div>
+                </div>
+                <!-- END PORTLET-->
+              </div>
+
+              <div class="col-md-6">
+                <!-- BEGIN PORTLET-->
+                <div class="portlet light">
+                  <div class="portlet-title">
+                    <div class="caption">
+                      <span class="caption-subject bold uppercase font-red-sunglo">用户统计数据</span> <span class="caption-helper">每日用户统计信息</span>
+                    </div>
+                    <div class="actions">
+                      <a href="javascript:void" data-value="showDPUserSummary:1" class=""> </a>
+                    </div>
+                  </div>
+                  <div class="portlet-body">
+                    <div id="userSummaryChart" class="mapChart"></div>
+                  </div>
+                </div>
+                <!-- END PORTLET-->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <hr />
+      </div>
+      <!-- END PAGE CONTENT -->
+    </div>
+  </div>
+  <!-- END PAGE CONTAINER -->
+
+
+  <!-- BEGIN PRE-FOOTER -->
+  <div th:include="common :: common-page-footer"></div>
+  <!-- END PRE-FOOTER -->
+
+</body>
+
+  <script src="/common.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/jquery-migrate.min.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/jquery.cokie.min.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
+  <script src="/assets/global/scripts/underscore-min.js"></script>
+  <script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+  <script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
+  <script src="/assets/global/plugins/messager/bootbox.js"></script>
+  
+  <script src="/assets/global/plugins/amcharts/amcharts.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/amcharts/serial.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/amcharts/themes/light.js" type="text/javascript"></script>
+  <script src="/assets/page/scripts/bakery.min.js" type="text/javascript"></script>
+  <script src="/assets/global/plugins/echarts/esl.js" type="text/javascript"></script>
+  <script src="/assets/global/scripts/Echarts.js" type="text/javascript"></script>
+  <!-- END PAGE LEVEL PLUGINS -->
+  <!-- BEGIN PAGE LEVEL SCRIPTS -->
+  <script src="/assets/global/scripts/metronic.js" type="text/javascript"></script>
+  <script src="/assets/global/scripts/custom.js" type="text/javascript"></script>
+  <script src="/assets/layout/scripts/layout.js" type="text/javascript"></script>
+  <script src="/assets/layout/scripts/quick-sidebar.js" type="text/javascript"></script>
+  <script src="/assets/layout/scripts/demo.js" type="text/javascript"></script>
+  <script src="/assets/layout/scripts/user-message.js" type="text/javascript"></script>
+  <!-- END PAGE LEVEL SCRIPTS -->
+</html>
+
+<script>
+$(function(){
+  Metronic.init(); // init metronic core componets
+  Layout.init(); // init layout
+  Demo.init(); // init demo(theme settings page)
+  QuickSidebar.init(); // init quick sidebar
+  $('[data-toggle="tooltip"]').tooltip();
+  UserMessage.init({
+    contextPath : ''
+  });
+})
+jQuery(document).ready(function() {
+  BAKERY.init({
+    contextPath : ''
+  });
+});
+
+  /* //图表  
+   var psLineChar = echarts.init(document.getElementById('mapChart'));  
+  
+   //查询  
+   function loadDrugs() {  
+       psLineChar.clear();  
+       psLineChar.showLoading({text: '正在努力的读取数据中...'});  
+       $.getJSON('/monitor/chart/api/dept-jobs', function (data) {  
+           if (data.status='success') {  
+               psLineChar.setOption(data.option, true);  
+               psLineChar.hideLoading();  
+           } else {  
+               alert('提示', data.msg);  
+           }  
+       });  
+   }  
+   //载入图表  
+   loadDrugs();
+   */
+</script>

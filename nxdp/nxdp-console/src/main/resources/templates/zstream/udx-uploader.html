@@ -1,0 +1,159 @@
+<html>
+<body>
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">上传</h3>
+    </div>
+    <div class="box-body">
+        <form class="form-horizontal" id="udxUploaderForm">
+            <input name="id" type="hidden"/>
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">类型：</label>
+                    <div class="col-xs-10">
+                        <select class="form-control" id="udxUploaderType" name="type" required>
+                            <option value="1">UDF</option>
+                            <option value="2">UDAF</option>
+                            <option value="3">UDTF</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">上传：</label>
+                    <div class="col-xs-10">
+                        <input accept=".jar" class="ignore" id="udxUploaderFile" name="file" type="file">
+                        <input id="udxUploaderFileName" name="name" type="hidden"/>
+                        <input id="udxUploaderFileUrl" name="url" type="hidden"/>
+                        <p class="help-block">请注意：若上传的文件与用户所属部门（代号）在HDFS中的文件同名，新文件会覆盖旧文件。</p>
+                        <div class="progress active" id="udxUploaderProgressBar">
+                            <div class="progress-bar progress-bar-success progress-bar-striped"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">方法类：</label>
+                    <div class="col-xs-10">
+                        <input class="form-control" maxlength="100" name="functionClass"
+                               placeholder="com.naixue.zstream.GetLengthUDF" required>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">函数别名：</label>
+                    <div class="col-xs-10">
+                        <input class="form-control" maxlength="50" name="functionAlias" placeholder="getLength"
+                               required>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="col-xs-1 control-label">功能描述：</label>
+                    <div class="col-xs-11">
+                        <textarea class="form-control" id="udxUploaderDescription" maxlength="100" name="description"
+                                  placeholder="必须填写函数说明" required rows="5"></textarea>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="box-footer text-center">
+        <div class="col-xs-12">
+            <button class="btn btn-default" onclick="toUdx()" type="button">返回</button>
+            <button class="btn btn-primary" onclick="saveUdx()" type="button">保存</button>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script type="text/javascript">
+function saveUdx(){
+  var valid = $('#udxUploaderForm').valid();
+  if(!valid){
+    return false;
+  }
+  if($('#udxUploaderFileName').val() == ''){
+    toastr.error('没找到上传的文件的文件名');
+    return false;
+  }
+  if($('#udxUploaderFileUrl').val() == ''){
+    toastr.error('服务器还没有返回上传的文件在HDFS的URL');
+    return false;
+  }
+  $.post('/zstream/udx/create.do',$('#udxUploaderForm').serialize(),function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.message,'UDX创建失败');
+      return false;
+    }
+    $('#udxUploaderForm input[name="id"]').val(re.data.id);
+    toastr.success('UDX创建成功，请点击返回按钮到UDX管理页');
+    //会导致job-editor.html的modal异常，所以换一种实现方式。
+    /* bootbox.confirm("UDX创建成功，是否返回到UDX列表？", function(result){ 
+      if(result){
+        toUdx();
+      }
+    }); */
+  })
+}
+
+(function(){
+  $('#udxUploaderType').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $('#udxUploaderForm').validate({
+    errorClass: 'text-danger',
+    ignore: ".ignore",
+  });
+  $('#udxUploaderFile').bind('change',function(){
+    $('#udxUploaderFileName').val('');
+    $('#udxUploaderFileUrl').val('');
+  });
+  $('#udxUploaderFile').fileupload({
+    url: '/zstream/udx/upload.do',
+    dataType: 'json',
+    replaceFileInput: false,
+    /* autoUpload: false, */
+    /* acceptFileTypes: /(\.|\/)(jar)$/i, */
+    /* previewMaxWidth: 100,
+    previewMaxHeight: 100,
+    previewCrop: true, */
+    /* progressall: function(e,data){
+      var progress = parseInt(data.loaded / data.total * 100, 10);
+      $('#progressBar').children('div').css('width',progress + '%').text(progress + '%');
+    },
+    done: function(e,data){
+      console.log(data)
+    }, */
+  }).on('fileuploadadd',function(e,data){
+    $('#udxUploaderFileName').val(data.files[0].name);
+    toastr.warning('文件['+data.files[0].name+']添加成功，并开始上传');
+  }).on('fileuploadprocessalways',function(e,data){
+    console.log(data)
+  }).on('fileuploadprogressall',function(e,data){
+    var progress = parseInt(data.loaded / data.total * 100, 10);
+    $('#udxUploaderProgressBar').children('div').css('width',progress + '%').text(progress + '%');
+  }).on('fileuploaddone',function(e,data){
+    console.log(data);
+    if(data.result.status == 'ok'){
+      $('#udxUploaderFileUrl').val(data.result.data);
+      toastr.success('文件上传成功');
+    }
+  }).on('fileuploadfail',function(e,data){
+    toastr.error(data);
+  })
+})();
+
+
+
+</script>
+
+
+</html>

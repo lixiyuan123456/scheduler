@@ -1,0 +1,541 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+<title th:fragment="html-title">苍鹰-工单申请</title>
+<style>
+#kafkaOffsetRegistryApplicationTable td:nth-of-type(4) {
+  white-space: normal;
+  min-width: 300px;
+  word-break: break-all;
+  word-wrap:break-word;
+  text-align: left;
+}
+</style>
+</head>
+<!-- END HEAD -->
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<div class="page-container">
+<div class="page-content">
+<div class="container">
+<!-- BEGIN PAGE BREADCRUMB -->
+<ul class="page-breadcrumb breadcrumb">
+  <li>
+    <a href="/goshawk/index">苍鹰</a>
+  </li>
+  <li class="active">
+    <i class="fa fa-circle"></i>
+    <span>工单申请</span>
+  </li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN PANEL CONTAINER -->
+<!-- BEGIN BUSINESS CONTENT -->
+<div class="portlet light bordered">
+  <div class="portlet-title">
+    <div class="caption font-green-sharp"><span>工单</span></div>
+  </div>
+  <div class="portlet-body">
+    <div class="row">
+      <div class="col-xs-2">
+        <ul class="nav nav-pills nav-stacked">
+          <li class="active"><a href="#kafkaTopicTab" data-toggle="pill">Kafka主题申请</a></li>
+          <li><a href="#kafkaOffsetRegistryTab" data-toggle="pill">Kafka偏移量登记</a></li>
+          <li><a href="#HiveTab" data-toggle="pill">Hive权限申请</a></li>
+        </ul>
+      </div>
+      <div class="col-xs-10 center-block">
+        <div class="tab-content">
+          <div class="tab-pane fade in active" id="kafkaTopicTab">
+            <form id="kafka-topic-form" class="form-horizontal">
+              <input type="hidden" name="hadoopUserGroupName" th:value="${hadoopBinding?.hadoopUserGroupName}">
+              <input type="hidden" name="topicNamePrefix" th:value="'zz_'+${hadoopBinding?.hadoopUserGroupName}+'_'">
+              <div class="form-group">
+                <label class="control-label col-xs-2">Topic名称</label>
+                <div class="col-xs-6">
+                  <input type="text" maxlength="30" class="form-control" th:value="'zz_'+${hadoopBinding?.hadoopUserGroupName}+'_'" name="topicName" required>
+                  <span id="topicNameHelpBlock" class="help-block"></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-xs-2">每日数据量（M）</label>
+                <div class="col-xs-6">
+                  <input type="number" min="1" rangelength="[1,9]" class="form-control" placeholder="" name="dailyDataCapacity" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-xs-2">用途</label>
+                <div class="col-xs-6">
+                  <textarea maxlength="100" class="form-control" name="purpose" required></textarea>
+                </div>
+              </div>
+              <div class="col-xs-offset-4">
+                <button id="kafkaTopicApplyBtn" type="button" class="btn btn-primary">申请</button>
+              </div>
+            </form>
+            <div class="table-responsive">
+              <table class="table table-hover table-advance table-striped" id="kafkaTopicDatatable" style="width:100%;">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Topic名称</th>
+                    <th>每日数据量</th>
+                    <th>用途</th>
+                    <th>申请时间</th>
+                    <th>状态</th>
+                    <th>审批意见</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="HiveTab">
+            <form id="hive-table-access-application-form" class="form-horizontal">
+              <input type="hidden" name="proxyAccount" th:value="${hadoopBinding?.hadoopUserGroupName}">
+              <div class="form-group">
+                <label class="control-label col-xs-2">库</label>
+                <div class="col-xs-6">
+                  <select class="form-control selectpicker show-tick" data-live-search="true" data-size="5" name="dbId" required></select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-xs-2">表</label>
+                <div class="col-xs-6">
+                  <select class="form-control selectpicker show-tick" data-live-search="true" data-size="5" name="tableId" required></select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-xs-2">权限</label>
+                <div class="col-xs-6">
+                  <select class="form-control selectpicker show-tick" data-live-search="true" data-size="5" name="permission" required>
+                    <option value="R">可读</option>
+                    <option value="RW">可读写</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-xs-2">用途</label>
+                <div class="col-xs-6">
+                  <textarea maxlength="100" class="form-control" name="purpose" required></textarea>
+                </div>
+              </div>
+              <div class="col-xs-offset-4">
+                <button id="HiveTableAccessApplyBtn" type="button" class="btn btn-primary">申请</button>
+              </div>
+            </form>
+            <div class="table-responsive">
+              <table class="table table-hover table-advance table-striped" id="HiveTableAccessDatatable" style="width:100%;">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>库名</th>
+                    <th>表名</th>
+                    <th>权限</th>
+                    <th>用途</th>
+                    <th>申请时间</th>
+                    <th>状态</th>
+                    <th>审批意见</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Kafka偏移量登记 -->
+          <div class="tab-pane fade" id="kafkaOffsetRegistryTab">
+            <form id="kafkaOffsetRegistryForm" class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-xs-2">kafka集群</label>
+                <div class="col-xs-6">
+                  <select class="form-control selectpicker show-tick" data-live-search="true" data-size="5" name="cluster" required></select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-xs-2">消费者名称</label>
+                <div class="col-xs-6">
+                  <input class="form-control" type="text" name="consumer" placeholder="消费者名称" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-xs-2">Topic名称</label>
+                <div class="col-xs-6">
+                  <input class="form-control" type="text" name="topic" placeholder="Topic名称 多个以,分隔" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-xs-2">告警阈值</label>
+                <div class="col-xs-6">
+                  <input class="form-control" type="number" name="threshold" placeholder="告警阈值" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-xs-2">用途</label>
+                <div class="col-xs-6">
+                  <textarea maxlength="100" class="form-control" name="description" required></textarea>
+                </div>
+              </div>
+              <div class="col-xs-offset-4">
+                <button id="kafkaOffsetRegistryApplyBtn" type="button" class="btn btn-primary">登记</button>
+              </div>
+            </form>
+            <div class="table-responsive">
+              <table class="table table-hover table-advance table-striped" id="kafkaOffsetRegistryApplicationTable" style="width:100%;">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>集群</th>
+                    <th>消费者名称</th>
+                    <th>Topic名称</th>
+                    <th>告警阈值</th>
+                    <th>用途</th>
+                    <th>状态</th>
+                    <th>审批意见</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <!-- TAB END -->
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      
+    </div>
+  </div>
+</div>
+<!-- END BUSINESS CONTENT -->
+<!-- END PANEL CONTAINER -->
+</div>
+</div>
+</div>
+
+
+
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+
+<script src="/assets/global/plugins/jquery-validation-1.19.0/jquery.validate.js"></script>
+<script src="/assets/global/plugins/jquery-validation-1.19.0/localization/messages_zh.js"></script>
+<!-- END JAVASCRIPT -->
+<script th:inline="javascript">
+function loadKafkaTopicDatatable(){
+  $('#kafkaTopicDatatable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: false,
+    lengthChange: false,
+    ajax: {
+      url: '/goshawk/workorder/kafka-topic-application/own-applications.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+      }
+    },
+    columns: [
+      {data: 'id'},
+      {data: 'topicName'},
+      {data: 'dailyDataCapacity'},
+      {data: 'purpose'},
+      {data: 'createTime'},
+      {
+        data: null,
+        class: 'success',
+        render: function(data, type, full, meta){
+          if(data.status == 'WAITING_ASSESS'){
+            return '等待审核';
+          }
+          if(data.status == 'PASS'){
+            return '审核通过';
+          }
+          if(data.status == 'NOT_PASS'){
+            return '审核拒绝';
+          }
+        }
+      },
+      {data: 'assessComment'},
+    ]
+  })
+}
+
+
+function loadHiveTableAccessDatatable(){
+  $('#HiveTableAccessDatatable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: false,
+    lengthChange: false,
+    ajax: {
+      url: '/goshawk/workorder/hive-table-access-application/own-applications.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+      }
+    },
+    columns: [
+      {data: 'id'},
+      {data: 'dbName'},
+      {data: 'tableName'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          if(data.permission == 'R'){
+            return '可读';
+          }
+          if(data.permission == 'RW'){
+            return '可读写';
+          }
+          return '';
+        }
+      },
+      {data: 'purpose'},
+      {data: 'createTime'},
+      {
+        data: null,
+        class: 'success',
+        render: function(data, type, full, meta){
+          if(data.status == 'WAITING_ASSESS'){
+            return '等待审核';
+          }
+          if(data.status == 'PASS'){
+            return '审核通过';
+          }
+          if(data.status == 'NOT_PASS'){
+            return '审核拒绝';
+          }
+        }
+      },
+      {data: 'assessComment'},
+    ]
+  })
+}
+
+//查询HIVEdb
+function loadHiveDbs(){
+  $('#hive-table-access-application-form select[name="dbId"]').empty();
+  $.get('/goshawk/workorder/list-hive-dbs.do',function(resp){
+    if(resp.status != 'ok'){
+      toastr.error('HIVE库列表查询失败！'+resp.message, '错误');
+      return false;
+    }
+    var dbs = resp.data;
+    var dbsOptions = '';
+    $.each(dbs,function(i,db){
+      dbsOptions += '<option value="'+db.dbId+'">'+db.name+'</option>';
+    })
+    $('#hive-table-access-application-form select[name="dbId"]').append(dbsOptions);
+    $('.selectpicker').selectpicker('refresh');
+    $('#hive-table-access-application-form select[name="dbId"]').trigger('change');
+  })
+}
+//查询HIVE表
+function loadHiveTables(dbId){
+  $('#hive-table-access-application-form select[name="tableId"]').empty();
+  $.get('/goshawk/workorder/list-hive-tbls.do',{dbId: dbId},function(resp){
+    if(resp.status != 'ok'){
+      toastr.error('HIVE表列表查询失败！'+resp.message, '错误');
+      return false;
+    }
+    var tbls = resp.data;
+    var tblsOptions = '';
+    $.each(tbls,function(i,tbl){
+      tblsOptions += '<option value="'+tbl.tblId+'" data-tblLocation="'+tbl.location+'">'+tbl.tblName+'</option>';
+    })
+    $('#hive-table-access-application-form select[name="tableId"]').append(tblsOptions);
+    $('.selectpicker').selectpicker('refresh');
+  })
+}
+/**
+ * KafkaOffsetRegistryApplication BEGIN
+ */
+ 
+ /* jQuery.validator.addMethod("validateKafkaTopic", function(value, element) {
+   return this.optional(element) || /^((\w+)(,*))*$/.test(value);
+ }, "格式不正确，注意：多个Topic之间以,分隔"); */
+
+ //加载Kafka集群
+function loadingKafkaClusters(){
+  $.get('/goshawk/workorder/kafka-offset/registry/kafka-clusters.do',function(resp){
+    if(resp.status == 'error'){
+      toastr.error(resp.message, '错误');
+      return false;
+    }
+    var options;
+    $.each(resp.data,function(i,e){
+      options += '<option value="'+e.code+'">'+e.name+'</option>';
+    })
+    $('#kafkaOffsetRegistryForm select[name="cluster"]').append(options);
+    $('.selectpicker').selectpicker('refresh');
+  })
+}
+ function loadingKafkaOffsetRegistryApplicationTable(){
+   $('#kafkaOffsetRegistryApplicationTable').DataTable({
+     serverSide: true,
+     ordering: false,
+     searching: false,
+     lengthChange: false,
+     ajax: {
+       url: '/goshawk/workorder/kafka-offset/registry/registered-applications.do',
+       data: function(d){
+         d.columns = null;
+         //d.search = null;
+       }
+     },
+     columns: [
+       {data: 'id'},
+       {
+         data: null,
+         render: function(data, type, full, meta){
+           if(data.cluster == '0'){
+             return 'zz-Kafka-1.0';
+           }
+           if(data.cluster == '1'){
+             return '58-Kafak-0.8';
+           }
+           if(data.cluster == '2'){
+             return '58-Kafak-1.0';
+           }
+         }
+       },
+       {data: 'consumer'},
+       {data: 'topic'},
+       {data: 'threshold'},
+       {data: 'description'},
+       {
+         data: null,
+         class: 'success',
+         render: function(data, type, full, meta){
+           if(data.status == '0'){
+             return '等待审核';
+           }
+           if(data.status == '1'){
+             return '审批通过';
+           }
+           if(data.status == '2'){
+             return '审批驳回';
+           }
+         }
+       },
+       {data: 'assessComment'},
+     ]
+   })
+ }
+
+ /**
+  * KafkaOffsetRegistryApplication END
+  */
+
+
+//JQuery
+$(function(){
+  var hadoopUserGroupName = $('#kafka-topic-form input[name="hadoopUserGroupName"]').val();
+  //加载申请记录
+  loadKafkaTopicDatatable();
+  loadHiveTableAccessDatatable();
+  loadingKafkaOffsetRegistryApplicationTable();
+  //KafkaTopic名称说明文案
+  $('#topicNameHelpBlock').text('格式：公司名_用户组_业务（例如：zz_'+hadoopUserGroupName+'_mysql_slowlog）');
+  //加载Hive库Hive表
+  loadHiveDbs();
+  //HIVE库下拉框绑定事件
+  $('#hive-table-access-application-form select[name="dbId"]').change(function(){
+    var selectedDbId = $('#hive-table-access-application-form select[name="dbId"]').val();
+    loadHiveTables(selectedDbId);
+  })
+  //KafkaTopic申请按钮
+  $('#kafkaTopicApplyBtn').click(function(){
+    $('#kafka-topic-form').validate();
+    if(!$('#kafka-topic-form').valid()){
+      return false;
+    }
+    //校验KafkaTopic是以zz_用户组名_开头 
+    var topicName = $('#kafka-topic-form input[name="topicName"]').val();
+    if(topicName.indexOf('zz_'+hadoopUserGroupName+'_') != 0){
+      toastr.error('Kafka Topic名称格式错误，请检查！', '错误');
+      return false;
+    }
+    //提交表单
+    $.post('/goshawk/workorder/apply-kafka-topic.do',$('#kafka-topic-form').serialize(),function(resp){
+      if(resp.status != 'ok'){
+        toastr.error(resp.message, '错误');
+        return false;
+      }
+      toastr.success('Kafka Topic申请成功！', '成功');
+      var topicNamePrefix = $('#kafka-topic-form input[name="topicNamePrefix"]').val();
+      $('#kafka-topic-form')[0].reset();
+      $('#kafka-topic-form input[name="topicNamePrefix"]').val(topicNamePrefix);
+      $('#kafka-topic-form input[name="hadoopUserGroupName"]').val(hadoopUserGroupName);
+      $('#kafkaTopicDatatable').DataTable().ajax.reload(null,false);
+    })
+  })
+  //HIVE表工单申请按钮
+  $('#HiveTableAccessApplyBtn').click(function(){
+    $('#hive-table-access-application-form').validate();
+    if(!$('#hive-table-access-application-form').valid()){
+      return false;
+    }
+    var data = $('#hive-table-access-application-form').serialize();
+    data += '&dbName='+$('#hive-table-access-application-form select[name="dbId"]').find('option:selected').text();
+    data += '&tableName='+$('#hive-table-access-application-form select[name="tableId"]').find('option:selected').text();
+    data += '&tableLocation='+$('#hive-table-access-application-form select[name="tableId"]').find('option:selected').attr('data-tblLocation');
+    $.post('/goshawk/workorder/apply-hive-table-access-application.do',data,function(resp){
+      if(resp.status != 'ok'){
+        toastr.error(resp.message, '错误');
+        return false;
+      }
+      toastr.success('HIVE表权限申请成功！', '成功');
+      $('#hive-table-access-application-form textarea[name="purpose"]').val('');
+      $('#HiveTableAccessDatatable').DataTable().ajax.reload(null,false);
+    })
+  })
+  /**
+   * KafkaOffsetRegistryApplication BEGIN
+   */
+   //加载Kafka集群
+  loadingKafkaClusters();
+  
+  $('#kafkaOffsetRegistryApplyBtn').click(function(){
+    $("#kafkaOffsetRegistryForm").validate();
+    if(!$('#kafkaOffsetRegistryForm').valid()){
+      return false;
+    }
+    var topic = $('#kafkaOffsetRegistryForm input[name="topic"]').val();
+    var pattern = /^((\w+)(,*))*$/;
+    if(!pattern.test(topic)){
+      toastr.error('Topic格式不正确', '错误');
+      return false;
+    }
+    var form = $("#kafkaOffsetRegistryForm").serialize();
+    $.post('/goshawk/workorder/kafka-offset/registry/register.do',form,function(resp){
+      if(resp.status == 'error'){
+        toastr.error(resp.message, '错误');
+        return false;
+      }
+      toastr.success('注册成功', '成功');
+      $('#kafkaOffsetRegistryApplicationTable').DataTable().ajax.reload(null,false);
+    })
+  })
+   /**
+    * KafkaOffsetRegistryApplication END
+    */
+})
+</script>
+</html>
+
+

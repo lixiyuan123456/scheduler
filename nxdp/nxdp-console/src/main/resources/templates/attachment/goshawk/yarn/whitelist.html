@@ -1,0 +1,254 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+    <title th:fragment="html-title">苍鹰系统-白名单</title>
+    <link href="/assets/global/plugins/x-editable/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"
+          type="text/css">
+    <style type="text/css">
+		.table {
+			width: 100%;
+		}
+
+		.table th {
+			white-space: nowrap;
+			text-align: center;
+		}
+
+		.table td {
+			white-space: nowrap;
+			text-align: center;
+		}
+
+		.table .text-left {
+			text-align: left;
+		}
+
+    </style>
+</head>
+<!-- END HEAD -->
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<div id="idHtml" style="display: none">
+    <div class="row form-group">
+        <div class="col-md-2">
+            <select name="authorName" class="form-control" data-live-search="true" data-size="5" title="负责人"
+                    style="width: 100%;">
+                <option th:each="user : ${users}" th:value="${user.trueName}" th:text="${user.trueName}"
+                        th:if="${user.id == currentUser.id}" selected="selected"></option>
+                <option th:each="user : ${users}" th:value="${user.trueName}" th:text="${user.trueName}"
+                        th:if="${user.id != currentUser.id}"></option>
+            </select>
+        </div>
+        <div class="input-group input-cont col-md-4">
+            <input type="text" name="appName" placeholder="应用名" class="form-control">
+        </div>
+    </div>
+</div>
+
+<div class="page-container">
+    <div class="page-content">
+        <div class="container">
+            <!-- BEGIN PAGE BREADCRUMB -->
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a href="/goshawk/index">苍鹰系统</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <a>YARN管理</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <span>白名单</span>
+                </li>
+            </ul>
+            <!-- END PAGE BREADCRUMB -->
+            <!-- BEGIN PANEL -->
+            <div class="panel panel-info">
+                <!-- BEGIN CONTENT -->
+                <div class="panel-heading">
+                    <span class="panel-title">白名单列表</span>
+                    <div class="pull-right">
+                        <a id="newWhitelist" href="javascript:;" class="btn btn-circle btn-default">新增白名单</a>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <form id="conditionForm" role="form" class="alert alert-success alert-borderless">
+                        <div class="row form-group">
+                            <div class="col-md-2">
+                                <label class="control-label">负责人：</label>
+                                <select id="authorName" name="authorName" class="form-control selectpicker"
+                                        data-live-search="true" data-size="5" title="负责人" style="width: 100%;">
+                                    <option value="0">全部</option>
+                                    <option th:each="user : ${users}" th:value="${user.trueName}"
+                                            th:text="${user.trueName}" th:if="${user.id == currentUser.id}"
+                                            selected="selected"></option>
+                                    <option th:each="user : ${users}" th:value="${user.trueName}"
+                                            th:text="${user.trueName}" th:if="${user.id != currentUser.id}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="control-label">&nbsp;</label>
+                                <div class="input-group">
+                                    <div class="input-cont">
+                                        <input type="text" id="appName" name="appName" placeholder="关键词"
+                                               class="form-control">
+                                    </div>
+                                    <span class="input-group-btn">
+					          <button type="button" id="searchBtn" class="btn green-haze">
+					            <span>查找&nbsp;</span>
+					            <i class="m-icon-swapright m-icon-white"></i>
+					          </button>
+					        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+
+                    <table class="table table-hover table-advance table-striped" id="dataTable">
+                        <thead>
+                        <tr>
+                            <th>任务名</th>
+                            <th>负责人</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <!-- END CONTENT -->
+            </div>
+            <!-- END PANEL -->
+        </div>
+    </div>
+</div>
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+
+<script th:inline="javascript">
+	$(function () {
+		//初始化表格组件
+		var table = $('#dataTable').DataTable({
+			'serverSide': true,
+			'ordering': false,
+			'searching': false,
+			'ajax': {
+				url: '/goshawk/yarn/whitelist/list.do',
+				data: function (d) {
+					d.columns = null;
+					//d.search = null;
+					d.condition = JSON.stringify($('#conditionForm').serializeObject());
+				}
+			},
+			'columns': [
+				{
+					data: 'appName',
+					className: 'text-left'
+				},
+				{data: 'authorName'},
+				{
+					data: null,
+					render: function (data, type, full, meta) {
+						var html = '';
+						html += '<a href="javascript:;" class="btn btn-danger" onclick="deleteWhitelist(' + data.id + ')"><i class="fa fa-times fa-fw"></i></a>';
+						return html;
+					}
+				}
+			]
+		});
+
+		var newWhitelistHtml = "";
+
+		//创建HIVE表
+		$('#newWhitelist').click(function () {
+			newWhitelistHtml = newWhitelistHtml || '<form id="hiddenForm" enctype="application/json" class=""alert alert-success alert-borderless>'
+					+ $("#idHtml").html()
+					+ '</form>';
+			bootbox.dialog({
+				title: "添加白名单",
+				message: newWhitelistHtml,
+				size: "large",
+				buttons: {
+					cancel: {
+						label: "取消",
+						className: 'btn-danger'
+					},
+					ok: {
+						label: "保存",
+						className: 'btn-info',
+						callback: function () {
+							console.log(JSON.stringify($('#hiddenForm').serializeObject()));
+							$.ajax({
+								'url': '/goshawk/yarn/whitelist/add.do',
+								'contentType': "application/json;charset=UTF-8",
+								'type': 'POST',
+								'async': true,
+								'dataType': 'json',
+								'data': JSON.stringify($('#hiddenForm').serializeObject()),
+								'success': function (resp) {
+									if (resp.status === "ok") {
+										toastr.success(resp.msg, "保存成功");
+										$('#dataTable').DataTable().ajax.reload(null, false);
+									} else {
+										toastr.error(resp.msg, '保存失败');
+									}
+								}
+							});
+						}
+					}
+				}
+			})
+		});
+
+		//点击查询
+		$('#searchBtn').click(function () {
+			table.ajax.reload(null, false);
+		});
+	});
+	//删除
+	function deleteWhitelist(id) {
+		bootbox.confirm({
+			message: "确定删除吗？",
+			buttons: {
+				cancel: {
+					label: '取消',
+					className: 'btn-success'
+				},
+				confirm: {
+					label: '确定',
+					className: 'btn-danger'
+				}
+			},
+			callback: function (result) {
+				if (result) {
+					$.post('/goshawk/yarn/whitelist/delete.do', {id: id}, function (resp) {
+						if (resp.status === "ok") {
+							toastr.success(resp.msg, "删除成功");
+							$('#dataTable').DataTable().ajax.reload(null, false);
+						} else {
+							toastr.error(resp.msg, '删除失败');
+						}
+					})
+				}
+			}
+		});
+	}
+
+</script>
+</html>

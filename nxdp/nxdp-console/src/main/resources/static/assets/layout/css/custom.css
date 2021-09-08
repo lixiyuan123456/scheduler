@@ -1,0 +1,205 @@
+/* here you can put your own css to customize and override the theme */
+
+/***
+Rounded Portlets
+***/
+/*
+.portlet {
+	border-radius: 4px !important;
+}
+
+.portlet .portlet-title {
+	border-radius: 4px 4px 0px 0px !important;
+}
+
+.portlet .portlet-body,
+.portlet .portlet-body .form-actions  {
+	border-radius: 0px 0px 4px 4px !important;
+}
+*/
+
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown > .dropdown-menu {
+  z-index: 9996;
+  margin-top: 5px;
+  margin-right: 7px;
+  font-family: "Open Sans", sans-serif;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown > .dropdown-menu:before {
+  position: absolute;
+  top: -8px;
+  right: 9px;
+  display: inline-block !important;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #efefef;
+  border-left: 8px solid transparent;
+  content: '';
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown > .dropdown-menu:after {
+  position: absolute;
+  top: -7px;
+  right: 10px;
+  display: inline-block !important;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid #fff;
+  border-left: 7px solid transparent;
+  content: '';
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-separator {
+  padding-left: 0px;
+  padding-right: 6px;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-separator .separator {
+  float: left;
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  margin-left: 5px;
+  margin-top: 17px;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-extended .dropdown-menu {
+  min-width: 160px;
+  max-width: 300px;
+  width: 300px;
+  z-index: 9996;
+  /* header notifications dropdowns */
+}
+
+
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown > .dropdown-toggle > .badge {
+  font-family: "Open Sans", sans-serif;
+  position: absolute;
+  top: 9px;
+  right: 24px;
+  font-weight: 300;
+  padding: 3px 6px;
+}
+
+.page-header .page-header-menu .hor-menu .navbar-nav li.dropdown > .dropdown-toggle .badge.badge-default {
+  background-color: #f36a5a;
+  color: #ffffff;
+}
+
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu {
+  background: #2e343b;
+  border: 0;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu:after {
+  border-bottom-color: #2e343b;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu > li.external {
+  background: #272c33;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu > li.external > h3 {
+  color: #a2abb7;
+  font-size: 13px;
+  display: inline-block;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-extended .dropdown-menu > li.external > a {
+  display: inline-block;
+  background: none;
+  clear: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  position: absolute;
+  right: 10px;
+  border: 0;
+  color: #5b9bd1;
+}
+
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu > li.external > a:hover {
+  color: #87b6dd;
+}
+
+
+
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu.dropdown-menu-default > li a,
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu .dropdown-menu-list > li a {
+  color: #aaafb7;
+  border-bottom: 1px solid #3b434c !important;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu.dropdown-menu-default > li a > i,
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu .dropdown-menu-list > li a > i {
+  color: #6FA7D7;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu.dropdown-menu-default > li a:hover,
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu .dropdown-menu-list > li a:hover {
+  background: #373e47;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu.dropdown-menu-default > li a {
+  border-bottom: 0 !important;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-dark .dropdown-menu.dropdown-menu-default > li.divider {
+  background: #3b434c;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-notification.dropdown-dark .dropdown-menu .dropdown-menu-list > li > a .time {
+  background: #23272d;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-notification.dropdown-dark .dropdown-menu .dropdown-menu-list > li > a:hover .time {
+  background: #181b1e;
+}
+
+
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-extended .dropdown-menu .dropdown-menu-list > li:first-child a {
+  border-top: none;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-notification .dropdown-menu .dropdown-menu-list > li a .details {
+  overflow: hidden;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-notification .dropdown-menu .dropdown-menu-list > li a .details .label-icon {
+  margin-right: 10px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+  border-radius: 50%;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-notification .dropdown-menu .dropdown-menu-list > li a .details .label-icon i {
+  margin-right: 2px;
+  margin-left: 1px;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-notification .dropdown-menu .dropdown-menu-list > li a .details .label-icon .badge {
+  right: 15px;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-notification .dropdown-menu .dropdown-menu-list > li a .time {
+  float: right;
+  max-width: 75px;
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.7 ;
+  filter: alpha(opacity=70) ;
+  text-align: right;
+  padding: 1px 5px;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-inbox > .dropdown-toggle {
+  padding: 17px 0px 8px 8px;
+  /* safari only hack */
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-inbox > .dropdown-toggle > .circle {
+  float: left;
+  margin-top: -5px;
+  padding: 3px 10px 4px 10px;
+  -webkit-border-radius: 50% !important;
+  -moz-border-radius: 50% !important;
+  -ms-border-radius: 50% !important;
+  -o-border-radius: 50% !important;
+  border-radius: 50% !important;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li.dropdown-inbox > .dropdown-toggle > .corner {
+  float: left;
+  margin-left: -4px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 0 9px 9px;
+}
+
+.notice-message {
+	width: 700px;
+}

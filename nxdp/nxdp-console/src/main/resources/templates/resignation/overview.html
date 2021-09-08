@@ -1,0 +1,179 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+<title th:fragment="html-title">转转调度平台</title>
+<style></style>
+</head>
+<!-- END HEAD -->
+
+<body>
+  <!-- BEGIN HEADER -->
+  <div th:replace="common :: common-page-header"></div>
+  <!-- END HEADER -->
+
+  <div class="page-container">
+    <div class="page-content">
+      <div class="container">
+        <!-- BEGIN PAGE BREADCRUMB -->
+        <ol class="breadcrumb">
+          <li class="active">离职交接</li>
+        </ol>
+        <!-- END PAGE BREADCRUMB -->
+        <!-- BEGIN PANEL CONTAINER -->
+        <!-- BEGIN BUSINESS CONTENT -->
+        <div class="portlet light">
+          <!-- <div class="portlet-title">
+						<div class="caption font-green-sharp">
+							<span></span>
+						</div>
+					</div> -->
+          <div class="portlet-body">
+            <div class="table-responsive">
+              <table class="table table-hover table-advance table-striped text-nowrap" id="datatable" style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th>编号</th>
+                    <th>任务编号</th>
+                    <th>名称</th>
+                    <th>原负责人</th>
+                    <th>原接警人</th>
+                    <th>新负责人</th>
+                    <th>新接警人</th>
+                    <th>状态</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- END BUSINESS CONTENT -->
+        <!-- END PANEL CONTAINER -->
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  <!-- BEGIN PRE-FOOTER -->
+  <div th:include="common :: common-page-footer"></div>
+  <!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+<script th:inline="javascript">
+  var USERS_LIST = function() {
+    var data = new Array();
+    $.ajax({
+      url : '/user/api/list-user',
+      //data : {jobId:jobId},
+      async : false,
+      dataType : 'json',
+      success : function(res) {
+        if (res.status != 'ok') {
+          bootbox.alert(res.message);
+          return false;
+        }
+        data = res.userList;
+      }
+    });
+    //console.log(data);
+    return data;
+  }();
+  var USERS_MAP = function(){
+    var data = new Map(); 
+    $.each(USERS_LIST, function(i, user) {
+      data.set(user.id,user);
+    });
+    return data;
+  }();
+  var USERS_LIST_OPTIONS = function() {
+    var html = '';
+    var selectedUsers = new Array();
+    if(arguments.length > 0 && arguments[0].indexOf(',') == -1){
+      selectedUsers.push(arguments[0]);
+    }else if(arguments.length > 0 && arguments[0].indexOf(',') != -1){
+      selectedUsers = arguments[0].split(',');
+    }
+    for(var [key, value] of USERS_MAP.entries()){
+      var user = value;
+      var selected = $.inArray(key,selectedUsers) == -1 ? false : true;
+      html += '<option value="' + user.id + '" ' + (selected ? "selected" : "") + '>' + user.name + '</option>';
+    }
+    return html;
+  };
+  
+  $(function() {
+    $('#datatable').DataTable({
+      serverSide : true,
+      ordering : false,
+      searching : true,
+      lengthChange : true,
+      rowId: 'id',
+      ajax : {
+        url : '/resignation/list.do',
+        data : function(d) {
+          d.isAdmin = true;
+          d.columns = null;
+        },
+      },
+      columns : [{
+        data : 'id',
+      },{
+        data : 'jobId'
+      }, {
+        data : 'jobName'
+      }, {
+        data : null,
+        render : function(data, type, full, meta) {
+          return '<select class="selectpicker" name="sourceDeveloper" id="sourceDeveloper_'+data.id+'" data-live-search="true" data-size="5" disabled>' + USERS_LIST_OPTIONS(data.sourceDeveloper) + '</select>';
+        }
+      }, {
+        data : null,
+        render : function(data, type, full, meta) {
+          return '<select class="selectpicker" name="sourceReceiver" id="sourceReceiver_'+data.id+'" data-live-search="true" data-size="5" multiple disabled>' + USERS_LIST_OPTIONS(data.sourceReceiver) + '</select>';
+        }
+      }, {
+        data : null,
+        render : function(data, type, full, meta) {
+          //var disable = data.status == 1 ? true : false;
+          var disable = true;
+          return '<select class="selectpicker" name="targetDeveloper" id="targetDeveloper_'+data.id+'" data-live-search="true" data-size="5" multiple data-max-options="1" '+ (disable ? "disabled" : "") +'>' + USERS_LIST_OPTIONS(data.targetDeveloper) + '</select>';
+        }
+      }, {
+        data : null,
+        render : function(data, type, full, meta) {
+          //var disable = data.status == 1 ? true : false;
+          var disable = true;
+          return '<select class="selectpicker" name="targetReceiver" id="targetReceiver_'+data.id+'" data-live-search="true" data-size="5" multiple '+ (disable ? "disabled" : "") +'>' + USERS_LIST_OPTIONS(data.targetReceiver) + '</select>';
+        }
+      },{
+        data : null,
+        render : function(data, type, full, meta) {
+          //var disable = data.status == 1 ? true : false;
+          //return '<button type="button" class="btn btn-primary" onclick="triggerTransferByResignationId('+data.id+')" '+ (disable ? "disabled" : "") +'>移交</button>';
+          return data.status == 1 ? '<span class="bg-success">交接完毕</span>' : '<span class="bg-danger">未交接</span>';
+        }
+      }]
+    }).on('draw',function(e,settings){
+      $('select').selectpicker({
+        showTick : true,
+      });
+    });
+  });
+</script>
+</html>
+
+
+

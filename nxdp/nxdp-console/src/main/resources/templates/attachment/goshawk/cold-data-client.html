@@ -1,0 +1,287 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+<title th:fragment="html-title">转转调度平台</title>
+<style></style>
+</head>
+<!-- END HEAD -->
+
+<body>
+  <!-- BEGIN HEADER -->
+  <div th:replace="common :: common-page-header"></div>
+  <!-- END HEADER -->
+
+  <div class="page-container">
+    <div class="page-content">
+      <div class="container">
+        <!-- BEGIN PAGE BREADCRUMB -->
+        <ul class="breadcrumb">
+          <li><a href="#">数据开发</a> <span class="divider">/</span></li>
+          <li><a href="/workshop/task-list">任务列表</a> <span class="divider">/</span></li>
+          <li class="active">冷数据</li>
+        </ul>
+        <!-- END PAGE BREADCRUMB -->
+        <!-- BEGIN PANEL CONTAINER -->
+        <!-- BEGIN BUSINESS CONTENT -->
+        <div class="portlet light bordered">
+          <div class="portlet-title">
+            <div class="caption font-green-sharp">
+              <span>冷数据</span>
+            </div>
+            <div class="text-right">
+                <button class="btn btn-large btn-success" type="button" id="displayColdListBtn">查看白名单</button>
+            </div>
+          </div>
+          <blockquote>
+            <p>当存储低于预期值时，管理员会清理系统中的冷数据。若数据较重要，请及时注册白名单，凡经过关键词匹配成功的冷数据不会被清理。</p>
+            <p class="help-block">注册白名单：点击<mark>查看白名单</mark>，在弹框内点击<mark>注册白名单</mark>，输入路径关键词即可注册成功。</p>
+          </blockquote>
+          <div class="portlet-body">
+            <!-- BEGIN QUERY -->
+            <div class="panel">
+              <div class="panel-body bg-success">
+                <div class="form-inline">
+                  <div class="form-group">
+                    <label>冷数据路径</label>
+                    <input type="text" class="form-control" placeholder="冷数据路径" style="width: 500px;" id="dirLike" name="dirLike">
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label">状态</label>
+                    <select class="selectpicker show-tick" data-live-search="true" data-size="5" title="状态" id="status" name="status">
+                      <option value="-1">全部</option>
+                      <option value="0">未删除</option>
+                      <option value="1">删除中</option>
+                      <option value="2">删除成功</option>
+                      <option value="3">删除失败</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="text-right" style="margin-top: -35px;">
+                  <button type="button" class="btn btn-primary" id="queryBtn">查询</button>
+                </div>
+              </div>
+            </div>
+            <!-- END QUERY -->
+            <!-- BEGIN TABLE -->
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h5>列表</h5>
+              </div>
+              <div class="panel-body">
+                <div class="table-responsive">
+                  <table class="table table-hover table-advance table-bordered" id="table" style="width: 100%;">
+                    <thead>
+                      <tr class="success">
+                        <th>ID</th>
+                        <th>路径</th>
+                        <th>时间</th>
+                        <th>状态</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!-- END TABLE -->
+        </div>
+        <!-- END BUSINESS CONTENT -->
+        <!-- END PANEL CONTAINER -->
+      </div>
+    </div>
+  </div>
+
+
+
+<div id="coldWhiteListModal" class="modal container fade" data-backdrop="static" data-keyboard="false" style="max-height: 80%;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+    <h4 class="modal-title">白名单列表</h4>
+  </div>
+  <div class="modal-body">
+    <div class="panel panel-default">
+      <div class="panel-heading">快速筛选</div>
+      <div class="panel-body">
+        <div class="form-inline" id="coldWhiteListQueryConditon">
+          <div class="form-group">
+            <label class="control-label">白名单关键词：</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="keywords" style="width: 540px;" placeholder="白名单关键词"/>
+            </div>
+          </div>
+          <div class="text-right" style="margin-top: -30px;">
+            <button type="button" class="btn btn-primary" id="coldWhiteListQueryConditonQueryBtn">查询</button>
+            <button type="button" class="btn btn-primary" id="registerColdWhiteBtn">注册白名单</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">列表</div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-hover table-advance table-bordered" id="coldWhiteListTable" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>白名单关键词</th>
+                <th>创建人</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer"></div>
+</div>
+
+
+
+
+
+  <!-- BEGIN PRE-FOOTER -->
+  <div th:include="common :: common-page-footer"></div>
+  <!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+<script th:inline="javascript">
+var currentUserName = [[${session.current_user.userName}]];
+</script>
+
+<script type="text/javascript">
+function list(){
+  $('#table').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: false,
+    //lengthChange: false,
+    ajax: {
+      url: '/goshawk/cluster/hdfs/cold/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+        d.dirLike = $('#dirLike').val();
+        d.status = $('#status').selectpicker('val');
+      }
+    },
+    columns: [
+      {data: 'id'},
+      {data: 'dir'},
+      {data: 'accessTime'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          if(data.status == 0){
+            return '<pre class="bg-info">未删除</pre>';
+          }
+          if(data.status == 1){
+            return '<pre class="bg-warning">删除中</pre>';
+          }
+          if(data.status == 2){
+            return '<pre class="bg-success">删除成功</pre>';
+          }
+          if(data.status == 3){
+            return '<pre class="bg-danger">删除失败</pre>';
+          }
+          return '';
+        }
+      },
+    ]
+  })
+}
+//白名单列表
+function displayColdWhiteList(){
+  $('#coldWhiteListTable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: false,
+    //lengthChange: false,
+    ajax: {
+      url: '/goshawk/cluster/hdfs/coldWhite/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+        d.keywords = $('#coldWhiteListQueryConditon input[name="keywords"]').val();
+      }
+    },
+    columns: [
+      {data: 'id'},
+      {data: 'keywords'},
+      {data: 'creator'},
+      {data: 'createTime'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          if(data.creator == currentUserName){
+            return '<button type="button" class="btn btn-danger" onclick="deleteColdWhiteById('+data.id+')">删除</button>';
+          }
+          return '';
+        }
+      },
+    ]
+  })
+}
+//按ID删除白名单
+function deleteColdWhiteById(id){
+  $.post('/goshawk/cluster/hdfs/coldWhite/delete.do',{coldWhiteId:id},function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.message,'错误');
+      return false;
+    }
+    $('#coldWhiteListTable').DataTable().ajax.reload(null,false);
+    toastr.success('删除成功','成功');
+  })
+}
+</script>
+<script type="text/javascript">
+$(function(){
+  list();
+  //点击查询
+  $('#queryBtn').click(function(){
+    $('#table').DataTable().ajax.reload(null,false);
+    toastr.success('查询成功','成功');
+  })
+  //查询白名单列表
+  displayColdWhiteList();
+  //点击查看白名单
+  $('#displayColdListBtn').click(function(){
+    $('#coldWhiteListTable').DataTable().ajax.reload(null,true);
+    $('#coldWhiteListModal').modal('show');
+  })
+  //白名单列表查询按钮
+  $('#coldWhiteListQueryConditonQueryBtn').click(function(){
+    $('#coldWhiteListTable').DataTable().ajax.reload(null,true);
+    toastr.success('查询成功','成功');
+  })
+  //注册白名单
+  $('#registerColdWhiteBtn').click(function(){
+    bootbox.prompt('请填写白名单关键字', function(result){
+      if(result != null){
+        $.post('/goshawk/cluster/hdfs/coldWhite/register.do',{keywords:result},function(re){
+          if(re.status != 'ok'){
+            toastr.error(re.message,'错误');
+          }else if(re.status == 'ok'){
+            $('#coldWhiteListTable').DataTable().ajax.reload(null,false);
+            toastr.success('注册成功','成功');
+          }
+        })
+      }
+    });
+    
+  })
+})
+</script>
+</html>
+
+
+

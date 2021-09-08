@@ -1,0 +1,205 @@
+<html>
+<body>
+<div id="udxDeletableCssArea">
+    <style type="text/css">
+.import-for-sql {
+  display: none;
+}
+
+    </style>
+</div>
+
+
+<div class="box box-info">
+    <div class="box-header with-border">
+        <h3 class="box-title">查询</h3>
+    </div>
+    <div class="box-body">
+        <form class="form-horizontal" id="udxForm">
+            <div class="row">
+                <div class="col-xs-4">
+                    <div class="form-group">
+                        <label class="col-xs-3 control-label">代号：</label>
+                        <div class="col-xs-9">
+                            <select class="form-control" id="udxProxyCode" name="proxyCode">
+                                <option value="0">全部</option>
+                                <option value="zdp">zdp</option>
+                                <option value="algo">algo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="form-group">
+                        <label class="col-xs-3 control-label">创建人：</label>
+                        <div class="col-xs-9">
+                            <select class="form-control" id="udxCreator" name="creator">
+                                <option value="0">全部</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="form-group">
+                        <label class="col-xs-3 control-label">类型：</label>
+                        <div class="col-xs-9">
+                            <select class="form-control" id="udxType" name="type">
+                                <option value="0">全部</option>
+                                <option value="1">UDF</option>
+                                <option value="2">UDAF</option>
+                                <option value="3">UDTF</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">
+                    <div class="form-group">
+                        <label class="col-xs-3 control-label">名称：</label>
+                        <div class="col-xs-9">
+                            <input class="form-control" id="nameLike" name="nameLike" placeholder="名称" type="text">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="box-footer text-right">
+        <button class="btn btn-primary" onclick="query()" type="submit">查询</button>
+    </div>
+</div>
+<div class="box box-success">
+    <div class="box-header with-border">
+        <h3 class="box-title">列表</h3>
+        <div class="box-tools">
+            <div class="text-right">
+                <button class="btn btn-primary" onclick="toUdxUploader()" type="button">上传</button>
+            </div>
+        </div>
+    </div>
+    <div class="box-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-advance table-striped text-nowrap" id="udxDatatable"
+                   style="width:100%;">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>名称</th>
+                    <th>类型</th>
+                    <th>创建人</th>
+                    <th>代号</th>
+                    <th>描述信息</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script type="text/javascript">
+(function(){
+  $.ajaxSettings.async = false;
+  $('#udxProxyCode').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $('#udxCreator').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $('#udxType').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $.get('/user/api/list-user',function(data){
+    if(data.userList){
+      $.each(data.userList,function(i,user){
+        $('#udxCreator').append('<option value="'+user.userName+'">'+user.trueName+'('+user.userName+')'+'</option>');
+      })
+    }
+    $('#udxCreator').selectpicker('val',currentUserPyName);
+    $('#udxCreator').selectpicker('refresh');
+  })
+  $.ajaxSettings.async = true;
+  $('#udxDatatable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: false,
+    lengthChange: true,
+    ajax: {
+      url: '/zstream/udx/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+        d.condition = JSON.stringify($('#udxForm').serializeJSON());
+      },
+    },
+    columns: [
+      {data: 'id'},
+      {data: 'name'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          if(data.type == 1){
+            return 'UDF';
+          }
+          if(data.type == 2){
+            return 'UDAF';
+          }
+          if(data.type == 3){
+            return 'UDTF';
+          }
+          return data.type;
+        }
+      },
+      {data: 'creator'},
+      {data: 'proxyCode'},
+      {data: 'description'},
+      {data: 'modifyTime'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          var html = '';
+          if(data.proxyCode == currentUserProxyCode){
+            html += '<button type="button" class="btn btn-danger hide-in-modal" onclick="deleteUdxById('+data.id+')">删除</button>';
+          }
+          html += '<button type="button" class="btn btn-danger import-for-sql" onclick="importUdxFiles4Sql('+data.id+')">引用</button>';
+          return html;
+        }
+      },
+    ]
+  });
+})();
+
+function query(){
+  $('#udxDatatable').DataTable().ajax.reload(null,false);
+}
+
+function deleteUdxById(udxId){
+  bootbox.confirm("确定要删除吗？", function(result){ 
+    if(result){
+      $.post('/zstream/udx/delete.do',{id:udxId},function(re){
+        if(re.status != 'ok'){
+          toastr.error(re.message);
+          return false;
+        }
+        $('#udxDatatable').DataTable().ajax.reload(null,false);
+        toastr.success('删除成功');
+      })
+    }
+  });
+}
+
+</script>
+
+
+</html>

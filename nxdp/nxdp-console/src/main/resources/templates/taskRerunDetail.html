@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+
+<head>
+    <meta charset="utf-8">
+    <title>数据开发-重跑Task详情</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="" name="description">
+    <meta content="" name="author">
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="/assets/global/css/googleapis_font.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css">
+    <link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css">
+    <!-- END GLOBAL MANDATORY STYLES -->
+    <!-- BEGIN PAGE LEVEL PLUGIN STYLES -->
+    <link href="/assets/global/plugins/select2/select2-3.5.1.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/select2/select2-bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/datatables/extensions/Scroller/css/dataTables.scroller.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/datatables/extensions/ColReorder/css/dataTables.colReorder.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/bootstrap-toastr/toastr.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/dagre-d3/tipsy.css" rel="stylesheet" type="text/css">
+    <!-- END PAGE LEVEL PLUGIN STYLES -->
+    <!-- BEGIN PAGE STYLES -->
+
+    <!-- END PAGE STYLES -->
+    <!-- BEGIN THEME STYLES -->
+    <!-- DOC: To use 'rounded corners' style just load 'components-rounded.css' stylesheet instead of 'components.css' in the below style tag -->
+    <link href="/assets/global/css/components-rounded.css" id="style_components" rel="stylesheet" type="text/css">
+    <link href="/assets/global/css/plugins.css" rel="stylesheet" type="text/css">
+    <link href="/assets/layout/css/layout.css" rel="stylesheet" type="text/css">
+    <link href="/assets/layout/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color">
+    <link href="/assets/layout/css/custom.css" rel="stylesheet" type="text/css">
+    <!-- END THEME STYLES -->
+    <link rel="shortcut icon" href="/favicon.ico">
+    <style type="text/css">
+        .select2-container .select2-selection--single {
+            height: 34px !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 33px !important;
+        }
+        .page-header {
+            height: auto !important;
+        }
+        .breadcrumb {
+            padding: 10px 0 15px 0 !important;
+        }
+
+    </style>
+</head>
+<!-- END HEAD -->
+<!-- BEGIN BODY -->
+<!-- DOC: Apply "page-header-menu-fixed" class to set the mega menu fixed  -->
+<!-- DOC: Apply "page-header-top-fixed" class to set the top menu fixed  -->
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <style type="text/css">
+                div.radio, div.checker {
+                    margin-right: 0;
+                    margin-left: -1px;
+                }
+                .table-scrollable {
+                    overflow-x: visible;
+                    overflow-y: visible;
+                }
+            </style>
+
+
+            <style id="css">
+                /* This sets the color for "TK" nodes to a light blue green. */
+                g.type-TK > rect {
+                    fill: #00ffd0;
+                }
+                g.bg-red > rect {
+                    fill: #cb5a5e;
+                }
+                g.bg-yellow > rect {
+                    fill: #c49f47;
+                }
+                g.bg-yellow-casablanca > rect {
+                    fill: #f2784b;
+                }
+                g.bg-blue > rect {
+                    fill: #3598dc;
+                }
+                g.bg-green > rect {
+                    fill: #26a69a;
+                }
+                g.bg-red-intense > rect {
+                    fill: #e35b5a;
+                }
+
+                text {
+                    font-weight: 300;
+                    font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+                    font-size: 14px;
+                }
+
+                .node rect {
+                    stroke: #999;
+                    fill: #fff;
+                    stroke-width: 1.5px;
+                }
+
+                .edgePath path {
+                    stroke: #333;
+                    stroke-width: 1.5px;
+                }
+
+                /* This styles the title of the tooltip */
+                .tipsy .name {
+                    font-size: 1.5em;
+                    font-weight: bold;
+                    color: #60b1fc;
+                    margin: 0;
+                }
+
+                /* This styles the body of the tooltip */
+                .tipsy .description {
+                    font-size: 1.2em;
+                }
+            </style>
+
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a>数据开发</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <a href="/workshop/task-list">任务列表</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <a href="/workshop/task-rerun-list">重跑Task</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li class="active">重跑Task详情
+                </li>
+            </ul>
+
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span>Task对应Job列表</span>
+                    </div>
+                    <div class="actions">
+                        <a href="javascript: void(0)" id="submitTask" th:attr="data-set=${taskId}" class="btn btn-circle green"><i class="fa fa-flash"></i> 提交该Task</a>
+                    </div>
+                </div>
+
+                <div class="portlet-body">
+                    <!-- search  form -->
+                    <form role="form" id="shFm" class="form-horizontal alert alert-success alert-borderless"
+                          method="get">
+
+                        <input type="hidden"  name="id" id="taskId" th:attr="value=${taskId}"/>
+                        <input type="hidden"  name="beginJobs" id="beginJobs" th:attr="value=${beginJobs}"/>
+                        <div class="row form-group">
+                            <!--
+                            <div class="col-md-2">
+                              <label class="control-label">调度状态：</label>
+                              <input id="status" name="status" class="form-control" style="width: 100%"
+                                  data-placeholder="选择调度状态" />
+                            </div>
+                            -->
+                            <!--<div class="col-md-2">-->
+                                <!--<label class="control-label">任务类型：</label>-->
+                                <!--<input id="jobType" name="jobType" class="form-control" style="width: 100%"-->
+                                       <!--data-placeholder="选择任务类型" />-->
+                            <!--</div>-->
+                            <!--<div class="col-md-2">-->
+                                <!--<label class="control-label">重要等级：</label>-->
+                                <!--<input id="jobLevel" name="jobLevel" class="form-control" style="width: 100%"-->
+                                       <!--data-placeholder="选择重要等级" />-->
+                            <!--</div>-->
+                            <!--<div class="col-md-2">-->
+                                <!--<label class="control-label">开发者：</label>-->
+                                <!--<input id="selUser" class="form-control" style="width: 100%" name="userId"-->
+                                       <!--data-placeholder="选择开发者" />-->
+                            <!--</div>-->
+                            <!--<div class="col-md-2">-->
+                                <!--<label class="control-label">是否允许重跑：</label>-->
+                                <!--<input id="historyRun" name="historyRun" class="form-control" style="width: 100%"-->
+                                       <!--data-placeholder="选择是否允许重跑历史" />-->
+                            <!--</div>-->
+
+                            <!--<div class="col-md-2">-->
+                                <!--<label class="control-label">操作状态：</label>-->
+                                <!--<select name="optStatus" id="optStatus" class="form-control">-->
+                                    <!--<option value="-99" selected>全部</option>-->
+                                    <!--<option value="-1" >已移除</option>-->
+                                    <!--<option value="0" >正常</option>-->
+                                <!--</select>-->
+                            <!--</div>-->
+
+                            <!--<div class="col-md-2">-->
+                                <!--<label class="control-label">运行状态：</label>-->
+                                <!--<input id="jobStatus" name="jobState" class="form-control" style="width: 100%"-->
+                                       <!--data-placeholder="选择运行状态" />-->
+                            <!--</div>-->
+
+                            <!--&lt;!&ndash;<div class="col-md-4">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<label class="control-label">标签：</label>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<input id="labels" name="labels" class="form-control" style="width: 100%"&ndash;&gt;-->
+                                       <!--&lt;!&ndash;data-placeholder="选择标签" />&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                            <!--<div class="col-md-8">-->
+                                <!--<label class="control-label">&nbsp;</label>-->
+                                <!--<div class="input-group">-->
+                                    <!--<div class="input-cont">-->
+                                        <!--<input type="text" id="kw" name="kw" value="" placeholder="输入任务关键词" class="form-control">-->
+                                    <!--</div>-->
+                                    <!--<span class="input-group-btn">-->
+                                        <!--<button type="button" id="doSearch" class="btn green-haze">查找 &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>-->
+                                    <!--</span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <div class="col-md-2">
+                                <label class="control-label">&nbsp;</label>
+                                <div class="input-group" style="padding-left: 30px;">
+                                    <button type="button" onclick="TaskRerunDetail.removeJobAll()" class="btn btn-warning">移除所有勾选</button>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="control-label">&nbsp;</label>
+                                <div class="input-group" style="padding-left: 30px;">
+                                    <button type="button" onclick="TaskRerunDetail.keepJobAll()" class="btn btn-info">只保留勾选</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- end form -->
+
+
+                    <div class="tabbable-line">
+                        <ul class="nav nav-tabs ">
+                            <li class="active">
+                                <a href="#tab_job_list" data-toggle="tab" aria-expanded="true">重跑列表</a>
+                            </li>
+                            <!--<li class="">-->
+                                <!--<a href="#tab_job_map" data-toggle="tab" aria-expanded="false" id="selectJobRelationMap">重跑关系图</a>-->
+                            <!--</li>-->
+                            <li>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_job_list">
+                                <table class="table table-hover table-advance table-striped" id="dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" width="80px" id="checkAll"></th>
+                                            <th>JobID</th>
+                                            <th>调度状态</th>
+                                            <th>运行状态</th>
+                                            <th>Job名称</th>
+                                            <th>重跑选择日期</th>
+                                            <th>创建时间</th>
+                                            <th>更新时间</th>
+                                            <th>操 作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="job, jobStat : ${jobList}" th:id="'task_'+${job.id}" th:class="${job.operationType}==-1 ? 'danger' : null">
+                                            <td><input type="checkbox" class="check-item" th:attr="data-attr=${job.id}"></td>
+                                            <td th:text="${job.jobId}"></td>
+                                            <td th:switch="${job.status}">
+                                                <span th:case="1" class='label bg-green'>上线</span>
+                                                <span th:case="2" class='label bg-grey-silver'>暂停</span>
+                                                <span th:case="*" class='label bg-grey'>其它</span>
+                                            </td>
+                                            <td th:switch="${job.state}">
+                                            <span th:case="0" class='label bg-yellow'>task未提交</span>
+                                            <span th:case="1" class='label bg-yellow-casablanca'>等待信号</span>
+                                            <span th:case="2" class='label bg-blue'>正在运行</span>
+                                            <span th:case="3" class='label bg-green'>运行成功</span>
+                                            <span th:case="4" class='label bg-red'>运行报错</span>
+                                            <span th:case="5" class='label bg-red-intense'>被kill</span>
+                                            <span th:case="6" class='label bg-yellow-casablanca'>重复提交</span>
+                                            <span th:case="7" class='label bg-red-intense'>运行中断</span>
+                                            <span th:case="*" class='label bg-grey'>其它</span>
+                                        </td>
+                                            <td>
+                                                <a th:href = "'/scheduler/task/detail?schedulerId='+${job.jobId}" target="_blank" th:text="${job.name}"></a>
+                                            </td>
+                                            <td th:text="${job.runTime}==null ? '默认前一天' : (${job.runTime}=='' ? '默认前一天' : ${#dates.format(job.runTime, 'yyyy-MM-dd HH:mm:ss')})"></td>
+                                            <td th:text="${job.createTime}==null ? '' : ${#dates.format(job.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                            <td th:text="${job.updateTime}==null ? '' : ${#dates.format(job.updateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                            <td th:switch="${job.operationType}">
+                                                <a th:case="0" href="javascript: void(0)" class="tooltips" th:onclick="'TaskRerunDetail.removeJob('+${job.id}+')'"
+                                                   data-original-title='移除该Job' data-toggle='tooltip'>
+                                                    <i class="fa font-red fa-trash-o"></i>
+                                                </a>
+                                                <a th:case="-1" href="javascript: void(0)" class="tooltips" th:onclick="'TaskRerunDetail.recoverJob('+${job.id}+')'"
+                                                   data-original-title='恢复Job' data-toggle='tooltip'>
+                                                    <i class="fa font-green fa-reply"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div class="tab-pane" id="tab_job_map">
+                                <svg id="svg-canvas" width=1000 height=600></svg>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+<!-- BEGIN FOOTER -->
+
+<!-- END FOOTER -->
+<!-- BEGIN JAVASCRIPTS (Load javascripts at bottom, this will reduce page load time) -->
+<!-- BEGIN CORE PLUGINS -->
+<!--[if lt IE 9]>
+<script src="/assets/global/plugins/respond.min.js"></script>
+<script src="/assets/global/plugins/excanvas.min.js"></script>
+<![endif]-->
+<script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-migrate.min.js" type="text/javascript"></script>
+<!-- IMPORTANT! Load jquery-ui.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
+<script src="/assets/global/plugins/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.cokie.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
+<script src="/assets/global/scripts/underscore-min.js"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
+<script src="/assets/global/plugins/messager/bootbox.js"></script>
+<!-- END CORE PLUGINS -->
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+<script src="/assets/global/plugins/select2/select2-3.5.1.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/datatables/extensions/TableTools/js/dataTables.tableTools.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/datatables/extensions/ColReorder/js/dataTables.colReorder.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-toastr/toastr.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modalmanager.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/messager/bootbox.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/dagre-d3/d3.v3.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/dagre-d3/dagre-d3.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/dagre-d3/dagre-d3.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/dagre-d3/tipsy.js" type="text/javascript"></script>
+<script src="/assets/page/scripts/workshop/task-rerun-detail-2b876b4819.min.js" type="text/javascript"></script>
+<!-- END PAGE LEVEL PLUGINS -->
+<!-- BEGIN PAGE LEVEL SCRIPTS -->
+<script src="/assets/global/scripts/metronic.js" type="text/javascript"></script>
+<script src="/assets/global/scripts/custom.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/layout.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/quick-sidebar.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/demo.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/user-message.js" type="text/javascript"></script>
+<!-- END PAGE LEVEL SCRIPTS -->
+<script>
+    jQuery(document).ready(function() {
+        Metronic.init(); // init metronic core componets
+        Layout.init(); // init layout
+        Demo.init(); // init demo(theme settings page)
+        QuickSidebar.init(); // init quick sidebar
+        UserMessage.init({
+            contextPath: ''
+        });
+        //Index.init(); // init index page
+        //Tasks.initDashboardWidget(); // init tash dashboard widget
+
+        //全局的ajax访问，处理ajax清求时session超时
+        $.ajaxSetup({
+            contentType:"application/x-www-form-urlencoded;charset=utf-8",
+            error: function(jqXHR, textStatus, errorThrown){
+                var message;
+                switch (jqXHR.status){
+                    case(500):
+                        message = "服务器系统内部错误";
+                        break;
+                    case(401):
+                        message = "未登录";
+                        break;
+                    case(403):
+                        message = "无权限执行此操作";
+                        break;
+                    case(408):
+                        message = "请求超时";
+                        break;
+                    default:
+                        message = "未知错误";
+                }
+                bootbox.alert(message+"!请重新刷新试试，并联系管理员");
+            },
+            complete:function(XMLHttpRequest,textStatus){
+                //通过XMLHttpRequest取得响应头，sessionstatus，
+                var sessionstatus=XMLHttpRequest.getResponseHeader("sessionstatus");
+                if(sessionstatus=="timeout"){
+                    //如果超时就处理 ，指定要跳转的页面(比如登陆页)
+                    //window.location.replace("/login/index.php");
+                    bootbox.confirm({
+                        message: "当前会话过期! 需要重新刷新当前页面吗?",
+                        buttons: {
+                            confirm: {
+                                label: 'Yes',
+                                className: 'btn-success'
+                            },
+                            cancel: {
+                                label: 'No',
+                                className: 'btn-danger'
+                            }
+                        },
+                        callback: function (result) {
+                            if(result){
+                                window.location.reload();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    });
+
+</script>
+<!-- END JAVASCRIPTS -->
+</body>
+<!-- END BODY -->
+<script th:inline="javascript">
+
+    jQuery(document).ready(function() {
+        TaskRerunDetail.init({
+            contextPath: '',
+            historyRun: '-1',
+            jobState: '-1',
+            jobLevel: '-1',
+            jobType: '-1',
+            userId: '-1',
+            labels: ''
+        });
+    });
+
+</script>
+
+</html>

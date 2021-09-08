@@ -1,0 +1,336 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+    <style type="text/css">
+    </style>
+</head>
+<!-- END HEAD -->
+
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <!-- BEGIN PAGE BREADCRUMB -->
+            <ol class="breadcrumb">
+                <li><a href="#">数据开发</a><span class="divider">/</span></li>
+                <li class="active" id="taskTitle"></li>
+            </ol>
+            <!-- END PAGE BREADCRUMB -->
+            <div class="portlet light">
+                <div th:replace="common :: common-functions"></div>
+                <div class="portlet-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="tabbable tabbable-custom boxless">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a data-toggle="tab" href="#tab_1">任务配置</a></li>
+                                    <li class=""><a class="" data-toggle="tab" href="#tab_2">调度配置</a></li>
+                                    <li class=""><a data-toggle="tab" href="#tab_3">更新记录</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1">
+                                        <div class="portlet-body form">
+                                            <!-- BEGIN FORM-->
+                                            <form action="#" class="form-horizontal" id="taskConfig">
+                                                <div class="form-body">
+                                                    <h3 class="form-section">基本信息</h3>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3">任务名称<span
+                                                                        class="required">* </span>
+                                                                </label>
+                                                                <div class="col-md-9">
+                                                                    <input id="hidType" type="hidden">
+                                                                    <input class="form-control" id="jobName" name="jobName"
+                                                                           placeholder="任务名称" type="text">
+                                                                    <input id="hidCodeEditLock" type="hidden" value="">
+                                                                    <input id="txtSvnPath" type="hidden">
+                                                                    <input id="txtSvnRevision" type="hidden">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!--/span-->
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3">服务器<span
+                                                                        class="required">* </span>
+                                                                </label>
+                                                                <div class="col-md-9">
+                                                                    <input class="form-control" data-placeholder="选择服务器"
+                                                                           id="server"
+                                                                           name="server"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!--/span-->
+                                                    </div>
+                                                    <!--/row-->
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3">负责人</label>
+                                                                <div class="col-md-9">
+                                                                    <input class="form-control" data-placeholder="选择负责人"
+                                                                           id="selUser"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3">接警人</label>
+                                                                <div class="col-md-9">
+                                                                    <!-- <input type="hidden" name="receiver" id="receiver" class="form-control"> -->
+                                                                    <select class="form-control" id="receiver"
+                                                                            name="receiver"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--/row-->
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3">任务描述<span
+                                                                        class="required">*</span></label>
+                                                                <div class="col-md-9">
+                                                                    <textarea class="form-control" id="description"
+                                                                              name="description"
+                                                                              rows="3"></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- 血缘关系 -->
+                                                    <!-- <div class="row">
+                                                      <div class="col-md-6">
+                                                        <div class="form-group">
+                                                          <label class="control-label col-md-3">输入</label>
+                                                          <div class="col-md-9">
+                                                            <label class="radio-inline">
+                                                              <input type="radio" name="inputMode" id="inputModeNone" value="0" checked="checked"><span>无</span>
+                                                            </label>
+                                                            <label class="radio-inline">
+                                                              <input type="radio" name="inputMode" id="inputModeTable" value="1"><span>数据表</span>
+                                                            </label>
+                                                            <label class="radio-inline">
+                                                              <input type="radio" name="inputMode" id="inputModeHdfs" value="2"><span>HDFS路径</span>
+                                                            </label>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                      <div class="col-md-6">
+                                                        <div class="form-group">
+                                                          <label class="control-label col-md-3">输入项</label>
+                                                          <div class="col-md-9">
+                                                            <input type="text" name="inputModeValue" id="inputModeValue" class="form-control" readonly="readonly">
+                                                            <div class="col-md-6" style="padding:0 0 0 0;">
+                                                              <select class="form-control" id="inputModeValueDatabaseSelect" style="display:none;" data-live-search="true" data-size="5"></select>
+                                                            </div>
+                                                            <div class="col-md-6" style="padding:0 0 0 0;">
+                                                              <select class="form-control" id="inputModeValueTableSelect" style="display:none;" data-live-search="true" data-size="5"></select>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div> -->
+
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3">血缘关系</label>
+                                                                <div class="col-md-9">
+                                                                    <label class="radio-inline"> <input checked="checked"
+                                                                                                        id="outputModeNone"
+                                                                                                        name="outputMode"
+                                                                                                        type="radio"
+                                                                                                        value="0"><span>无</span>
+                                                                    </label> <label class="radio-inline"> <input
+                                                                        id="outputModeTable" name="outputMode"
+                                                                        type="radio" value="1"><span>数据表</span>
+                                                                </label> <label class="radio-inline"> <input
+                                                                        id="outputModeHdfs" name="outputMode"
+                                                                        type="radio"
+                                                                        value="2"><span>HDFS路径</span>
+                                                                </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3">输出项</label>
+                                                                <div class="col-md-9">
+                                                                    <input class="form-control" id="outputModeValue"
+                                                                           name="outputModeValue" readonly="readonly"
+                                                                           type="text">
+                                                                    <select class="form-control selectpicker showTick"
+                                                                            data-live-search="true"
+                                                                            data-size="5"
+                                                                            id="outputModeValueSelect"
+                                                                            multiple name="outputModeValue"
+                                                                            style="display: none;"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="panel panel-default">
+                                                        <div class="panel-heading"
+                                                             style="line-height: 32px; padding-bottom: 8px; padding-top: 5px;">
+                                                            <span>配置SQL代码</span>
+                                                            <div class="pull-right">
+                                                                <div class="form-inline">
+                                                                    <div class="form-group">
+                                                                        <label class="control-label">是否基于spark引擎：</label>
+                                                                        <input class="form-control" data-onstyle="danger"
+                                                                               data-size="small" data-toggle="toggle"
+                                                                               id="useSparkEngine" type="checkbox">
+                                                                        <span class="help-block pull-right">此按钮的作用仅仅是帮助开发者快速在SQL开始位置添加“set hive.execution.engine=spark;”语句</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="panel-body">
+                                                            <div class="">
+                                                                <div class="form-group">
+                                                                    <div data-error-container="#editor_error">
+                                                                        <div id="sqlEditor"
+                                                                             style="min-height:500px;"></div>
+                                                                        <div style="padding: 10px; width: 100%">
+                                                                            <span class="help-block">注：编辑后请保存，否则他人无法编辑</span>
+                                                                        </div>
+                                                                        <div id="sqlEditDiv"
+                                                                             style="float: right;"></div>
+                                                                    </div>
+                                                                    <div class="help-block" id="errorBlock"></div>
+                                                                    <div id="editor_error"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--/row-->
+
+                                                    <!--/row-->
+                                                </div>
+                                            </form>
+                                            <!-- END FORM-->
+                                        </div>
+                                    </div>
+
+                                    <div th:replace="common :: common-schedule"></div>
+
+                                    <div class="tab-pane" id="tab_3">
+                                        <!-- BEGIN SAMPLE TABLE PORTLET-->
+                                        <div class="portlet light">
+                                            <div class="portlet-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover table-advance table-striped text-nowrap"
+                                                           id="tblHistory" style="width: 100%;">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>更新时间</th>
+                                                            <th>操作人</th>
+                                                            <th>文件路径</th>
+                                                            <th>版本</th>
+                                                            <th>查看</th>
+                                                        </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- END SAMPLE TABLE PORTLET-->
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade modal-scroll" data-backdrop="static" data-keyboard="false" data-width="900px"
+                 id="dlgSql">
+                <div class="modal-header">
+                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button"></button>
+                    <h4 class="modal-title">
+                        <span class="title font-green">SQL</span>
+                    </h4>
+                </div>
+
+                <div class="modal-body" style="overflow: auto;">
+                    <pre id="sqlEditorView"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" type="button">关闭</button>
+                </div>
+            </div>
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+<script src="/assets/page/scripts/workshop/task-relation-chain.js" type="text/javascript"></script>
+<script src="/assets/page/scripts/workshop/task-scheduler-91e1605b40.min.js" type="text/javascript"></script>
+<script src="/assets/page/scripts/workshop/task-add-sql-d014ebf769.min.js" type="text/javascript"></script>
+
+<script th:inline="javascript">
+var JOB_TYPE = [[${JOB_TYPE}]];
+if(JOB_TYPE != null){
+  $("#hidType").val(JOB_TYPE);
+}
+jQuery(document).ready(function() {
+  TaskScheduler.init({
+    contextPath: '',
+    userId: [[${user.id}]],
+    jobType: [[${JOB_TYPE}]],
+  });
+  TaskAdd.init({
+    contextPath: '',
+    userId: [[${user.id}]],
+    taskScheduler: TaskScheduler,
+    jobType: [[${JOB_TYPE}]],
+  });
+
+  $(".downloadInNewWindow").click(function(e){
+    e.preventDefault();
+    window.open($(this).attr('href'));
+  });
+
+  window.onbeforeunload = function() {
+    return '请确认保存后离开页面 ';
+  };
+  
+  $('#useSparkEngine').change(function() {
+    if($(this).prop('checked')){
+      var sqlEditor = ace.edit("sqlEditor");
+      sqlEditor.navigateFileStart();
+      sqlEditor.insert('set hive.execution.engine=spark;');
+      sqlEditor.splitLine();
+      sqlEditor.navigateFileEnd();
+    }
+  })
+});
+
+</script>
+</html>

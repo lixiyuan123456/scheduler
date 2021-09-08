@@ -1,0 +1,112 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+    <title th:fragment="html-title">转转调度平台</title>
+    <style></style>
+</head>
+<!-- END HEAD -->
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<div class="page-container">
+    <div class="page-content">
+        <div class="container">
+            <!-- BEGIN PAGE BREADCRUMB -->
+            <ul class="breadcrumb">
+                <li><a href="#">元数据</a><span class="divider">/</span></li>
+                <li><a href="/metadata/hive-table/list">元数据列表</a><span class="divider">/</span></li>
+                <li class="active">设计元数据历史版本</li>
+            </ul>
+            <!-- END PAGE BREADCRUMB -->
+            <!-- BEGIN PANEL CONTAINER -->
+            <!-- BEGIN BUSINESS CONTENT -->
+            <div class="panel panel-default">
+                <div class="panel-heading">历史版本列表<span class="help-block"
+                                                       style="display:inline-block;">注意：版本ID越大代表版本最新</span></div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-advance table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>表名</th>
+                                <th>状态</th>
+                                <th>创建人</th>
+                                <th>修改人</th>
+                                <th>修改时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="hiveTableEditionsTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END BUSINESS CONTENT -->
+            <!-- END PANEL CONTAINER -->
+        </div>
+    </div>
+</div>
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+<script th:inline="javascript">
+var tableId = [[${tableId}]];
+var editTable = function(id){
+  window.open('/metadata/hive-table/edit?id='+id,'_blank');
+}
+var deleteTable = function(id){
+  $.post('/metadata/hive-table/deleteTableEditionByTableEditionId.do',{tableEditionId : id},function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.message, '错误');
+      return false;
+    }
+    bootbox.alert('删除成功',function(){
+      window.location.reload();
+    });
+  })
+}
+$(function(){
+  $.get('/metadata/hive-table/listTableEditions.do',{tableId:tableId},function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.data, '错误')
+      return false;
+    }
+    $('#hiveTableEditionsTbody').empty();
+    var html = '';
+    $.each(re.data.editions,function(i,obj){
+      html += '<tr>';
+      html += '<td>' + obj.id + '</td>';
+      html += '<td>' + obj.fullName + '</td>';
+      html += '<td>' + (obj.status == 0 ? '草稿' : obj.status == 1 ? '正式' : '') + '</td>';
+      html += '<td>' + obj.creator + '</td>';
+      html += '<td>' + obj.modifier + '</td>';
+      html += '<td>' + obj.modifyTime + '</td>';
+      html += '<td>';
+      html += '<a href="javascript:;" class="btn btn-sm btn-primary" onclick="editTable('+obj.id+')"><i class="fa fa-pencil fa-fw"></i>编辑</a>';
+      html += '<a href="javascript:;" class="btn btn-sm btn-danger" onclick="deleteTable('+obj.id+')"><i class="fa fa-trash fa-fw"></i>删除</a>';
+      html += '</td>';
+      html += '</tr>';
+    });
+    $('#hiveTableEditionsTbody').append(html);
+  })
+})
+
+</script>
+</html>
+
+
+

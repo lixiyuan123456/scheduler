@@ -1,0 +1,586 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head>
+    <title th:fragment="html-title">苍鹰系统-任务查找</title>
+    <link href="/assets/global/plugins/x-editable/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"
+          type="text/css">
+    <style type="text/css">
+		.table {
+			width: 100%;
+		}
+
+		.table th {
+			white-space: nowrap;
+			text-align: center;
+		}
+
+		.table td {
+			white-space: nowrap;
+			text-align: center;
+		}
+
+		.table .text-left {
+			text-align: left;
+		}
+
+    </style>
+</head>
+<head th:include="common :: common-html-header"></head>
+<!-- END HEAD -->
+
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a href="/goshawk/index">苍鹰系统</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <a>YARN管理</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <span>任务查询</span>
+                </li>
+            </ul>
+
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span>任务信息</span>
+                    </div>
+                </div>
+
+                <div class="portlet-body">
+                    <!-- search  form -->
+                    <form class="alert alert-success alert-borderless" id="conditionForm" role="form">
+                        <div class="row form-group">
+
+                            <div class="col-md-4">
+                                <label class="control-label">完成时间：</label>
+                                <div class="input-group input-daterange date" data-provide="datepicker">
+                                    <div class="input-icon">
+                                        <i class="fa fa-calendar"></i>
+                                        <input class="form-control" id="start" name="startTime" type="text"/>
+                                    </div>
+                                    <span class="input-group-addon"><i class="fa fa-arrow-right"></i></span>
+                                    <div class="input-icon">
+                                        <i class="fa fa-calendar"></i>
+                                        <input class="form-control" id="end" name="endTime" type="text"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">运行类型：</label>
+                                <input class="form-control" data-placeholder="选择运行类型" id="runType" name="runType"
+                                       style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">任务类型：</label>
+                                <input class="form-control" data-placeholder="选择任务类型" id="appType" name="appType"
+                                       style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">队列：</label>
+                                <input class="form-control" data-placeholder="选择队列" id="queue" name="queue"
+                                       style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">部门：</label>
+                                <input class="form-control" data-placeholder="选择部门" id="dept" name="dept"
+                                       style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">executor内存：</label>
+                                <input class="form-control" dataType="number" id="spark-executor-memory"
+                                       name="executorMemory"
+                                       placeholder="executor-memory" style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">总内存：</label>
+                                <input class="form-control" dataType="number" id="spark-total-memory"
+                                       name="totalMemory"
+                                       placeholder="总内存大小" style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">总cpu core：</label>
+                                <input class="form-control" dataType="number" id="spark-cpu" name="cpu"
+                                       placeholder="总cpu core"
+                                       style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">运行时长：</label>
+                                <input class="form-control" dataType="number" id="duration" name="duration"
+                                       placeholder="运行时长, 单位秒"
+                                       style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">mapper数量：</label>
+                                <input class="form-control" dataType="number" disabled id="mr-num-mapper"
+                                       name="numMapper"
+                                       placeholder="map task数量" style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">reducer数量：</label>
+                                <input class="form-control" dataType="number" disabled id="mr-num-reducer"
+                                       name="numReducer"
+                                       placeholder="reduce task数量" style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">任务名：</label>
+                                <input class="form-control" id="jobName" name="jobName" placeholder="任务名称"
+                                       style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">负责人：</label>
+                                <input class="form-control" data-placeholder="选择开发者" id="user" name="user"
+                                       style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">JobId：</label>
+                                <input class="form-control" id="jobId" name="jobId" placeholder="jobId"
+                                       style="width: 100%"/>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">&nbsp;</label>
+                                <span class="input-group-btn">
+                  <button class="btn green-haze" id="doSearch" type="button">查找 &nbsp;
+                    <i class="m-icon-swapright m-icon-white"></i>
+                  </button>
+                </span>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- end form -->
+
+
+                    <div id="sparkDiv">
+                        <table class="table table-hover table-advance table-striped" id="sparkDataTable"
+                               style="width:100%;">
+                            <thead>
+                            <tr>
+                                <th>任务ID</th>
+                                <th>任务名称</th>
+                                <th>开发者</th>
+                                <th>executor内存</th>
+                                <th>总共内存</th>
+                                <th>总cpu</th>
+                                <th>任务执行时间</th>
+                                <th>任务开始时间</th>
+                                <th>任务完成时间</th>
+                                <th>任务类型</th>
+                                <th>运行类型</th>
+                                <th>运行类型运行队列</th>
+                                <th>部门名</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="mrDiv" style="display: none">
+                        <table class="table table-hover table-advance table-striped" id="mrDataTable"
+                               style="width:100%;">
+                            <thead>
+                            <tr>
+                                <th>任务ID</th>
+                                <th>任务名称</th>
+                                <th>开发者</th>
+                                <th>mapper数量</th>
+                                <th>reducer数量</th>
+                                <th>任务执行时间</th>
+                                <th>任务开始时间</th>
+                                <th>任务完成时间</th>
+                                <th>任务类型</th>
+                                <th>运行类型</th>
+                                <th>运行类型运行队列</th>
+                                <th>部门名</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+<!-- BEGIN FOOTER -->
+
+<!-- END FOOTER -->
+
+</body>
+
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+<script src="/assets/page/scripts/workshop/task-list-33b267f1ff.min.js" type="text/javascript"></script>
+
+
+<!-- END BODY -->
+<script th:inline="javascript">
+	var jobList = (function () {
+		var self = $(this);
+
+		function initDataTemplate() {
+			self.query = {
+				start: "",
+				end: "",
+				runType: "-1",
+				appType: "spark",
+				queue: "-1",
+				dept: "-1",
+				executorMemory: -1,
+				totalMemory: -1,
+				cpu: -1,
+				duration: -1,
+				numMapper: -1,
+				numReducer: -1,
+				jobName: "-1",
+				user: [[${user.trueName}]],
+				jobId: "-1"
+			};
+
+			$("#spark-executor-memory,#spark-total-memory,#spark-cpu,#duration,#mr-num-mapper,#mr-num-reducer,#jobId,#jobName")
+					.on("input", function (e) {
+						var $this = $(e.target);
+						if ($this.attr("dataType") === "number") {
+							var _value = parseInt($this.val().replace(/[^\d]/g, "")) || 0;
+							if (!!_value) {
+								$this.val(_value);
+								self.query[$this.attr("name")] = _value;
+							} else {
+								$this.val("");
+								self.query[$this.attr("name")] = -1;
+							}
+						} else {
+							self.query[$this.attr("name")] = $this.val();
+						}
+					});
+		}
+
+		/** 初始化任务结束时间 */
+		function initFinishDay() {
+			var $start = $("#start");
+			var $end = $("#end");
+			var datePickerOption = {
+				rtl: Metronic.isRTL(),
+				orientation: "right",
+				autoclose: true,
+				format: "yyyy-mm-dd"
+			};
+
+			$start.datepicker(datePickerOption).on("changeDate", function (a) {
+				self.query.start = $.datepicker.formatDate("yy-mm-dd", a.date);
+			});
+			$start.datepicker("setDate", "-1d");
+
+			$end.datepicker(datePickerOption).on("changeDate", function (a) {
+				self.query.end = $.datepicker.formatDate("yy-mm-dd", a.date);
+			});
+			$end.datepicker("setDate", "+0d");
+		}
+
+		/** 初始化用户列表 */
+		function initUserList() {
+			self.userList = [{id: "-1", text: '全部'}];
+			$.post(self.contextPath + '/user/api/list-user', function (data, status) {
+				_.each(data.userList, function (user) {
+					if (self.userId === user.id) {
+						self.userList.push({id: user.trueName, text: user.trueName + "-" + user.userName, selected: true});
+					} else {
+						self.userList.push({id: user.trueName, text: user.trueName + "-" + user.userName, selected: false});
+					}
+				});
+				var $userList = $('#user');
+				$userList.select2({
+					"language": {
+						"noResults": function () {
+							return "无搜索结果";
+						}
+					},
+					placeholder: '选择用户',
+					data: self.userList
+				}).on('change', function (item) {
+					self.query.user = $(this).val();
+				});
+				$userList.val(self.user).trigger('change');
+			});
+		}
+
+		/** 初始化队列 */
+		function initQueue() {
+			var $queue = $('#queue');
+			$queue.on('change', function (item) {
+				self.query.queue = $(this).val();
+			});
+			reloadQueue();
+		}
+
+		/** 重新加载队列 */
+		function reloadQueue() {
+			$.post(self.contextPath + '/goshawk/yarn/yarn-job/get-queue.do', {appType: self.query.appType},
+					function (response, status) {
+						if (response.status === "ok") {
+							self.queueList = [{id: "-1", text: '全部'}];
+							response.data.forEach(function (q) {
+								self.queueList.push({id: q, text: q, selected: false});
+							});
+						}
+
+						var $queue = $('#queue');
+						$queue.select2({
+							language: {
+								"noResults": function () {
+									return "无搜索结果";
+								}
+							},
+							placeholder: '选择队列',
+							data: self.queueList
+						});
+
+						$queue.val("-1").trigger('change');
+					});
+		}
+
+		/** 初始化作业类型 */
+		function initAppType() {
+			self.appTypeList = [
+				{id: "spark", text: 'Spark'},
+				{id: "mapreduce", text: 'MapReduce'}
+			];
+
+			var $appType = $('#appType');
+			$appType.select2({
+				minimumResultsForSearch: -1,
+				"language": {
+					"noResults": function () {
+						return "无搜索结果";
+					}
+				},
+				placeholder: '选择作业类型',
+				data: self.appTypeList
+			}).on('change', function (item) {
+				self.query.appType = $(this).val();
+
+				reloadQueue();
+
+				// 相关输入框禁用掉
+				if (self.query.appType === "spark") {
+					$("#mrDiv").hide();
+					$("#sparkDiv").show();
+
+					$("[id^='mr']").attr("disabled", "");
+					$("[id^='spark']").removeAttr("disabled");
+				} else {
+					$("#mrDiv").show();
+					$("#sparkDiv").hide();
+
+					$("[id^='mr']").removeAttr("disabled");
+					$("[id^='spark']").attr("disabled", "");
+				}
+
+				reloadTable();
+			});
+			$appType.val("spark").trigger('change');
+		}
+
+		function initRunType() {
+			self.runTypeList = [
+				{id: "-1", text: '全部'},
+				{id: "非调度", text: '非调度'},
+				{id: "调度", text: '调度'}
+			];
+			var $runType = $('#runType');
+			$runType.select2({
+				minimumResultsForSearch: -1,
+				"language": {
+					"noResults": function () {
+						return "无搜索结果";
+					}
+				},
+				placeholder: '选择运行类型',
+				data: self.runTypeList
+			}).on('change', function (item) {
+				self.query.runType = $(this).val();
+			});
+			$runType.val("-1").trigger('change');
+		}
+
+		function initDept() {
+			self.deptList = [
+				{id: "-1", text: '全部'},
+				{id: "work", text: 'work'},
+				{id: "zdp", text: 'zdp'},
+				{id: "algo", text: 'algo'}
+			];
+			var $dept = $('#dept');
+			$dept.select2({
+				minimumResultsForSearch: -1,
+				"language": {
+					"noResults": function () {
+						return "无搜索结果";
+					}
+				},
+				placeholder: '选择部门',
+				data: self.deptList
+			}).on('change', function (item) {
+				self.query.dept = $(this).val();
+			});
+			$dept.val("-1").trigger('change');
+		}
+
+		var sparkColumns = [
+			{
+				data: null,
+				render: function (data, type, full, meta) {
+					return '<span title="' + data.jobId + '">...' + data.jobId.substr(12, 22) + '</span>';
+				}
+			},
+			{
+				data: null,
+				render: function (data, type, full, meta) {
+					var s = data.jobName;
+					var i = s.indexOf("_", 7) + 1;
+					return '<span title="' + data.jobName + '">' + data.jobName.substr(i, 20) + '...</span>';
+				},
+				className: 'text-left'
+			},
+			{data: 'authorName'},
+			{data: 'executorMemtory'},
+			{data: 'executorMemotryTotal'},
+			{data: 'executorCpucoreTotal'},
+			{data: 'executeTime'},
+			{data: 'startTime'},
+			{data: 'finishTime'},
+			{data: 'appType'},
+			{data: 'appScheduleType'},
+			{data: 'queueName'},
+			{data: 'userName'}
+		];
+
+		var mrColumns = [
+			{data: 'jobId'},
+			{data: 'jobName', className: 'text-left'},
+			{data: 'authorName'},
+			{data: 'mapTaskNumber'},
+			{data: 'reduceTaskNumber'},
+			{data: 'executeTime'},
+			{data: 'startTime'},
+			{data: 'finishTime'},
+			{data: 'appType'},
+			{data: 'appScheduleType'},
+			{data: 'queueName'},
+			{data: 'userName'}
+		];
+
+		function getTableOption(columns) {
+			return {
+				"scrollX": true,
+				"autoWidth": false,
+				"columnDefs": [
+					{"width": "10px", "targets": 0},
+					{"width": "10px", "targets": 1}
+				],
+				'serverSide': true,
+				'ordering': false,
+				'searching': false,
+				'ajax': {
+					url: '/goshawk/yarn/yarn-job/list.do',
+					data: function (d) {
+						d.columns = null;
+						//d.search = null;
+						d.condition = JSON.stringify(self.query);
+					}
+				},
+				'columns': columns
+			};
+		}
+
+		function reloadTable() {
+			if ($("#appType").val() === "mapreduce") {
+				if (self.mrTable) {
+					self.mrTable.ajax.reload(null, false);
+				} else {
+					self.mrTable = $("#mrDataTable").DataTable(getTableOption(mrColumns));
+				}
+			} else {
+				if (self.sparkTable) {
+					self.sparkTable.ajax.reload(null, false);
+				} else {
+					self.sparkTable = $("#sparkDataTable").DataTable(getTableOption(sparkColumns));
+				}
+			}
+		}
+
+		$("#doSearch").on("click", function () {
+			reloadTable();
+		});
+
+		return {
+			init: function (opts) {
+				self.contextPath = opts.contextPath;
+				self.user = opts.user;
+
+				// init前缀的函数都是只执行一次
+				initDataTemplate();
+				initFinishDay();
+				initUserList();
+				initAppType();
+				initQueue();
+				initRunType();
+				initDept();
+
+				reloadTable();
+			}
+		};
+	})();
+
+	$(document).ready(function () {
+		jobList.init({
+			contextPath: '',
+			user: [[${user.trueName}]]
+		});
+	});
+
+</script>
+</html>
+

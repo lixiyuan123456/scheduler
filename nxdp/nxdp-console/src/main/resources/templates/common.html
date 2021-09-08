@@ -1,0 +1,601 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:fragment="common-html-header">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<title th:fragment="html-title">转转调度平台</title>
+
+
+<link href="/assets/global/css/googleapis_font.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/select2/select2.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/clockface/css/clockface.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/css/plugins.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-colorpicker/css/colorpicker.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/datatables/extensions/Scroller/css/dataTables.scroller.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/datatables/extensions/ColReorder/css/dataTables.colReorder.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/icheck/skins/all.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/typeahead/typeahead.bundle.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-toastr/toastr.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-fileinput/css/fileinput.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/spinner/bootstrap-spinner.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/global/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" type="text/css">
+<link href="/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
+<link href="/jQuery-contextMenu-2.8.0/jquery.contextMenu.css" rel="stylesheet" type="text/css">
+
+<link href="/assets/global/css/components-rounded.css" id="style_components" rel="stylesheet" type="text/css">
+<link href="/assets/global/css/plugins.css" rel="stylesheet" type="text/css">
+<link href="/assets/layout/css/layout.css" rel="stylesheet" type="text/css">
+<link href="/assets/layout/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color">
+<!-- <link href="/assets/layout/css/custom.css" rel="stylesheet" type="text/css"> -->
+
+<link href="/assets/page/css/servers-icons-4af607f8bf.min.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+html {
+  /* position: relative; */
+  min-height: 100%;
+}
+body {
+  height:auto!important;
+}
+.page-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #FF5959;
+  padding: 0 0 0 0;
+  z-index: 9999;
+}
+.page-footer .container {
+  background-color: #FF5959;
+}
+
+/* .select2-container .select2-selection--single {
+  height: 34px !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 33px !important;
+} */
+/* .breadcrumb {
+  padding: 10px 0 15px 0 !important;
+} */
+.tooltip pre {
+  background: black;
+  color: white;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  border: none;
+}
+.tooltip-inner {
+  text-align: left;
+  max-width: 800px;
+  max-height: 300px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  opacity: 0.5;
+}
+table th,td {
+  text-align: center;
+}
+</style>
+</head>
+<!-- END HEAD -->
+
+
+<!-- BEGIN PAGE HEADER -->
+<div class="page-header" th:fragment="common-page-header">
+<nav class="navbar navbar-default" style="background-color:#FF5959;margin-bottom:0px;">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand"><img alt="" style="height:30px;" src="/assets/global/img/logo.png"></a>
+    </div>
+    <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li th:class="${#lists.isEmpty(mainMenu.children)} ? '':'dropdown'" th:each="mainMenu : ${session.main_menus}">
+          <a th:href="${mainMenu.href}" th:text="${mainMenu.name}" th:if="${#lists.isEmpty(mainMenu.children)}"></a> 
+          <!-- <a th:href="${mainMenu.href}" th:utext="|${mainMenu.name} <i class='fa fa-angle-down'></i>|" th:if="${not #lists.isEmpty(mainMenu.children)}" data-hover="megamenu-dropdown"></a> -->
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" aria-haspopup="true" aria-expanded="false" th:href="${mainMenu.href}" th:utext="|${mainMenu.name} <i class='fa fa-angle-down'></i>|" th:if="${not #lists.isEmpty(mainMenu.children)}"></a>
+          <ul class="dropdown-menu" th:if="${not #lists.isEmpty(mainMenu.children)}">
+            <li th:class="${#lists.isEmpty(child.children)} ? '':'dropdown-submenu'" th:each="child : ${mainMenu.children}">
+              <a th:href="${child.href}" th:if="${child.isNew == 0}" th:utext="|<i class='${child.iconClass}'></i> ${child.name}|"></a>
+              <a href="javascript:;" th:if="${child.isNew == 1}" th:utext="|<i class='${child.iconClass}'></i> ${child.name}|" th:onclick="'javascript:window.open(\''+${child.href}+'\', \'_blank\')'"></a>
+              <ul class="dropdown-menu" th:if="${not #lists.isEmpty(child.children)}">
+                <li th:each="subChild : ${child.children}">
+                  <a th:href="${subChild.href}" th:if="${subChild.isNew == 0}" th:utext="|<i class='${subChild.iconClass}'></i> ${subChild.name}|"></a>
+                  <a href="javascript:;" th:if="${subChild.isNew == 1}" th:utext="|<i class='${subChild.iconClass}'></i> ${subChild.name}|" th:onclick="'javascript:window.open(\''+${subChild.href}+'\', \'_blank\')'"></a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" aria-haspopup="true" aria-expanded="false" th:text="${session.current_user.agent}?'(AGENT)'+${session.current_user.name}:${session.current_user.name}"></a>
+          <ul class="dropdown-menu">
+            <li><a href="javascript:void(0);" onclick="checkUserStatusBeforeConfirmResign()">离职交接</a></li>
+            <li th:if="${session.current_user.agent}"><a href="javascript:void(0);" onclick="disableAgent()">停用代理</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+</div>
+
+
+<div class="col-md-9" th:fragment="common-cron">
+	<input type="text" id="cronExpression" name="runTime" class="form-control" style="width: 80%; display: inline-block;" placeholder="Cron表达式">
+	<label>
+		<a id="tip-schedulerCron"></a>
+		<a href="javascript:void(0)" title="显示时间表达式生成工具" id="showCron" class="btn btn-xs default tooltips">
+			<i class="fa fa-arrow-down"></i>
+		</a>
+		<a href="javascript:void(0)" title="隐藏时间表达式生成工具" id="hideCron" class="btn btn-xs default tooltips" style="display: none">
+			<i class="fa fa-arrow-up"></i>
+		</a>
+		<!-- <a href="javascript:void(0)" title="cronExpress写法" onclick="TaskScheduler.quartzExpressDetail()" class="btn btn-xs default tooltips">
+			<i class="fa icon-question"></i>
+		</a> -->
+	</label>
+	<div id="cronSelect" style="float: left; white-space: nowrap; display: none">
+		<select id="year" size="8" multiple="multiple" style="width: 80px;" onclick="TaskScheduler.createCronExp()">
+			<option value="*" selected="selected">选择年</option>
+			<script th:inline="javascript">
+				var date = new Date();
+                var year = date.getFullYear();
+                for (var i = 0; i < 20; i++) {
+	                var tmpYear = year + i;
+	                document.write("<option value='"+tmpYear+"'>" + tmpYear+ "年</option>");
+                }
+			</script>
+		</select>
+		<select id="month" size="8" multiple="multiple" style="width: 80px;" onclick="TaskScheduler.createCronExp()">
+			<option value="*" selected="selected">选择月</option>
+			<script th:inline="javascript">
+				for (var i = 1; i <= 12; i++) {
+	                document.write("<option value='"+i+"'>" + i + "月</option>");
+                }
+			</script>
+		</select>
+		<select id="day" size="8" multiple="multiple" style="width: 80px;" onclick="TaskScheduler.createCronExp()">
+			<option value="*" selected="selected">选择日</option>
+			<script th:inline="javascript">
+				for (var i = 1; i <= 31; i++) {
+	                document.write("<option value='"+i+"'>" + i + "日</option>");
+                }
+			</script>
+		</select>
+		<select id="week" size="8" multiple="multiple" style="width: 80px;" onclick="TaskScheduler.createCronExp()">
+			<option value="*" selected="selected">选择星期</option>
+			<script th:inline="javascript">
+				for (var i = 1; i <= 7; i++) {
+	                document.write("<option value='"+i+"'>星期" + i + "</option>");
+                }
+			</script>
+		</select>
+		<select id="hour" size="8" multiple="multiple" style="width: 80px;" onclick="TaskScheduler.createCronExp()">
+			<option value="*" selected="selected">选择时</option>
+			<script th:inline="javascript">
+				for (var i = 0; i < 24; i++) {
+	                document.write("<option value='"+i+"'>" + i + "时</option>");
+                }
+			</script>
+		</select>
+		<select id="minutes" size="8" multiple="multiple" style="width: 80px;" onclick="TaskScheduler.createCronExp()">
+			<option value="*" selected="selected">选择分</option>
+			<script th:inline="javascript">
+				for (var i = 0; i < 60; i++) {
+	                document.write("<option value='"+i+"'>" + i + "分</option>");
+                }
+			</script>
+		</select>
+		<select id="seconds" size="8" multiple="multiple" style="width: 80px;" onclick="TaskScheduler.createCronExp()">
+			<option value="*">选择秒</option>
+			<option value="0" selected>0秒</option>
+			<script th:inline="javascript">
+				for (var i = 1; i < 60; i++) {
+	                document.write("<option value='"+i+"'>" + i + "秒</option>");
+                }
+			</script>
+		</select>
+	</div>
+</div>
+
+<ol class="breadcrumb" th:fragment="common-page-breadcrumb">
+  <li><a href="#">数据开发</a><span class="divider">/</span></li>
+  <li class="active" id="breadcrumb-title"></li>
+</ol>
+
+
+
+<div class="btn-group" th:fragment="common-shortcut">
+  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="1000" data-close-others="true" aria-expanded="false">
+    <span>新建任务</span>&nbsp;&nbsp;&nbsp;<i class="fa fa-angle-down"></i>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a target="_blank" href="/workshop/task-data-extract"> <span class="server-icon extract-icon"></span> <span>数据抽取</span></a></li>
+    <li><a target="_blank" href="/workshop/task-add-sql?type=3"> <span class="server-icon hive-icon"></span> <span>HIVE</span></a></li>
+    <li><a target="_blank" href="/workshop/task-add-mapreduce?type=4"> <span class="server-icon mapreduce-icon"></span> <span>MR</span></a></li>
+    <li><a target="_blank" href="/workshop/task-add-shell?type=5"> <span class="server-icon bash-icon"></span> <span>SHELL</span></a></li>
+    <li><a target="_blank" href="/workshop/task-add-spark?type=7"> <span class="server-icon spark-icon"></span> <span>SPARK</span></a></li>
+    <li><a target="_blank" href="/workshop/task-add-spark?type=12"> <span class="server-icon spark-icon"></span> <span>SPARK-STREAMING</span></a></li>
+    <li><a target="_blank" href="/workshop/task-add-sql?type=16"> <span class="server-icon spark-icon"></span> <span>SPARK-SQL</span></a></li>
+    <li><a target="_blank" href="/workshop/vars"> <i class="fa fa-wrench"></i> <span>内置变量</span></a></li>
+  </ul>
+</div>
+
+
+
+<div class="portlet-title" th:fragment="common-functions">
+  <div class="caption">
+    <span class="text-primary">新建任务</span>
+  </div>
+  <div class="actions">
+    <a href="javascript: void(0)" id="saveTask" class="btn btn-primary"> <i class="fa fa-save"></i><span>保存</span></a>
+    <a href="javascript: void(0)" id="viewTask" class="btn btn-primary"> <i class="fa fa-eye"></i><span>查看详情</span></a>
+    <div th:replace="common :: common-shortcut"></div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="tab-pane" id="tab_2" th:fragment="common-schedule">
+  <div class="portlet-body form">
+    <!-- BEGIN FORM-->
+    <form action="#" class="form-horizontal" id="scheduleConfig">
+      <input type="hidden" id="hidId" th:value="${jobId}" />
+      <input type="hidden" id="hidType" th:value="${type}" />
+      <input type="hidden" id="filePath" name="filePath" value="" />
+      <input type="hidden" id="fileName" name="fileName" value="" />
+      <input type="hidden" id="newFileName" name="newFileName" value="" />
+      <input type="hidden" id="uploadFlag" name="uploadFlag" value="0" />
+      <input type="hidden" value="" name="autoInput" id="autoInput" />
+      <input type="hidden" value="" name="autoOutput" id="autoOutput" />
+      <input type="hidden" id="dependencyJobIds" />
+      <div class="form-body">
+        <h3 class="form-section">调度配置</h3>
+        <div class="alert alert-danger display-hide">
+          <button class="close" data-close="alert"></button>
+          <span>You have some form errors. Please check below.</span>
+        </div>
+        <div class="alert alert-success display-hide">
+          <button class="close" data-close="alert"></button>
+          <span>Your form validation is successful!</span>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label col-md-3">重要等级</label>
+              <div class="col-md-9">
+                <input type="text" class="form-control" id="jobLevel" style="width: 60%" placeholder="重要等级">
+              </div>
+            </div>
+          </div>
+          <!--/span-->
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label col-md-3"> 执行队列 <span class="required">* </span>
+              </label>
+              <div class="col-md-9">
+                <input type="text" class="form-control" id="hadoopQueue" name="hadoopQueue" style="width: 100%" data-placeholder="选择队列">
+              </div>
+            </div>
+          </div>
+          <!--/span-->
+        </div>
+        <!--/row-->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label col-md-3">重跑设定</label>
+              <div class="col-md-9">
+                <div class="input-group">
+                  <span class="input-group-addon">重跑次数</span>
+                  <input type="text" class="form-control" id="retry" name="retry" value="0" data-min="0" data-max="3">
+                  <span class="input-group-addon">时间间隔（秒）</span>
+                  <input type="text" class="form-control" id="retryTimeSpan" name="retryTimeSpan" value="0" data-min="0" data-max="1800" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--/span-->
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label col-md-3">其他设置</label>
+              <div class="col-md-9">
+                <label class="checkbox-inline"> <input type="checkbox" value="0" id="errorRunContinue" name="errorRunContinue" /><span>出错阻塞</span>
+                </label> <label class="checkbox-inline"> <input type="checkbox" value="0" id="parallelRun" name="parallelRun" /><span>支持并行</span>
+                </label>
+                <!-- <label>
+                                    <input type="checkbox" value="0" id="historyRun" name="historyRun" />禁止重跑
+                                    <a href="javascript:void(0)" title="该选项主要是解决重跑依赖任务不会被连带调起，勾选的任务被禁止重跑历史数据，需要谨慎对待" class="btn btn-xs default tooltips">
+                                        <i class="fa icon-info"></i>
+                                    </a>
+                                </label> -->
+                <!-- <div class="" data-error-container="#form_2_services_error"></div> -->
+              </div>
+            </div>
+          </div>
+          <!--/span-->
+        </div>
+        <!--/row-->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label col-md-3">上线</label>
+              <div class="col-md-9">
+                <input type="checkbox" id="schedulerStatus" checked data-toggle="toggle" data-onstyle="success" value="2">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label col-md-3">是否报警</label>
+              <div class="col-md-9">
+                <div class="checkbox-list" data-error-container="#form_2_services_error">
+                  <label class="checkbox-inline"> <input type="checkbox" value="1" id="isMonitorId" name="isMonitor" checked="checked" />
+                  </label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label col-md-3">Cron表达式</label>
+              <div th:replace="common :: common-cron"></div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label class="control-label col-md-3">延迟报警</label>
+              <div class="col-md-9">
+                <div class="checkbox-list" data-error-container="#form_2_services_error">
+                  <label class="checkbox-inline"> <input type="checkbox" value="1" id="delayWarn" name="delayWarn" checked="checked" />
+                  </label>
+                </div>
+                <!--
+                                <div class="input-group input-medium">
+                                    <span class="input-group-addon">
+                                    <input type="checkbox" id="delayWarn" value="1" checked="checked">
+                                    </span>
+                                    <input type="text" id="delayWarnLine" class="form-control" placeholder="秒数or时间(HH:mm:ss)">
+                                </div>
+                                 -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3 class="form-section">依赖配置</h3>
+
+        <!--/row-->
+        <div class="row">
+          <div class="col-md-12">
+            <!-- BEGIN SAMPLE TABLE PORTLET-->
+            <div class="portlet light">
+              <div class="tools">
+                <label> Search <input type="search" id="searchJob" class="form-control input-middle input-inline" placeholder="输入任务名称">
+                </label>
+              </div>
+              <div class="portlet-body table-responsive">
+                <table class="table table-hover table-advance table-striped" id='recommJob' style="width: 100%;">
+                  <thead>
+                    <tr>
+                      <th>任务ID</th>
+                      <th>任务类型</th>
+                      <th>任务名称</th>
+                      <th>OUTPUT</th>
+                      <th>运行时间</th>
+                      <th>负责人</th>
+                      <th>任务状态</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="portlet-title">
+                <div class="caption">
+                  <span class="caption-subject font-black-sharp bold uppercase">已添加的依赖</span>
+                </div>
+              </div>
+              <div class="portlet-body table-responsive">
+                <table class="table table-hover table-advance table-striped" id='dependentJobs' style="width: 100%;">
+                  <thead>
+                    <tr>
+                      <th>任务ID</th>
+                      <th>任务类型</th>
+                      <th>任务名称</th>
+                      <th>OUTPUT</th>
+                      <th>运行时间</th>
+                      <th>负责人</th>
+                      <th>任务状态</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- END SAMPLE TABLE PORTLET-->
+
+          </div>
+        </div>
+        <!--/row-->
+      </div>
+    </form>
+    <!-- END FORM-->
+  </div>
+</div>
+
+
+<!-- BEGIN FOOTER -->
+<div th:fragment="common-page-footer">
+    <footer class="page-footer">
+      <div class="container" style="padding-top: 10px;">
+        <h4>
+          <span class="">数据平台部  让数据变得更简单</span>
+          <span class="pull-right">企业微信：翟传成、孙志伟、李希沅</span>
+        </h4>
+      </div>
+    </footer>
+    <div class="scroll-to-top"><i class="icon-arrow-up"></i></div>
+</div>
+<!-- END FOOTER -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html>
+
+
+
+
+<div th:fragment="common-html-javascripts">
+
+<!--[if lt IE 9]>
+<script src="/assets/global/plugins/respond.min.js"></script>
+<script src="/assets/global/plugins/excanvas.min.js"></script> 
+<![endif]-->
+
+<script src="/common.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-migrate.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.cokie.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
+<script src="/assets/global/scripts/underscore-min.js"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
+<script src="/assets/global/plugins/messager/bootbox.js"></script>
+<script src="/assets/global/common.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/select2/select2.full.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/ace/ace.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/ace/ext-themelist.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/ace/ext-language_tools.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/clockface/js/clockface.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-daterangepicker/moment.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/datatables/extensions/TableTools/js/dataTables.tableTools.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/datatables/extensions/ColReorder/js/dataTables.colReorder.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/icheck/icheck.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-contextmenu/bootstrap-contextmenu.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-toastr/toastr.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/messager/bootbox.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/typeahead/handlebars.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/typeahead/typeahead.bundle.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modalmanager.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-validation-1.19.0/jquery.validate.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-validation-1.19.0/additional-methods.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-validation-1.19.0/localization/messages_zh.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-fileinput/js/plugins/canvas-to-blob.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-fileinput/js/fileinput.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-fileinput/js/fileinput_locale_zh.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-toggle/js/bootstrap-toggle.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/spinner/jquery.spinner.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-select/js/bootstrap-select.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-select/js/i18n/defaults-zh_CN.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-table/bootstrap-table.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/timeago.js/timeago.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/timeago.js/timeago.locales.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.formatDateTime.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.serializeObject.min.js" type="text/javascript"></script>
+<script src="/sweetalert2/sweetalert2.all.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.serializejson.js"></script>
+<script src="/jQuery-File-Upload-9.30.0/vendor/jquery.ui.widget.js"></script>
+<script src="/jQuery-File-Upload-9.30.0/jquery.fileupload.js"></script>
+<script src="/jQuery-contextMenu-2.8.0/jquery.contextMenu.js"></script>
+<script src="/jQuery-contextMenu-2.8.0/jquery.ui.position.js"></script>
+<script src="/assets/global/plugins/jstree/dist/jstree.min.js" type="text/javascript"></script>
+
+
+<script src="/assets/global/scripts/metronic.js" type="text/javascript"></script>
+<script src="/assets/global/scripts/custom.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/layout.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/quick-sidebar.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/demo.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/user-message.js" type="text/javascript"></script>
+
+<script th:inline="javascript">
+function disableAgent(){
+  $.post('/agentUser/disableAgent.do',function(r){
+    if(r.status != 'ok'){
+      bootbox.alert(r.msg);
+      return false;
+    }
+    window.location.href = "/";
+  });
+}
+$(function(){
+  Metronic.init(); // init metronic core componets
+  Layout.init(); // init layout
+  Demo.init(); // init demo(theme settings page)
+  QuickSidebar.init(); // init quick sidebar
+  $('[data-toggle="tooltip"]').tooltip();
+  UserMessage.init({
+    contextPath : ''
+  });
+})
+</script>
+<!-- END JAVASCRIPTS -->
+</div>

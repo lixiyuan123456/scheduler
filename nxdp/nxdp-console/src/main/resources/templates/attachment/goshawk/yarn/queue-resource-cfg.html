@@ -1,0 +1,410 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+<title th:fragment="html-title">苍鹰-YARN管理-队列资源</title>
+<link href="/assets/global/plugins/patternfly-bootstrap-treeview/bootstrap-treeview.css" rel="stylesheet" type="text/css">
+<style>
+.btn + .btn {
+  margin-left: 0px;
+}
+</style>
+</head>
+<!-- END HEAD -->
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<div class="page-container">
+<div class="page-content">
+<div class="container">
+<!-- BEGIN PAGE BREADCRUMB -->
+<ul class="page-breadcrumb breadcrumb">
+  <li>
+    <a href="/goshawk/index">苍鹰</a>
+  </li>
+  <li>
+    <i class="fa fa-circle"></i>
+    <span>YARN管理</span>
+  </li>
+  <li class="active">
+    <i class="fa fa-circle"></i>
+    <span>队列资源</span>
+  </li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN PANEL CONTAINER -->
+<!-- BEGIN BUSINESS CONTENT -->
+<div class="portlet light bordered">
+  <div class="portlet-title">
+    <div class="caption font-green-sharp"><span>YARN管理-队列资源配置文件</span></div>
+  </div>
+  <div class="portlet-body">
+    <div class="row">
+        <div id="queue-resource-tree" class="col-xs-4"></div>
+        <div class="col-xs-2">
+          <p class="row well center-block">
+            <button id="deleteBtn" type="button" class="btn btn-danger btn-block">删除</button>
+            <!-- <button id="saveBtn" type="button" class="btn btn-info btn-block">重新设值</button> -->
+            <button id="addBrotherBtn" type="button" class="btn btn-warning btn-block">添加同级节点</button>
+            <button id="addChildBtn" type="button" class="btn btn-warning btn-block">添加子节点</button>
+            <button id="viewXmlBtn" type="button" class="btn btn-success btn-block">预览XML</button>
+          </p>
+        </div>
+        <div class="col-xs-6">
+          <form id="queue-resource-node-form" class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label col-xs-4">节点名称</label>
+              <div class="col-xs-8">
+                <input type="text" class="form-control" placeholder="name" name="name" required>
+              </div>
+            </div>
+            <!-- <div class="form-group">
+              <label class="control-label col-xs-4">weight</label>
+              <div class="col-xs-8">
+                <input type="text" class="form-control col-xs-8" placeholder="weight">
+              </div>
+            </div> -->
+            <div class="form-group">
+              <label class="control-label col-xs-4">最小占比值</label>
+              <div class="col-xs-8">
+                <div class="input-group">
+                  <input type="number" class="form-control" placeholder="" name="minPercentValue">
+                  <span class="input-group-addon">%</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-xs-4">最大占比值</label>
+              <div class="col-xs-8">
+                <div class="input-group">
+                  <input type="number" class="form-control" placeholder="" name="maxPercentValue">
+                  <span class="input-group-addon">%</span>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="form-group">
+              <label class="control-label col-xs-4">minResources值</label>
+              <div class="col-xs-8">
+                <input type="number" class="form-control col-xs-8" placeholder="" name="minResourcesValue">
+              </div>
+            </div> -->
+            <!-- <div class="form-group">
+              <label class="control-label col-xs-4">maxResources值</label>
+              <div class="col-xs-8">
+                <input type="number" class="form-control col-xs-8" placeholder="" name="maxResourcesValue">
+              </div>
+            </div> -->
+            <!-- <div class="form-group">
+              <label class="control-label col-xs-4">minResources</label>
+              <div class="col-xs-8">
+                <input type="text" class="form-control col-xs-8" placeholder="minResources" name="minResources" disabled>
+              </div>
+            </div> -->
+            <!-- <div class="form-group">
+              <label class="control-label col-xs-4">maxResources</label>
+              <div class="col-xs-8">
+                <input type="text" class="form-control col-xs-8" placeholder="maxResources" name="maxResources" disabled>
+              </div>
+            </div> -->
+            <!-- <div class="form-group">
+              <label class="control-label col-xs-4">aclSubmitApps</label>
+              <div class="col-xs-8">
+                <input type="text" class="form-control col-xs-8" placeholder="aclSubmitApps">
+              </div>
+            </div> -->
+            <!-- <div class="form-group">
+              <label class="control-label col-xs-4">aclAdministerApps</label>
+              <div class="col-xs-8">
+                <input type="text" class="form-control col-xs-8" placeholder="aclAdministerApps">
+              </div>
+            </div> -->
+            <!-- <div class="form-group">
+              <label class="control-label col-xs-4">queueMaxAMShareDefault</label>
+              <div class="col-xs-8">
+                <input type="text" class="form-control col-xs-8" placeholder="queueMaxAMShareDefault">
+              </div>
+            </div> -->
+            <!-- <div class="form-group">
+              <label class="control-label col-xs-4">userMaxAppsDefault</label>
+              <div class="col-xs-8">
+                <input type="text" class="form-control col-xs-8" placeholder="userMaxAppsDefault">
+              </div>
+            </div> -->
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!-- END BUSINESS CONTENT -->
+<!-- END PANEL CONTAINER -->
+</div>
+</div>
+</div>
+
+
+<div id="xmlViewModal" class="modal container fade" data-backdrop="static" data-keyboard="false">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3>XML预览</h3>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <textarea id="xmlTextarea" class="form-control" style="min-height: 350px;"></textarea>
+    </div>
+    <div class="form-horizontal">
+      <div class="form-group">
+        <label class="col-xs-1 control-label">服务器IP</label>
+        <div class="col-xs-6">
+          <input id="xmlTargetServers" type="text" class="form-control" value="10.148.16.86;">
+        </div>
+        <label class="col-xs-1 control-label">路径</label>
+        <div class="col-xs-4">
+          <input id="xmlTargetServerPath" type="text" class="form-control" value="/home/work/">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn">Close</button>
+    <button type="button" class="btn btn-primary" id="uploadToServersBtn">服务器分发</button>
+  </div>
+</div>
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+
+<!-- <script src="/assets/global/plugins/Parsley.js-2.8.1/parsley.js"></script>
+<script src="/assets/global/plugins/Parsley.js-2.8.1/i18n/zh_cn.js"></script> -->
+<script src="/assets/global/plugins/patternfly-bootstrap-treeview/bootstrap-treeview.js"></script>
+<script th:inline="javascript">
+function loadTree(tree){
+  console.log(tree);
+  $('#queue-resource-tree').treeview({
+    data: tree,
+    //showCheckbox: true,
+    multiSelect: true,
+    onNodeSelected: function(event,node){
+      var selectedNodes = $('#queue-resource-tree').treeview(true).getSelected();
+      $.each(selectedNodes,function(i,selectedNode){
+        if(selectedNode.nodeId != node.nodeId){
+          $('#queue-resource-tree').treeview(true).unselectNode(selectedNode);
+        }
+      })
+      $('#queue-resource-node-form input[name="name"]').val(node.name);
+      // $('#queue-resource-node-form input[name="minResources"]').val(node.minResources);
+      // $('#queue-resource-node-form input[name="maxResources"]').val(node.maxResources);
+      $('#queue-resource-node-form input[name="minPercentValue"]').val(node.minPercentValue);
+      $('#queue-resource-node-form input[name="maxPercentValue"]').val(node.maxPercentValue);
+    },
+    onNodeUnselected: function(event,node){
+      $('#queue-resource-node-form')[0].reset();
+    },
+    onNodeChecked: function(event,node){},
+    onNodeUnchecked: function(event,node){}
+  })
+}
+function checkExistOnlyOneSelectedNode(){
+  var nodes = $('#queue-resource-tree').treeview(true).getSelected();
+  //console.log(nodes);
+  if(nodes.length == 0){
+    toastr.error('目前没有任何节点被选中！', '错误');
+    return false;
+  }
+  if(nodes.length != 1){
+    toastr.error('只允许选择一个节点！', '错误');
+    return false;
+  }
+  return true;
+}
+function checkSeLectedRootNode(){
+  var node = getSelectedNode();
+  return node.root;
+}
+function getSelectedNode(){
+  return $('#queue-resource-tree').treeview(true).getSelected()[0];
+}
+function checkRequiredFieldsInForm(){
+  var name = $('#queue-resource-node-form input[name="name"]').val();
+  if($.trim(name) == ''){
+    toastr.error('节点名称不允许为空！', '错误');
+    return false;
+  }
+  var minPercentValue = $('#queue-resource-node-form input[name="minPercentValue"]').val();
+  if($.trim(minPercentValue) == ''){
+    toastr.error('节点最小占比值不允许为空！', '错误');
+    return false;
+  }
+  var maxPercentValue = $('#queue-resource-node-form input[name="maxPercentValue"]').val();
+  if($.trim(maxPercentValue) == ''){
+    toastr.error('节点最大占比值不允许为空！', '错误');
+    return false;
+  }
+  return true;
+}
+//oldNodes:原treeviews的所有节点
+//newNodes:新treeviews的所有节点
+//replaceNode：依然是原节点，只不过它的nodes属性发生了add或delete操作
+function replaceNodeByNodeId(oldNodes,newNodes,replaceNode){
+  $.each(oldNodes,function(i,node){
+    if(node.nodeId == replaceNode.nodeId){
+      newNodes.push(replaceNode);
+      return false;
+    }else{
+      newNodes.push(node);
+    }
+    if(node.nodes && node.nodes.length > 0){
+      replaceNodeByNodeId(node.nodes,newNodes[i].nodes,replaceNode);
+    }
+  })
+}
+
+function enhanceTreeNodes(nodes){
+  $.each(nodes,function(i,node){
+    if(node.nodes && node.nodes.length > 0){
+      node.queues = node.nodes;
+      enhanceTreeNodes(node.nodes);
+    }
+  })
+}
+$(function(){
+  //初始化最基本的RootTree
+  $.get('/goshawk/yarn/queue-resource/cfg/root-tree.do',function(data){
+    if(data.status != 'ok'){
+      toastr.error(data.message, '错误');
+      return false;
+    }else{
+      loadTree(data.tree);
+    }
+  })
+  //点击删除
+  $('#deleteBtn').click(function(){
+    if(!checkExistOnlyOneSelectedNode()){
+      return false;
+    }
+    var selectedNode = getSelectedNode();
+    if(selectedNode.root && selectedNode.root == true){
+      toastr.error('根节点不允许删除！', '错误');
+      return false;
+    }
+    $('#queue-resource-tree').treeview(true).removeNode(selectedNode);
+  })
+  //点击重新设值
+  $('#saveBtn').click(function(){
+    if(!checkExistOnlyOneSelectedNode()){
+      return false;
+    }
+    var selectedNode = getSelectedNode();
+    var updateNode = selectedNode;
+    var newNode = $('#queue-resource-node-form').serializeJSON();
+    updateNode.name = newNode.name;
+    updateNode.text = newNode.name;
+    updateNode.percentValue = newNode.percentValue;
+    if(selectedNode.root && selectedNode.root == true){
+      newNode.root = true;
+      if(newNode.name != 'root' || newNode.text != 'root'){
+        toastr.error('根节点不允许重命名！', '错误');
+        return false;
+      }
+    }
+    $('#queue-resource-tree').treeview(true).updateNode(selectedNode,updateNode);
+    $('#queue-resource-tree').treeview(true).selectNode(updateNode);
+  })
+  //点击添加同级节点
+  $('#addBrotherBtn').click(function(){
+    if(!checkExistOnlyOneSelectedNode()){
+      return false;
+    }
+    if(!checkRequiredFieldsInForm()){
+      return false;
+    }
+    var selectedNode = getSelectedNode();
+    if(selectedNode.root == true){
+      toastr.error('根节点不允许添加同级节点！', '错误');
+      return false;
+    }
+    var newBrotherNode = $('#queue-resource-node-form').serializeJSON();
+    newBrotherNode.text = newBrotherNode.name;
+    $('#queue-resource-tree').treeview(true).addNodeAfter(newBrotherNode,selectedNode);
+    $('#queue-resource-tree').treeview(true).selectNode(newBrotherNode);
+  })
+  //点击添加子节点
+  $('#addChildBtn').click(function(){
+    if(!checkExistOnlyOneSelectedNode()){
+      return false;
+    }
+    if(!checkRequiredFieldsInForm()){
+      return false;
+    }
+    var selectedNode = getSelectedNode();
+    var newChildNode = $('#queue-resource-node-form').serializeJSON();
+    newChildNode.text = newChildNode.name;
+    $('#queue-resource-tree').treeview(true).addNode(newChildNode,selectedNode);
+    $('#queue-resource-tree').treeview(true).selectNode(newChildNode);
+    // if(currentNode.nodes == null){
+    //   currentNode.nodes = [];
+    // }
+    // if(currentNode.queues == null){
+    //   currentNode.queues = [];
+    // }
+    // currentNode.nodes.push(newChildNode);
+    // currentNode.queues.push(newChildNode);
+    // 替换原node
+    // var oldNodes = $('#queue-resource-tree').treeview(true).getEnabled();
+    // var newNodes = [];
+    // replaceNodeByNodeId(oldNodes,newNodes,currentNode);
+  })
+  //点击预览XML
+  $('#viewXmlBtn').click(function(){
+    var nodes = $('#queue-resource-tree').treeview(true).getNodes();
+    enhanceTreeNodes(nodes);
+    $.ajax({
+      url: '/goshawk/yarn/queue-resource/cfg/view-xml.do',
+      data: JSON.stringify(nodes[0]),
+      type: 'post',
+      contentType: 'application/json;charset=utf-8',
+      success: function(resp){
+        if(resp.status != 'ok'){
+          toastr.error(resp.message, '错误');
+          return false;
+        }
+        //$('#queue-resource-tree').treeview(true).remove();
+        console.log(resp.xml);
+        $('#xmlTextarea').val(resp.xml);
+        $('#xmlViewModal').modal();
+      }
+    })
+  })
+  //点击上传服务器
+  $('#uploadToServersBtn').click(function(){
+    var xml = $('#xmlTextarea').val();
+    var servers = $('#xmlTargetServers').val();
+    var path = $('#xmlTargetServerPath').val();
+    $.post('/goshawk/yarn/queue-resource/cfg/distribute.do',{
+      xml: xml,
+      servers: servers,
+      path: path
+    },function(resp){
+      if(resp.status != 'ok'){
+        toastr.error(resp.message, '错误');
+        return false;
+      }else{
+        toastr.success('XML文件分发成功', '成功');
+      }
+    })
+  })
+})
+</script>
+</html>

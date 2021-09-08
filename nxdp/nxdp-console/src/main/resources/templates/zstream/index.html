@@ -1,0 +1,154 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+    <link href="/slideout-1.0.1/slideout.css" rel="stylesheet" type="text/css">
+    <link href="/AdminLTE-2.4.10/css/AdminLTE.css" rel="stylesheet" type="text/css">
+    <style type="text/css">
+.modal {
+  background-color: #ffffff;
+}
+
+    </style>
+</head>
+<!-- END HEAD -->
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<div class="wrapper">
+    <div class="main-sidebar">
+        <div class="sidebar text-center">
+            <ul class="todo-list">
+                <li><a class="btn btn-success" href="#" onclick="toJobList()" role="button">任务管理</a></li>
+                <li><a class="btn btn-primary" href="#" onclick="toJobEditor()" role="button">新建任务</a></li>
+                <li><a class="btn btn-warning" href="#" onclick="toUdx()" role="button">UDX管理</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="main-header">
+                <a data-toggle="push-menu" href="#" role="button"><i class="fa fa-bars fa-fw"></i></a>
+                <div style="display:inline-block;">
+                    <a href="http://dashen.zhuanspirit.com/pages/viewpage.action?pageId=24792173"
+                       target="_blank">操作说明书</a>
+                </div>
+                <div class="pull-right" style="display:inline-block;position:relative;margin-top:-10px;">
+                    <a class="btn btn-success" href="#" onclick="toJobList()" role="button">任务管理</a>
+                    <a class="btn btn-primary" href="#" onclick="toJobEditor()" role="button">新建任务</a>
+                    <a class="btn btn-warning" href="#" onclick="toUdx()" role="button">UDX管理</a>
+                </div>
+            </div>
+            <!-- <div class="text-right">
+              <a href="#" class="btn btn-success" role="button" onclick="toJobList()">任务管理</a>
+              <a href="#" class="btn btn-primary" role="button" onclick="toJobEditor()">新建任务</a>
+              <a href="#" class="btn btn-warning" role="button" onclick="toUdx()">UDX管理</a>
+            </div> -->
+        </div>
+        <div class="content" id="mainBody"></div>
+    </div>
+</div>
+
+<!-- <div id="slideoutMenu" class="slideout-menu slideout-menu-left">
+  <div class="box box-solid">
+    <div class="box-body pad table-responsive">
+      <table class="table table-bordered text-center">
+        <tr>
+          <td><a href="#" class="btn btn-success" role="button" onclick="toJobList()">任务管理</a></td>
+        </tr>
+        <tr>
+          <td><a href="#" class="btn btn-primary" role="button" onclick="toJobEditor()">新建任务</a></td>
+        </tr>
+        <tr>
+          <td><a href="#" class="btn btn-warning" role="button" onclick="toUdx()">UDX管理</a></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div> -->
+
+<!-- <main id="slideoutPanel">
+  <div class="box">
+    <div class="box-body">
+    <header class="main-header">
+      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button" id="slideoutToggleBtn">侧边栏</a>
+      <div class="text-right">
+        <a href="#" class="btn btn-success" role="button" onclick="toJobList()">任务管理</a>
+        <a href="#" class="btn btn-primary" role="button" onclick="toJobEditor()">新建任务</a>
+        <a href="#" class="btn btn-warning" role="button" onclick="toUdx()">UDX管理</a>
+      </div>
+    </header>
+    </div>
+  </div>
+  <div id="mainBody"></div>
+</main> -->
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+<script src="/slideout-1.0.1/slideout.js" type="text/javascript"></script>
+<script src="/AdminLTE-2.4.10/js/adminlte.js" type="text/javascript"></script>
+<!-- <script src="/jquery-1.12.4.min.js" type="text/javascript"></script> -->
+
+<script th:inline="javascript">
+var currentUserPyName = [[${session.current_user.pyName}]];
+var currentUserName = [[${session.current_user.name}]];
+var currentUserProxyCode = [[${session.current_user.hadoopBinding.proxyCode}]];
+console.log(currentUserPyName);
+console.log(currentUserProxyCode);
+
+(function(){
+  /* var slideout = new Slideout({
+    'panel': document.getElementById('slideoutPanel'),
+    'menu': document.getElementById('slideoutMenu'),
+    'padding': 120,
+  });
+  $('#slideoutToggleBtn').click(function(){
+    slideout.toggle();
+  }) */
+  $('[data-toggle="push-menu"]').pushMenu('toggle');
+  //默认
+  toJobList();
+})();
+
+function toUdx(){
+  $('#mainBody').load('/zstream/udx');
+}
+function toUdxUploader(){
+  $('#mainBody').load('/zstream/udx/uploader');
+}
+function toJobEditor(){
+  $('#mainBody').load('/zstream/job/editor');
+}
+function toJobList(){
+  $('#mainBody').load('/zstream/job');
+}
+
+
+$(function(){
+  $.ajaxSetup({
+    error: function(jqXHR,textStatus,errorThrown){
+      console.log(jqXHR);
+      console.log(textStatus);
+      console.log(errorThrown);
+    }
+  })
+})
+
+</script>
+</html>
+
+
+

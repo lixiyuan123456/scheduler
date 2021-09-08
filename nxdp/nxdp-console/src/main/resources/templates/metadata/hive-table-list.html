@@ -1,0 +1,295 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+    <link href="/assets/global/plugins/x-editable/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"
+          type="text/css">
+</head>
+<!-- END HEAD -->
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<div class="page-container">
+    <div class="page-content">
+        <div class="container">
+            <!-- BEGIN PAGE BREADCRUMB -->
+            <ul class="breadcrumb">
+                <li><a href="#">元数据</a><span class="divider">/</span></li>
+                <li class="active">元数据列表</li>
+            </ul>
+            <!-- END PAGE BREADCRUMB -->
+            <div class="pull-right" style="margin-top: -40px;">
+                <a class="btn btn-circle btn-default" href="javascript:;" id="createHiveTableBtn">设计元数据</a>
+            </div>
+
+            <div class="panel panel-default" style="margin-bottom:0px;">
+                <div class="panel-heading">
+                    <span class="panel-title">查询</span>
+                    <div class="pull-right" style="display:inline-block;">
+                        <span class="help-block"><a
+                                href="http://dashen.zhuanspirit.com/pages/viewpage.action?pageId=32212210"
+                                target="_blank">操作说明书</a></span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" id="conditionForm">
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label">时间：</label>
+                                <div class="col-xs-10">
+                                    <div class="input-group input-daterange date" data-provide="datepicker">
+                                        <div class="input-icon">
+                                            <i class="fa fa-calendar"></i>
+                                            <input class="form-control" id="queryStartDate" name="queryStartDate"
+                                                   type="text"/>
+                                        </div>
+                                        <span class="input-group-addon"><i class="fa fa-arrow-right"></i></span>
+                                        <div class="input-icon">
+                                            <i class="fa fa-calendar"></i>
+                                            <input class="form-control" id="queryEndDate" name="queryEndDate"
+                                                   type="text"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-3">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">设计者：</label>
+                                <div class="col-xs-8">
+                                    <select class="selectpicker form-control" data-live-search="true" data-size="5"
+                                            id="creator" name="creatorId" style="width: 100%;" title="创建人">
+                                        <option value="0">全部</option>
+                                        <option selected="selected" th:each="user : ${users}"
+                                                th:if="${user.id == currentUser.id}" th:text="${user.trueName}"
+                                                th:value="${user.id}"></option>
+                                        <option th:each="user : ${users}" th:if="${user.id != currentUser.id}"
+                                                th:text="${user.trueName}"
+                                                th:value="${user.id}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-3">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label">状态：</label>
+                                <div class="col-xs-8">
+                                    <select class="form-control selectpicker" data-live-search="true" data-size="5"
+                                            id="status" name="status" style="width: 100%;" title="状态">
+                                        <option value="">全部</option>
+                                        <option th:each="status : ${tableStatusList}" th:text="${status.name}"
+                                                th:value="${status.code}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="col-xs-1 control-label">关键词：</label>
+                                <div class="col-xs-8">
+                                    <input class="form-control" id="kw" name="name" placeholder="关键词" type="text">
+                                </div>
+                                <div class="col-xs-3">
+                                    <button class="btn btn-primary pull-right" id="searchBtn" type="button">查询</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-default" style="margin-bottom:0px;">
+                <div class="panel-heading">
+                    <span class="panel-title">列表</span>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-advance table-striped  text-nowrap" id="dataTable">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>表名</th>
+                                <th>状态</th>
+                                <th>创建人</th>
+                                <th>设计时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+
+<script th:inline="javascript">
+var HIVE_DBS;
+$('.date').datepicker({
+  format : 'yyyy-mm-dd',
+  language : 'zh-CN',
+  autoclose : true,
+  opens : 'left'
+});
+//初始化日期组件
+$('#queryStartDate').datepicker('setDate',moment().subtract(31, 'days').format('YYYY-MM-DD'));
+$('#queryEndDate').datepicker('setDate',moment().format('YYYY-MM-DD'));
+$(function(){
+  $.ajaxSettings.async = false;
+  $.get('/metadata/hive-table/list-dbs.do',function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.data, '错误')
+      return false;
+    }
+    HIVE_DBS = re.data;
+  });
+  $.ajaxSettings.async = true;
+  //创建HIVE表
+  $('#createHiveTableBtn').click(function(){
+    window.location.href = '/metadata/hive-table/create';
+  });
+  //点击查询
+  $('#searchBtn').click(function(){
+    $('#dataTable').DataTable().ajax.reload(null,false);
+  });
+  $('#dataTable').DataTable({
+    'serverSide' : true,
+    'ordering' : false,
+    'searching' : false,
+    'ajax' : {
+      url : '/metadata/hive-table/list.do',
+      data : function(d){
+        d.columns = null;
+        //d.search = null;
+        d.condition = JSON.stringify($('#conditionForm').serializeObject());
+      }
+    },
+    'columns' : [
+      {data : 'id'},
+      {
+        data : 'fullName',
+        className : 'text-left',
+        /* render : function(data, type, full, meta){
+          var updateType = '';
+          if(data.updateType == 1){
+            updateType = '_full';
+          }else if(data.updateType == 2){
+            updateType = '_inc';
+          }
+          var partition = '';
+          if(data.partition == 0){
+            partition = '_0p';
+          }else if(data.partition == 1){
+            partition = '_1h';
+          }else if(data.partition == 2){
+            partition = '_1d';
+          }else if(data.partition == 3){
+            partition = '_1w';
+          }else if(data.partition == 4){
+            partition = '_1m';
+          }else if(data.partition == 5){
+            partition = '_1q';
+          }else if(data.partition == 6){
+            partition = '_1y';
+          }
+          return getHiveDbCodeByDbId(data.dbId) + '_' + data.name + updateType + partition;
+        } */
+      },
+      {
+        data : null,
+        render : function(data, type, full, meta){
+          if(data.status == -1){
+            return '<span class="btn btn-default">删除</span>';
+          }
+          if(data.status == 0){
+            return '<span class="btn btn-info">草稿</span>';
+          }
+          if(data.status == 1){
+            return '<span class="btn btn-success">正式</span>';
+          }
+        }
+      },
+      {data : 'creator'},
+      {data : 'createTime'},
+      {
+        data : null,
+        render : function(data, type, full, meta){
+          var html = '';
+          //html += '<a href="javascript:;" class="btn btn-success" onclick="editTable('+data.id+')"><i class="fa fa-edit fa-fw"></i>编辑</a>';
+          //html += '<a href="javascript:;" class="btn btn-danger" onclick="deleteTable('+data.id+')"><i class="fa fa-times fa-fw"></i>删除</a>';
+          if(data.status != -1){
+            html += '<a href="javascript:;" class="btn btn-primary" onclick="viewTable('+data.id+')"><i class="fa fa-eye fa-fw"></i>查看</a>';
+          }
+          if(data.status == 1){
+            html += '<a href="javascript:;" class="btn btn-danger" onclick="deleteTable('+data.id+')"><i class="fa fa-times fa-fw"></i>删除</a>';
+          }
+          return html;
+        }
+      }
+    ]
+  });
+})
+function getHiveDbCodeByDbId(dbId){
+  var dbCode = '';
+  $.each(HIVE_DBS,function(i,v){
+    if(v.id == dbId){
+      dbCode = v.code;
+      return false;
+    }
+  })
+  return dbCode;
+}
+//编辑
+var editTable = function(id){
+  //window.location.href = '/metadata/hive-table/edit?id='+id;
+  window.open('/metadata/hive-table/edit?id='+id,'_blank');
+}
+var viewTable = function(id){
+  window.open('/metadata/hive-table/view?tableId='+id,'_blank');
+}
+//删除
+var deleteTable = function(id){
+  bootbox.confirm({
+    message: "确定删除吗？删除会删除表结构和数据",
+    buttons: {
+        cancel: {
+            label: '取消',
+            className: 'btn-default'
+        },
+        confirm: {
+            label: '确定',
+            className: 'btn-danger'
+        }
+    },
+    callback: function (result) {
+        if(result){
+          $.post('/metadata/hive-table/delete.do',{id : id},function(resp){
+            if(resp.status == 'error'){
+              toastr.error(resp.data, '错误')
+              return false;
+            }
+            $('#dataTable').DataTable().ajax.reload(null,false);
+          })
+        }
+    }
+  });
+}
+
+</script>
+</html>

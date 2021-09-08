@@ -1,0 +1,678 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+    <link href="/assets/global/plugins/x-editable/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"
+          type="text/css">
+    <style type="text/css">
+    </style>
+</head>
+<!-- END HEAD -->
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <style type="text/css">
+.tabbable .nav li>a {
+  text-shadow: none !important;
+  color: #0d638f;
+}
+
+            </style>
+            <ul class="page-breadcrumb breadcrumb">
+                <li><a>数据开发</a> <i class="fa fa-circle"></i></li>
+                <li class="active" id='taskTitle'></li>
+            </ul>
+            <div class="portlet light">
+                <div th:replace="common :: common-functions"></div>
+                <div class="portlet-body">
+                    <div class="row">
+                        <div class="col-md-12 alertInfo">
+                            <div class="alert alert-danger display-hide">
+                                <button class="close" data-close="alert"></button>
+                                信息不完整，请切换Tab检查
+
+                            </div>
+                            <div class="alert alert-success display-hide">
+                                <button class="close" data-close="alert"></button>
+                                数据完整，保存成功
+
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="tabbable tabbable-custom boxless">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a data-toggle="tab" href="#tab_1">任务配置</a></li>
+                                    <li class=""><a class="" data-toggle="tab" href="#tab_2">调度配置</a></li>
+                                    <li class=""><a data-toggle="tab" href="#tab_3">更新记录</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_1">
+                                        <div class="portlet-body form">
+                                            <!-- BEGIN FORM-->
+                                            <form action="#" class="form-horizontal" id="taskConfig">
+                                                <div class="form-body">
+                                                    <h3 class="form-section">基本信息</h3>
+                                                    <div class="alert alert-danger display-hide">
+                                                        <button class="close" data-close="alert"></button>
+                                                        You have some form errors. Please check below.
+
+                                                    </div>
+                                                    <div class="alert alert-success display-hide">
+                                                        <button class="close" data-close="alert"></button>
+                                                        Your form validation is successful!
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3"> 任务名称<span
+                                                                        class="required">* </span>
+                                                                </label>
+                                                                <div class="col-md-9">
+                                                                    <input class="form-control" id="jobName" name="jobName"
+                                                                           placeholder="任务名称" type="text">
+                                                                    <input id="hidId" th:value="${#httpServletRequest.getParameter('id')}"
+                                                                           type="hidden">
+                                                                    <input id="hidType" type="hidden" value='1'>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!--/span-->
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3"> 服务器<span
+                                                                        class="required">* </span>
+                                                                </label>
+                                                                <div class="col-md-9">
+                                                                    <input class="form-control" data-placeholder="选择服务器"
+                                                                           id="server"
+                                                                           name="server"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!--/span-->
+                                                    </div>
+                                                    <!--/row-->
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3">负责人</label>
+                                                                <div class="col-md-9">
+                                                                    <!-- <input id="selUser" class="form-control select2" data-placeholder="选择负责人" /> -->
+                                                                    <select class="form-control" id="selUser"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3">接警人</label>
+                                                                <div class="col-md-9">
+                                                                    <!-- <input type="hidden" name="receiver" id="receiver" class="form-control"> -->
+                                                                    <select class="form-control" id="receiver"
+                                                                            name="receiver"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--/row-->
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label class="control-label col-md-3"> 任务描述<span
+                                                                        class="required">* </span>
+                                                                </label>
+                                                                <div class="col-md-9">
+                                                                    <textarea class="form-control" id="description"
+                                                                              name="description"
+                                                                              rows="3"></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <h3 class="form-section">配置抽取</h3>
+                                                    <!--/row-->
+                                                    <div class="row">
+                                                        <div class="col-md-12 col-sm-12">
+                                                            <div class="tabbable-line">
+                                                                <ul class="nav nav-tabs ">
+                                                                    <li class="active"><a data-toggle="tab"
+                                                                                          href="#tab_15_1">数据源</a></li>
+                                                                    <li class=""><a data-toggle="tab" href="#tab_15_2">目的地</a>
+                                                                    </li>
+                                                                    <li class=""><a class="" href="javascript:void(0);"
+                                                                                    onclick="TaskAdd.compareTableColumns()">
+                                                                        <i class="fa fa-columns"></i> 字段比对
+
+                                                                    </a></li>
+                                                                </ul>
+                                                                <div class="tab-content">
+                                                                    <div class="tab-pane active" id="tab_15_1">
+                                                                        <div class="row">
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">
+                                                                                        数据源类型<span
+                                                                                            class="required">* </span>
+                                                                                    </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <!-- <input type="text" id="sourceServerType" name="sourceServerType" style="width: 50%" class="form-control" placeholder="数据源类型"> -->
+                                                                                        <select class="form-control"
+                                                                                                id="sourceServerType"
+                                                                                                name="sourceServerType">
+                                                                                            <option value="0"></option>
+                                                                                            <option value="1">MYSQL
+                                                                                            </option>
+                                                                                            <option disabled="disabled"
+                                                                                                    value="2">
+                                                                                                HIVE
+                                                                                            </option>
+                                                                                        </select>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">
+                                                                                        服务器别名<span
+                                                                                            class="required">* </span>
+                                                                                    </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <select class="form-control"
+                                                                                                id="sourceConfig"
+                                                                                                name="sourceConfig">
+                                                                                            <option value="0"></option>
+                                                                                        </select>
+                                                                                        <!-- <input id="sourceConfig" name="sourceConfig" class="form-control" data-placeholder="选择服务器"/> -->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">
+                                                                                        数据库<span
+                                                                                            class="required">* </span>
+                                                                                    </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <select class="form-control"
+                                                                                                id="sourceDatabase"
+                                                                                                name="sourceDatabase">
+                                                                                            <option value="0"></option>
+                                                                                        </select>
+                                                                                        <!-- <input type="text" id="sourceDatabase" name="sourceDatabase" class="form-control" placeholder="数据库"> -->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">
+                                                                                        表<span
+                                                                                            class="required">* </span>
+                                                                                    </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <select class="form-control"
+                                                                                                id="sourceTable"
+                                                                                                name="sourceTable">
+                                                                                            <option value="0"></option>
+                                                                                        </select>
+                                                                                        <!-- <input id="sourceTable" name="sourceTable" class="form-control" style="width: 70%;" data-placeholder="选择表"/> -->
+                                                                                        <!-- <a href="javascript:void(0)" id="btnFetchSourceFields" style="margin-left: 10px;">更新缓存</a> -->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">WHERE条件 </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <input class="form-control"
+                                                                                               id="sourceWhere"
+                                                                                               name="sourceWhere"
+                                                                                               placeholder="Where条件"
+                                                                                               type="text">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">
+                                                                                        并行数<span
+                                                                                            class="required">* </span>
+                                                                                    </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <div id="spinnerMapNum">
+                                                                                            <div class="input-group input-small">
+                                                                                                <input class="spinner-input form-control"
+                                                                                                       data-max="200"
+                                                                                                       data-min="1"
+                                                                                                       data-rule="quantity"
+                                                                                                       id="runMapNum"
+                                                                                                       maxlength="3"
+                                                                                                       name="runMapNum"
+                                                                                                       type="text"
+                                                                                                       value="1">
+                                                                                                <div class="input-group-addon">
+                                                                                                    <a class="btn spinner-up btn-xs blue"
+                                                                                                       data-spin="up"
+                                                                                                       href="javascript:;">
+                                                                                                        <i class="fa fa-angle-up"></i>
+                                                                                                    </a> <a
+                                                                                                        class="btn spinner-down btn-xs blue"
+                                                                                                        data-spin="down"
+                                                                                                        href="javascript:;">
+                                                                                                    <i class="fa fa-angle-down"></i>
+                                                                                                </a>
+                                                                                                    <a class="btn btn-xs"
+                                                                                                       data-html="true"
+                                                                                                       data-toggle="tooltip"
+                                                                                                       href="javascript:void(0)"
+                                                                                                       title="<pre>表中有整数类型的主键或者索引列时，可增加并行数</pre>"><i
+                                                                                                            class="fa icon-info"></i></a>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">
+                                                                                        抽取方式<span
+                                                                                            class="required">* </span>
+                                                                                    </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <label> <input checked="checked"
+                                                                                                       name="extractType"
+                                                                                                       type="radio"
+                                                                                                       value="1">标准
+                                                                                        </label>
+                                                                                        <!--
+                                                                                                                              -->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <h4 class="form-section">表字段</h4>
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <table class="table table-hover table-light"
+                                                                                       id="sourceFields">
+                                                                                    <tr>
+                                                                                        <th>字段名</th>
+                                                                                        <th>类型</th>
+                                                                                        <th>是否抽取</th>
+                                                                                        <th>是否加密</th>
+                                                                                        <!-- <th>是否清洗
+                                                                                                                        <a href="#" title="将以下字符 \r \t \n \1 （分别对应 mac换行，tab，linux换行，hive默认字段分割符）替换成空格"
+                                                                                                                        class="easyui-tooltip icon-tip" style="display: inline-block; width: 16px; height: 16px; margin-left: 1px;"></a>
+                                                                                                                        </th>-->
+                                                                                        <th>移动 <a class="easyui-tooltip icon-help"
+                                                                                                  data-options="position:'right'"
+                                                                                                  href="#"
+                                                                                                  style="display: inline-block; width: 16px; height: 16px; margin-left: 1px;"
+                                                                                                  title="清洗规则：将以下字符 \r \t \n \1 （分别对应 mac换行，tab，linux换行，hive默认字段分割符）替换成空格"></a>
+                                                                                        </th>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="tab-pane" id="tab_15_2">
+                                                                        <div class="row">
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">
+                                                                                        目的地类型<span
+                                                                                            class="required">* </span></label>
+                                                                                    <div class="col-md-9">
+                                                                                        <!-- <input type="text" id="targetServerType" name="targetServerType" style="width: 50%" class="form-control" placeholder="目的地类型"> -->
+                                                                                        <select class="form-control"
+                                                                                                id="targetServerType"
+                                                                                                name="targetServerType"
+                                                                                                style="width: 100%;">
+                                                                                            <option value="0"></option>
+                                                                                            <option disabled="disabled"
+                                                                                                    value="1">
+                                                                                                MYSQL
+                                                                                            </option>
+                                                                                            <option value="2">HIVE
+                                                                                            </option>
+                                                                                        </select>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">
+                                                                                        服务器别名<span
+                                                                                            class="required">* </span>
+                                                                                    </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <select class="form-control"
+                                                                                                id="targetConfig"
+                                                                                                name="targetConfig"
+                                                                                                style="width: 100%;">
+                                                                                            <option value="0"></option>
+                                                                                        </select>
+                                                                                        <!-- <input id="targetConfig" name="targetConfig" class="form-control" data-placeholder="选择服务器" /> -->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">
+                                                                                        数据库<span
+                                                                                            class="required">* </span>
+                                                                                    </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <select class="form-control"
+                                                                                                id="targetDatabase"
+                                                                                                name="targetDatabase"
+                                                                                                style="width: 100%;">
+                                                                                            <option value="0"></option>
+                                                                                        </select>
+                                                                                        <!-- <input type="text" id="targetDatabase" name="targetDatabase" class="form-control" placeholder="数据库"> -->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">
+                                                                                        表<span
+                                                                                            class="required">* </span>
+                                                                                    </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <select class="form-control"
+                                                                                                id="targetTable"
+                                                                                                name="targetTable"
+                                                                                                style="width: 100%;">
+                                                                                            <option value="0"></option>
+                                                                                        </select>
+                                                                                        <!-- <input id="targetTable" name="targetTable" class="form-control" style="width: 70%;" data-placeholder="选择表" /> -->
+                                                                                        <!-- <a href="javascript:void(0)" id="btnFetchTargetFields" style="margin-left: 10px;">更新缓存</a> -->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                        </div>
+                                                                        <div class="row" id="targetPartitionDiv">
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">分区字段 </span></label>
+                                                                                    <div class="col-md-9">
+                                                                                        <input class="form-control"
+                                                                                               id="targetPartition"
+                                                                                               name="targetPartition"
+                                                                                               placeholder="分区字段或者分区条件"
+                                                                                               type="text">
+                                                                                        <span class="form-tip">注:支持[cal_dt=${dateSuffix}]</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">
+                                                                                        压缩<span
+                                                                                            class="required">* </span>
+                                                                                    </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <label> <input class="mini-radio"
+                                                                                                       name="compress"
+                                                                                                       type="radio"
+                                                                                                       value="1">使用
+                                                                                        </label> <label> <input
+                                                                                            checked="checked"
+                                                                                            class="mini-radio"
+                                                                                            name="compress" type="radio"
+                                                                                            value="0">不使用
+                                                                                    </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">hive设置 </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <textarea class="form-control"
+                                                                                                  id="hiveArgs" name="hiveArgs"
+                                                                                                  placeholder="hive个性化自定义设置"
+                                                                                                  rows="3"></textarea>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                        </div>
+                                                                        <div class="row" id="targetWhereDiv">
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group"
+                                                                                     id="targetWhereDiv">
+                                                                                    <label class="control-label col-md-3">WHERE条件 </span></label>
+                                                                                    <div class="col-md-9">
+                                                                                        <input class="form-control"
+                                                                                               id="targetWhere"
+                                                                                               name="targetWhere"
+                                                                                               placeholder="默认按where条件去删除，为空不会清空目标表"
+                                                                                               type="text">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">导入类型 </label>
+                                                                                    <div class="col-md-9">
+                                                                                        <label> <input checked="checked"
+                                                                                                       class="mini-radio"
+                                                                                                       name="loadType"
+                                                                                                       type="radio"
+                                                                                                       value="1">批量
+                                                                                        </label> <label> <input
+                                                                                            class="mini-radio"
+                                                                                            name="loadType"
+                                                                                            type="radio" value="2">分批
+                                                                                    </label> <label> <a
+                                                                                            class="btn btn-xs default tooltips"
+                                                                                            href="javascript:void(0)"
+                                                                                            title="批量导入,速度快,但容易影响目标库;分批导入,主要考虑尽量减少对目标库影响">
+                                                                                        <i class="fa icon-info"></i>
+                                                                                    </a>
+                                                                                    </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                        </div>
+                                                                        <div class="row" id="targetPostSqlDiv">
+                                                                            <div class="col-md-5">
+                                                                                <div class="form-group">
+                                                                                    <label class="control-label col-md-3">Post
+                                                                                        Sql </span></label>
+                                                                                    <div class="col-md-9">
+                                                                                        <textarea class="form-control"
+                                                                                                  id="postSql" name="postSql"
+                                                                                                  placeholder="抽取结束后在目的地执行,默认为空"
+                                                                                                  rows="3"></textarea>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <!--/span-->
+                                                                        </div>
+                                                                        <h4 class="form-section">表字段</h4>
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <table class="table table-hover table-light"
+                                                                                       id="targetFields">
+                                                                                    <tr>
+                                                                                        <th>字段名</th>
+                                                                                        <th>类型</th>
+                                                                                        <th>是否导入</th>
+                                                                                        <!-- <th>是否清洗
+                                                                                                                        <a href="#" title="将以下字符 \r \t \n \1 （分别对应 mac换行，tab，linux换行，hive默认字段分割符）替换成空格"
+                                                                                                                        class="easyui-tooltip icon-tip" style="display: inline-block; width: 16px; height: 16px; margin-left: 1px;"></a>
+                                                                                                                        </th>-->
+                                                                                        <th>移动 <a class="easyui-tooltip icon-help"
+                                                                                                  data-options="position:'right'"
+                                                                                                  href="#"
+                                                                                                  style="display: inline-block; width: 16px; height: 16px; margin-left: 1px;"
+                                                                                                  title="清洗规则：将以下字符 \r \t \n \1 （分别对应 mac换行，tab，linux换行，hive默认字段分割符）替换成空格"></a>
+                                                                                        </th>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <!-- END FORM-->
+                                        </div>
+                                    </div>
+
+                                    <div th:replace="common :: common-schedule"></div>
+
+
+                                    <div class="tab-pane" id="tab_3">
+                                        <!-- BEGIN SAMPLE TABLE PORTLET-->
+                                        <div class="portlet light">
+                                            <div class="portlet-body">
+                                                <div class="table-responsive">
+                                                    <table class="table" id="tblHistory">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>更新时间</th>
+                                                            <th>操作人</th>
+                                                        </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- END SAMPLE TABLE PORTLET-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade modal-scroll" data-backdrop="static" data-keyboard="false" data-width="900px"
+                 id="compareColumns">
+                <div class="modal-header">
+                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button"></button>
+                    <h3 class="modal-title">抽取字段比对</h3>
+                </div>
+                <div class="modal-body" style="overflow: auto;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>源表</h4>
+                            <table class="table table-hover table-light" id="sourceCompareColumns">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th nowrap="nowrap">字段名</th>
+                                    <th nowrap="nowrap">字段类型</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>目标表</h4>
+                            <table class="table table-hover table-light" id="targetCompareColumns">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th nowrap="nowrap">字段名</th>
+                                    <th nowrap="nowrap">字段类型</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" type="button">关闭</button>
+                </div>
+            </div>
+            <!-- loading -->
+            <div class="modal fade" data-backdrop="static" data-keyboard="false" id="loading">
+                <div class="modal-body">
+                    <p class="text-center">请稍候...</p>
+                </div>
+            </div>
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+<script src="/assets/page/scripts/workshop/task-scheduler-201b2876ed.min.js" type="text/javascript"></script>
+<script src="/assets/page/scripts/workshop/task-add-extract-5e90941638.min.js" type="text/javascript"></script>
+<!-- END BODY -->
+<script th:inline="javascript">
+    jQuery(document).ready(function() {
+        //页面加载的时候的进度条
+        $("#divLoading").ajaxStart(function() {
+            $(this).show()
+        }).ajaxSuccess(function() {
+            $(this).hide()
+        }).ajaxError(function() {
+            $(this).html("<font color='red'>服务器加载数据失败！</font>")
+        });
+
+        TaskScheduler.init({
+            contextPath: '',
+            userId: [[${user.id}]]
+        });
+        TaskAdd.init({
+            contextPath: '',
+            userId: [[${user.id}]],
+            taskScheduler: TaskScheduler
+        });
+
+        $(".downloadInNewWindow").click(function(e) {
+            e.preventDefault();
+            window.open($(this).attr('href'));
+        });
+
+        window.onbeforeunload = function() {
+            return '请确认保存后离开页面 ';
+        };
+    });
+
+</script>

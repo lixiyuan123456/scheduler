@@ -1,0 +1,690 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+<title th:fragment="html-title">苍鹰-工单审批</title>
+<style>
+#kafkaOffsetRegistryDatatable td:nth-of-type(4) {
+  white-space: normal;
+  min-width: 300px;
+  word-break: break-all;
+  word-wrap:break-word;
+  text-align: left;
+}
+</style>
+</head>
+<!-- END HEAD -->
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<div class="page-container">
+<div class="page-content">
+<div class="container">
+<!-- BEGIN PAGE BREADCRUMB -->
+<ul class="page-breadcrumb breadcrumb">
+  <li>
+    <a href="/goshawk/index">苍鹰</a>
+  </li>
+  <li class="active">
+    <i class="fa fa-circle"></i>
+    <span>工单审批</span>
+  </li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN PANEL CONTAINER -->
+<!-- BEGIN BUSINESS CONTENT -->
+<div class="portlet light bordered">
+  <div class="portlet-title">
+    <div class="caption font-green-sharp"><span>工单审批</span></div>
+  </div>
+  <div class="portlet-body">
+    <div class="row">
+      <div class="col-xs-2">
+        <ul class="nav nav-pills nav-stacked">
+          <li class="active"><a href="#kafkaTopicTab" data-toggle="pill">Kafka主题工单</a></li>
+          <li><a href="#kafkaOffsetRegistryTab" data-toggle="pill">Kafka偏移量登记</a></li>
+          <li><a href="#HiveTab" data-toggle="pill">Hive工单</a></li>
+        </ul>
+      </div>
+      <div class="col-xs-10 center-block">
+        <div class="tab-content">
+          <div class="tab-pane fade in active" id="kafkaTopicTab">
+            <div class="table-responsive">
+              <table class="table table-hover table-advance table-striped" id="kafkaTopicApplicationDatatable" style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Topic名称</th>
+                    <th>每日数据量</th>
+                    <th>用途</th>
+                    <th>申请时间</th>
+                    <th>申请人</th>
+                    <th>申请人部门</th>
+                    <th>状态</th>
+                    <th>审批意见</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <!--  -->
+          <div class="tab-pane fade" id="HiveTab">
+            <div class="table-responsive">
+              <table class="table table-hover table-advance table-striped" id="hiveTableAccessApplicationDatatable" style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>库名</th>
+                    <th>表名</th>
+                    <th>权限</th>
+                    <th>用途</th>
+                    <th>申请时间</th>
+                    <th>申请人</th>
+                    <th>申请人部门</th>
+                    <th>状态</th>
+                    <th>审批意见</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Kafka偏移量工单 -->
+          <div class="tab-pane fade" id="kafkaOffsetRegistryTab">
+            <div class="table-responsive">
+              <table class="table table-hover table-advance table-bordered" id="kafkaOffsetRegistryDatatable" style="width: 100%;">
+                <thead>
+                  <tr>
+                    <th>Id</th>
+                    <th>集群</th>
+                    <th>GroupId</th>
+                    <th>Topic</th>
+                    <th>告警阈值</th>
+                    <th>用途</th>
+                    <th>OA</th>
+                    <th>审批意见</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- TAB END -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END BUSINESS CONTENT -->
+<!-- END PANEL CONTAINER -->
+</div>
+</div>
+</div>
+
+
+
+<!-- 审批 -->
+<div id="assessKafkaTopicApplicationModal" class="modal fade" data-backdrop="static" data-keyboard="false" style="max-height: 80%;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+    <h4 class="modal-title">审批</h4>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-xs-12">
+        <form id="assessKafkaTopicApplicationForm">
+          <div class="form-group">
+            <label class="control-label">ID</label>
+            <input type="text" class="form-control" name="id" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">Topic名称</label>
+            <input type="text" class="form-control" name="topicName" required>
+          </div>
+          <div class="form-group">
+            <label class="control-label">分区数</label>
+            <input type="text" class="form-control" name="partitions" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">用途</label>
+            <textarea class="form-control" name="purpose" readonly></textarea>
+          </div>
+          <div class="form-group">
+            <label class="control-label">申请人</label>
+            <input type="text" class="form-control" name="creatorName" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">申请人部门</label>
+            <input type="text" class="form-control" name="creatorDeptName" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">审批意见</label>
+            <textarea class="form-control" rows="3" name="assessComment"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" id="assessKafkaTopicApplicationModalRejectBtn">拒绝</button>
+    <button type="button" class="btn btn-success" id="assessKafkaTopicApplicationModalAcceptBtn">通过</button>
+  </div>
+</div>
+
+
+
+<!-- 审批 -->
+<div id="assessHiveTableAccessApplicationModal" class="modal fade" data-backdrop="static" data-keyboard="false" style="max-height: 80%;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+    <h4 class="modal-title">审批</h4>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-xs-12">
+        <form id="assessHiveTableAccessApplicationForm">
+          <div class="form-group">
+            <label class="control-label">ID</label>
+            <input type="text" class="form-control" name="id" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">库名</label>
+            <input type="text" class="form-control" name="dbName" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">表名</label>
+            <input type="text" class="form-control" name="tableName" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">权限</label>
+            <input type="text" class="form-control" name="permission" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">用途</label>
+            <textarea class="form-control" name="purpose" readonly></textarea>
+          </div>
+          <div class="form-group">
+            <label class="control-label">申请人</label>
+            <input type="text" class="form-control" name="creatorName" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">申请人部门</label>
+            <input type="text" class="form-control" name="creatorDeptName" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">审批意见</label>
+            <textarea class="form-control" rows="3" name="assessComment"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" id="assessHiveTableAccessApplicationModalRejectBtn">拒绝</button>
+    <button type="button" class="btn btn-success" id="assessHiveTableAccessApplicationModalAcceptBtn">通过</button>
+  </div>
+</div>
+
+
+<!-- 审批 -->
+<div id="assessKafkaOffsetRegistryApplicationModal" class="modal fade" data-backdrop="static" data-keyboard="false" style="max-height: 80%;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+    <h4 class="modal-title">审批</h4>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-xs-12">
+        <form id="assessKafkaOffsetRegistryApplicationForm">
+          <div class="form-group">
+            <label class="control-label">ID</label>
+            <input type="text" class="form-control" name="id" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">集群</label>
+            <!-- <input type="text" class="form-control" name="clusterAlias" required> -->
+            <select class="form-control selectpicker show-tick" data-live-search="true" data-size="5" name="cluster" required></select>
+          </div>
+          <div class="form-group">
+            <label class="control-label">GroupId</label>
+            <input type="text" class="form-control" name="consumer" required>
+          </div>
+          <div class="form-group">
+            <label class="control-label">Topic</label>
+            <input type="text" class="form-control" name="topic" required>
+          </div>
+          <div class="form-group">
+            <label class="control-label">告警阈值</label>
+            <input type="text" class="form-control" name="threshold" required>
+          </div>
+          <div class="form-group">
+            <label class="control-label">用途</label>
+            <textarea class="form-control" name="description" readonly></textarea>
+          </div>
+          <div class="form-group">
+            <label class="control-label">申请人</label>
+            <input type="text" class="form-control" name="applicantName" readonly>
+          </div>
+          <div class="form-group">
+            <label class="control-label">审批意见</label>
+            <textarea class="form-control" rows="3" name="assessComment"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div id="beforeKafkaOffsetRegistryAssessDiv" style="display: none;">
+      <button type="button" class="btn btn-danger" id="assessKafkaOffsetRegistryApplicationModalRejectBtn">拒绝</button>
+      <button type="button" class="btn btn-success" id="assessKafkaOffsetRegistryApplicationModalAcceptBtn">通过</button>
+    </div>
+    <div id="afterKafkaOffsetRegistryAssessDiv" style="display: none;">
+      <button type="button" class="btn btn-success" id="reeditKafkaOffsetRegistryApplicationModalBtn">修订</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+<script src="/assets/global/plugins/jquery-validation-1.19.0/jquery.validate.js"></script>
+<script src="/assets/global/plugins/jquery-validation-1.19.0/localization/messages_zh.js"></script>
+<script th:inline="javascript">
+function assessKafkaTopicApplication(rowIndex){
+  var row = $('#kafkaTopicApplicationDatatable').DataTable().row(rowIndex).data();
+  $('#assessKafkaTopicApplicationForm input[name="id"]').val(row.id);
+  $('#assessKafkaTopicApplicationForm input[name="topicName"]').val(row.topicName);
+  $('#assessKafkaTopicApplicationForm input[name="partitions"]').val(row.partitions);
+  $('#assessKafkaTopicApplicationForm textarea[name="purpose"]').val(row.purpose);
+  $('#assessKafkaTopicApplicationForm input[name="creatorName"]').val(row.creatorName);
+  $('#assessKafkaTopicApplicationForm input[name="creatorDeptName"]').val(row.creatorDeptName);
+  $('#assessKafkaTopicApplicationForm textarea[name="assessComment"]').val(row.assessComment);
+  $('#assessKafkaTopicApplicationModal').modal();
+}
+function assessHiveTableAccessApplication(rowIndex){
+  var row = $('#hiveTableAccessApplicationDatatable').DataTable().row(rowIndex).data();
+  $('#assessHiveTableAccessApplicationForm input[name="id"]').val(row.id);
+  $('#assessHiveTableAccessApplicationForm input[name="dbName"]').val(row.dbName);
+  $('#assessHiveTableAccessApplicationForm input[name="tableName"]').val(row.tableName);
+  $('#assessHiveTableAccessApplicationForm input[name="permission"]').val(row.permission == 'R'?'可读':'可读写');
+  $('#assessHiveTableAccessApplicationForm textarea[name="purpose"]').val(row.purpose);
+  $('#assessHiveTableAccessApplicationForm input[name="creatorName"]').val(row.creatorName);
+  $('#assessHiveTableAccessApplicationForm input[name="creatorDeptName"]').val(row.creatorDeptName);
+  $('#assessHiveTableAccessApplicationForm textarea[name="assessComment"]').val(row.assessComment);
+  
+  $('#assessHiveTableAccessApplicationModal').modal();
+}
+
+
+function assessKafkaTopicApplicationByClick(op){
+  $.post('/goshawk/workorder/assess-kafka-topic-application.do',{
+    id: $('#assessKafkaTopicApplicationForm input[name="id"]').val(),
+    topicName: $('#assessKafkaTopicApplicationForm input[name="topicName"]').val(),
+    assessComment: $('#assessKafkaTopicApplicationForm textarea[name="assessComment"]').val(),
+    status: op
+  },function(resp){
+    if(resp.status != 'ok'){
+      toastr.error(resp.message, '错误');
+      return false;
+    }
+    $('#kafkaTopicApplicationDatatable').DataTable().ajax.reload(null,false);
+    $('#assessKafkaTopicApplicationModal').modal('hide');
+    toastr.success('审批成功', '成功');
+  })
+}
+function assessHiveTableAccessApplicationByClick(op){
+  $.post('/goshawk/workorder/assess-hive-table-access-application.do',{
+    id: $('#assessHiveTableAccessApplicationForm input[name="id"]').val(),
+    assessComment: $('#assessHiveTableAccessApplicationForm textarea[name="assessComment"]').val(),
+    status: op
+  },function(resp){
+    if(resp.status != 'ok'){
+      toastr.error(resp.message, '错误');
+      return false;
+    }
+    $('#hiveTableAccessApplicationDatatable').DataTable().ajax.reload(null,false);
+    $('#assessHiveTableAccessApplicationModal').modal('hide');
+    toastr.success('审批成功', '成功');
+  })
+}
+
+
+function loadKafkaTopicApplicationDatatable(){
+  $('#kafkaTopicApplicationDatatable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: false,
+    lengthChange: false,
+    ajax: {
+      url: '/goshawk/workorder/kafka-topic-application/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+      }
+    },
+    columns: [
+      {data: 'id'},
+      {data: 'topicName'},
+      {data: 'dailyDataCapacity'},
+      {data: 'purpose'},
+      {data: 'createTime'},
+      {data: 'creatorName'},
+      {data: 'creatorDeptName'},
+      {
+        data: null,
+        class: 'success',
+        render: function(data, type, full, meta){
+          if(data.status == 'WAITING_ASSESS'){
+            return '等待审核';
+          }
+          if(data.status == 'PASS'){
+            return '审核通过';
+          }
+          if(data.status == 'NOT_PASS'){
+            return '审核拒绝';
+          }
+        }
+      },
+      {data: 'assessComment'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          var html = '';
+          if(data.status == 'WAITING_ASSESS'){
+            html += '<button type="button" class="btn btn-primary" onclick="assessKafkaTopicApplication('+meta.row+');">审批</button>';
+          }
+          return html;
+        }
+      },
+    ]
+  })
+}
+
+
+function loadHiveTableAccessApplicationDatatable(){
+  $('#hiveTableAccessApplicationDatatable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: false,
+    lengthChange: false,
+    ajax: {
+      url: '/goshawk/workorder/hive-table-access-application/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+      }
+    },
+    columns: [
+      {data: 'id'},
+      {data: 'dbName'},
+      {data: 'tableName'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          if(data.permission == 'R'){
+            return '可读';
+          }
+          if(data.permission == 'RW'){
+            return '可读写';
+          }
+          return '';
+        }
+      },
+      {data: 'purpose'},
+      {data: 'createTime'},
+      {data: 'creatorName'},
+      {data: 'creatorDeptName'},
+      {
+        data: null,
+        class: 'success',
+        render: function(data, type, full, meta){
+          if(data.status == 'WAITING_ASSESS'){
+            return '等待审核';
+          }
+          if(data.status == 'PASS'){
+            return '审核通过';
+          }
+          if(data.status == 'NOT_PASS'){
+            return '审核拒绝';
+          }
+        }
+      },
+      {data: 'assessComment'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          var html = '';
+          if(data.status == 'WAITING_ASSESS'){
+            html += '<button type="button" class="btn btn-primary" onclick="assessHiveTableAccessApplication('+meta.row+');">审批</button>';
+          }
+          return html;
+        }
+      },
+    ]
+  })
+}
+
+function loadingKafkaOffsetRegistryApplications(){
+  $('#kafkaOffsetRegistryDatatable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: false,
+    lengthChange: false,
+    autoWidth: false,
+    ajax: {
+      url: '/goshawk/workorder/kafka-offset/registry/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+      }
+    },
+    columns: [
+      {data: 'id'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          if(data.cluster == '0'){
+            return 'zz-Kafka-1.0';
+          }
+          if(data.cluster == '1'){
+            return '58-Kafak-0.8';
+          }
+          if(data.cluster == '2'){
+            return '58-Kafak-1.0';
+          }
+        }
+      },
+      {data: 'consumer'},
+      {
+        data: 'topic',
+        width: '150'
+      },
+      {data: 'threshold'},
+      {data: 'description'},
+      {data: 'applicantName'},
+      {data: 'assessComment'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          var html ='';
+          if(data.status == 0){
+            html += '<button type="button" class="btn btn-primary" onclick="assessKafkaOffsetRegistryApplicationByClick('+meta.row+')">审批</button>';
+          }
+          else if(data.status == 1){
+            html += '<button type="button" class="btn btn-primary" onclick="assessKafkaOffsetRegistryApplicationByClick('+meta.row+')">编辑</button>';
+            html += '<button type="button" class="btn btn-warning" onclick="deleteKafkaOffsetRegistryApplication('+data.id+')">删除</button>';
+          }
+          return html;
+        }
+      },
+    ]
+  })
+}
+
+function assessKafkaOffsetRegistryApplicationByClick(rowIndex){
+  var row = $('#kafkaOffsetRegistryDatatable').DataTable().row(rowIndex).data();
+  $('#assessKafkaOffsetRegistryApplicationForm input[name="id"]').val(row.id);
+  var cluster;
+  if(row.cluster == '0'){
+    cluster = 'zz-Kafka-1.0';
+  }
+  if(row.cluster == '1'){
+    cluster = '58-Kafak-0.8';
+  }
+  if(row.cluster == '2'){
+    cluster = '58-Kafak-1.0';
+  }
+  //$('#assessKafkaOffsetRegistryApplicationForm input[name="clusterAlias"]').val(cluster);
+  $('#assessKafkaOffsetRegistryApplicationForm select[name="cluster"]').selectpicker('val',row.cluster);
+  $('.selectpicker').selectpicker('refresh');
+  $('#assessKafkaOffsetRegistryApplicationForm input[name="consumer"]').val(row.consumer);
+  $('#assessKafkaOffsetRegistryApplicationForm input[name="topic"]').val(row.topic);
+  $('#assessKafkaOffsetRegistryApplicationForm input[name="threshold"]').val(row.threshold);
+  $('#assessKafkaOffsetRegistryApplicationForm textarea[name="description"]').val(row.description);
+  $('#assessKafkaOffsetRegistryApplicationForm input[name="applicantName"]').val(row.applicantName);
+  $('#assessKafkaOffsetRegistryApplicationForm textarea[name="assessComment"]').val(row.assessComment);
+  if(row.status == 0){
+    $('#beforeKafkaOffsetRegistryAssessDiv').show();
+    $('#afterKafkaOffsetRegistryAssessDiv').hide();
+  }
+  else if(row.status == 1){
+    $('#beforeKafkaOffsetRegistryAssessDiv').hide();
+    $('#afterKafkaOffsetRegistryAssessDiv').show();
+  }
+  $('#assessKafkaOffsetRegistryApplicationModal').modal();
+}
+
+function loadingKafkaClusters(){
+  $.get('/goshawk/workorder/kafka-offset/registry/kafka-clusters.do',function(resp){
+    if(resp.status == 'error'){
+      toastr.error(resp.message, '错误');
+      return false;
+    }
+    var options;
+    $.each(resp.data,function(i,e){
+      options += '<option value="'+e.code+'">'+e.name+'</option>';
+    })
+    $('#assessKafkaOffsetRegistryApplicationForm select[name="cluster"]').append(options);
+    $('.selectpicker').selectpicker('refresh');
+  })
+}
+
+function assessKafkaOffsetRegistryApplication(op){
+  var status = op == 'pass' ? 1 : 2;
+  $('#assessKafkaOffsetRegistryApplicationForm').validate();
+  if(!$('#assessKafkaOffsetRegistryApplicationForm').valid()){
+    return false;
+  }
+  var form = $('#assessKafkaOffsetRegistryApplicationForm').serialize();
+  form += '&status=' + status;
+  $.post('/goshawk/workorder/kafka-offset/registry/assess.do',form,function(resp){
+    if(resp.status == 'error'){
+      toastr.error(resp.message, '错误');
+      return false;
+    }
+    $('#kafkaOffsetRegistryDatatable').DataTable().ajax.reload(null,false);
+    $('#assessKafkaOffsetRegistryApplicationModal').modal('hide');
+    toastr.success('审批成功', '成功');
+  })
+}
+
+function deleteKafkaOffsetRegistryApplication(id){
+  $.post('/goshawk/workorder/kafka-offset/registry/delete.do',{id:id},function(resp){
+    if(resp.status == 'error'){
+      toastr.error(resp.message, '错误');
+      return false;
+    }
+    $('#kafkaOffsetRegistryDatatable').DataTable().ajax.reload(null,false);
+    $('#assessKafkaOffsetRegistryApplicationModal').modal('hide');
+    toastr.success('删除成功', '成功');
+  })
+}
+
+//JQuery
+$(function(){
+  loadKafkaTopicApplicationDatatable();
+  loadHiveTableAccessApplicationDatatable();
+  loadingKafkaOffsetRegistryApplications();
+  loadingKafkaClusters();
+  //点击审批KafkaTopic拒绝按钮
+  $('#assessKafkaTopicApplicationModalRejectBtn').click(function(){
+    $('#assessKafkaTopicApplicationForm').validate();
+    if(!$('#assessKafkaTopicApplicationForm').valid()){
+      return false;
+    }
+    assessKafkaTopicApplicationByClick(2);
+  })
+  //点击审批KafkaTopic批准按钮
+  $('#assessKafkaTopicApplicationModalAcceptBtn').click(function(){
+    $('#assessKafkaTopicApplicationForm').validate();
+    if(!$('#assessKafkaTopicApplicationForm').valid()){
+      return false;
+    }
+    assessKafkaTopicApplicationByClick(1);
+  })
+  //HiveTableAccessApplication拒绝
+  $('#assessHiveTableAccessApplicationModalRejectBtn').click(function(){
+    $('#assessHiveTableAccessApplicationForm').validate();
+    if(!$('#assessHiveTableAccessApplicationForm').valid()){
+      return false;
+    }
+    assessHiveTableAccessApplicationByClick(2);
+  })
+  //HiveTableAccessApplication批准
+  $('#assessHiveTableAccessApplicationModalAcceptBtn').click(function(){
+    $('#assessHiveTableAccessApplicationForm').validate();
+    if(!$('#assessHiveTableAccessApplicationForm').valid()){
+      return false;
+    }
+    assessHiveTableAccessApplicationByClick(1);
+  })
+  
+  
+  $('#assessKafkaOffsetRegistryApplicationModalRejectBtn').click(function(){
+    assessKafkaOffsetRegistryApplication('reject');
+  })
+  $('#assessKafkaOffsetRegistryApplicationModalAcceptBtn').click(function(){
+    assessKafkaOffsetRegistryApplication('pass');
+  })
+  $('#reeditKafkaOffsetRegistryApplicationModalBtn').click(function(){
+    $('#assessKafkaOffsetRegistryApplicationForm').validate();
+    if(!$('#assessKafkaOffsetRegistryApplicationForm').valid()){
+      return false;
+    }
+    var form = $('#assessKafkaOffsetRegistryApplicationForm').serialize();
+    $.post('/goshawk/workorder/kafka-offset/registry/reedit.do',form,function(resp){
+      if(resp.status == 'error'){
+        toastr.error(resp.message, '错误');
+        return false;
+      }
+      $('#kafkaOffsetRegistryDatatable').DataTable().ajax.reload(null,false);
+      $('#assessKafkaOffsetRegistryApplicationModal').modal('hide');
+      toastr.success('修订成功', '成功');
+    })
+  })
+})
+</script>
+</html>
+
+

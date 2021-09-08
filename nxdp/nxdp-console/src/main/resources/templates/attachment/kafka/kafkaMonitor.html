@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<!--[if IE 8]>
+<html lang="en" class="ie8 no-js"> <![endif]-->
+<!--[if IE 9]>
+<html lang="en" class="ie9 no-js"> <![endif]-->
+<!--[if !IE]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+    <meta charset="utf-8">
+    <title>kafka监控</title>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="" name="description">
+    <meta content="" name="author">
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="/assets/global/css/googleapis_font.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/uniform/css/uniform.default.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css">
+    <link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css">
+    <!-- END GLOBAL MANDATORY STYLES -->
+    <!-- BEGIN PAGE LEVEL PLUGIN STYLES -->
+    <link href="/assets/page/css/info-coding-c40b75e0aa.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css" rel="stylesheet"
+          type="text/css">
+    <link href="/assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet"
+          type="text/css">
+    <link href="/assets/global/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet"
+          type="text/css">
+    <link href="/assets/global/plugins/select2/select2-3.5.1.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/select2/select2-bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="/assets/global/plugins/select2/bootstrap-select.min.css" rel="stylesheet" type="text/css">
+    <!-- END PAGE LEVEL PLUGIN STYLES -->
+    <!-- BEGIN PAGE STYLES -->
+
+    <!-- END PAGE STYLES -->
+    <!-- BEGIN THEME STYLES -->
+    <!-- DOC: To use 'rounded corners' style just load 'components-rounded.css' stylesheet instead of 'components.css' in the below style tag -->
+    <link href="/assets/global/css/components-rounded.css" id="style_components" rel="stylesheet" type="text/css">
+    <link href="/assets/global/css/plugins.css" rel="stylesheet" type="text/css">
+    <link href="/assets/layout/css/layout.css" rel="stylesheet" type="text/css">
+    <link href="/assets/layout/css/themes/default.css" id="style_color" rel="stylesheet" type="text/css">
+    <link href="/assets/layout/css/custom.css" rel="stylesheet" type="text/css">
+    <!-- END THEME STYLES -->
+    <link href="/template/favicon.ico" rel="shortcut icon">
+    <style type="text/css">
+  .select2-container .select2-selection--single {
+    height: 34px !important;
+  }
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 33px !important;
+  }
+  .page-header {
+    height: auto !important;
+  }
+  .breadcrumb {
+    padding: 10px 0 15px 0 !important;
+  }
+  
+
+    </style>
+</head>
+<!-- END HEAD -->
+<!-- BEGIN BODY -->
+<!-- DOC: Apply "page-header-menu-fixed" class to set the mega menu fixed  -->
+<!-- DOC: Apply "page-header-top-fixed" class to set the top menu fixed  -->
+<body>
+
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <style>
+    .deptJobsChart {
+      width: 100%;
+      height: 300px;
+    }
+    
+    .miniChart {
+      width: 100%;
+      height: 250px;
+    }
+
+            </style>
+
+            <!-- Page Content BEGIN -->
+            <div class="container-fluid">
+                <div class="page-content">
+
+                    <div class="portlet light bordered">
+                        <div class="portlet-title">
+                            <div class="caption font-green-sharp">
+                                <span>kafaka监控列表</span>
+                            </div>
+                            <div class="actions">
+                                <!--
+                                <button type="button" class="btn btn-circle green" >
+                                  <i class="fa fa-plus"></i> 重跑勾选
+                                </button>
+                                -->
+                                <!-- <div class="btn-group">
+                                    <button type="button" class="btn btn-circle green dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
+                                            data-delay="1000" data-close-others="true" aria-expanded="false">
+                                        <i class="fa fa-refresh"></i> 重跑操作
+                                        <i class="fa fa-angle-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu pull-right" role="menu">
+                                        <li>
+                                            <a href="javascript:void(0)" onclick="TaskList.reRunJob(1)">
+                                                <i class="fa fa-check"></i> 重跑所选Job</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0)" onclick="TaskList.reRunJob(2)">
+                                                <i class="fa fa-refresh"></i> 重跑我的所有Job</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0)" onclick="TaskList.reRunJob(8)">
+                                                <i class="fa fa-history"></i> 重跑所选Job历史</a>
+                                        </li>
+                                        <li>
+                                            <a href="/workshop/task-rerun-edit">
+                                                <i class="fa fa-cart-plus"></i> 自定义重跑 </a>
+                                        </li>
+                                        <li>
+                                            <a href="/workshop/task-rerun-list">
+                                                <i class="fa fa-search"></i> 查看历史重跑Task</a>
+                                        </li>
+                                    </ul>
+                                </div> -->
+                                <!--  <div th:replace="common :: common-shortcut"></div> -->
+                            </div>
+                        </div>
+
+                        <div class="portlet-body">
+                            <!-- search  form -->
+                            <form class="alert alert-success alert-borderless" role="form">
+                                <div class="row form-group">
+                                    <div class="col-md-3">
+                                        <label class="control-label">开始时间：</label>
+                                        <div class="input-group date">
+                                            <input class="form-control" id="startTime" readonly="readonly" th:attr="value=${startTime}"
+                                                   type="text">
+                                            <span class="input-group-btn">
+              <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+              </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="control-label">结束时间：</label>
+                                        <div class="input-group date">
+                                            <input class="form-control" id="endTime" readonly="readonly" th:attr="value=${endTime}"
+                                                   type="text">
+                                            <span class="input-group-btn">
+              <button class="btn default date-set" type="button"><i class="fa fa-calendar"></i></button>
+              </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="control-label">相关主题：</label>
+                                        <!-- <input id="selUser" class="form-control" style="width: 100%"
+                                               data-placeholder="选择主题" /> -->
+                                        <select class="selectpicker show-tick form-control" data-actions-box="true"
+                                                data-live-search="true" id="auth_name"
+                                                multiple="multiple">
+                                            <option th:attr="value=${obj[0]}" th:each="obj : ${querySelectList}"
+                                                    th:utext="${obj[1]}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="control-label">&nbsp;</label>
+                                        <span class="input-group-btn">
+                                        <button class="btn green-haze" id="searchData" onclick="queryKafkaEchartData()"
+                                                type="button">查找 &nbsp; <i
+                                                class="m-icon-swapright m-icon-white"></i></button>
+                                </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+
+                    <!-- <div class="row">
+                        <div class="col-md-6">
+                          BEGIN Portlet PORTLET
+                        <div class="portlet light">
+                          <div class="portlet-title">
+                            <div class="caption font-dark">
+                              <span class="caption-subject bold uppercase">任务运行状态</span>
+                              <span class="caption-helper">当日上线任务运行状态</span>
+                            </div>
+                            <div class="actions">
+                              <a href="javascript:void" data-value="showDPRunJobStatus:3" class="btn btn-circle btn-default btn-sm"><i class="icon-user"></i> 我的 </a>
+                              <a href="javascript:void" data-value="showDPRunJobStatus:2" class="btn btn-circle btn-default btn-sm"><i class="icon-users"></i> 部门 </a>
+                              <a href="javascript:void" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-default btn-sm"><i class="icon-globe"></i> 平台 </a>
+                              <a href="javascript:void" data-value="showDPRunJobStatus:1" class="btn btn-circle btn-icon-only btn-default fullscreen">
+                              </a>
+                            </div>
+                          </div>
+                          <div class="portlet-body">
+                              <div id="runJobStatusChart" class="CSSAnimationChart"></div>
+                          </div>
+                        </div>
+                        END PORTLET
+                        </div>
+
+                        <div class="col-md-6">
+                          BEGIN PORTLET
+                        <div class="portlet light">
+                          <div class="portlet-title">
+                            <div class="caption">
+                              <span class="caption-subject bold uppercase font-red-sunglo">任务数量统计</span>
+                              <span class="caption-helper">不同类型上线任务数量统计</span>
+                            </div>
+                            <div class="actions">
+                              <a href="javascript:void" data-value="showDPTaskTypeJobsBar:" class="btn btn-circle btn-icon-only btn-default fullscreen">
+                              </a>
+                            </div>
+                          </div>
+                          <div class="portlet-body">
+                              <div id="jobNumsByTypeChart" class="mapChart"></div>
+                          </div>
+                        </div>
+                        END PORTLET
+                        </div>
+
+                      </div>
+
+                      <div class="row">
+                      <div class="col-md-6">
+                        BEGIN PORTLET
+                        <div class="portlet light">
+                          <div class="portlet-title">
+                            <div class="caption caption-md font-red-sunglo">
+                              <i class="icon-bar-chart theme-font hide"></i>
+                              <span class="caption-subject theme-font bold uppercase">当日出错任务列表</span>
+                            </div>
+                            <div class="actions">
+                              <div class="btn-group btn-group-devided" data-toggle="buttons">
+                                <label class="btn btn-transparent grey-salsa btn-circle btn-sm active">
+                                <input type="radio" name="errorJobsRadio" data-value="showDPErrorJobs:3" class="toggle" id="option1">我的</label>
+                                <label class="btn btn-transparent grey-salsa btn-circle btn-sm">
+                                <input type="radio" name="errorJobsRadio" data-value="showDPErrorJobs:2" class="toggle" id="option2">部门</label>
+                                <label class="btn btn-transparent grey-salsa btn-circle btn-sm">
+                                <input type="radio" name="errorJobsRadio" data-value="showDPErrorJobs:1" class="toggle" id="option2">平台</label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="portlet-body">
+                            <div class="table-scrollable table-scrollable-borderless">
+                              <div style="overflow:scroll; height:300px; width: 100%;">
+                              <table id="errorJobs" class="table table-hover table-light">
+                              <thead>
+                              <tr class="uppercase">
+                                <th>
+                                                                        任务名
+                                </th>
+                                <th>
+                                                                        负责人
+                                </th>
+                                <th>
+                                                                        调度类型
+                                </th>
+                                <th>
+                                                                         执行时间
+                                </th>
+                              </tr>
+                              </thead>
+                              </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        END PORTLET
+                      </div>
+
+                      <div class="col-md-6">
+                        BEGIN PORTLET
+                        <div class="portlet light">
+                          <div class="portlet-title">
+                            <div class="caption caption-md font-red-sunglo">
+                              <i class="icon-bar-chart theme-font hide"></i>
+                              <span class="caption-subject theme-font bold uppercase">用户上线任务排名</span>
+                              <span class="caption-helper hide"></span>
+                            </div>
+                            <div class="actions">
+                              <div class="btn-group btn-group-devided" data-toggle="buttons">
+                                <label class="btn btn-transparent grey-salsa btn-circle btn-sm active">
+                                <input type="radio" name="userJobsRank" data-value="showDPUserJobsRank:2" class="toggle" id="option1">部门</label>
+                                <label class="btn btn-transparent grey-salsa btn-circle btn-sm">
+                                <input type="radio" name="userJobsRank" data-value="showDPUserJobsRank:1" class="toggle" id="option2">平台</label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="portlet-body">
+                            <div class="table-scrollable table-scrollable-borderless">
+                              <div style="overflow:scroll; height:300px; width: 100%;">
+                              <table id="userJobsRank" class="table table-hover table-light">
+                              <thead>
+                              <tr class="uppercase">
+                                <th>
+                                                                        用户名
+                                </th>
+                                <th>
+                                                                       所属部门
+                                </th>
+                                <th>
+                                                                        任务数
+                                </th>
+                                <th>
+                                                                        排名
+                                </th>
+                              </tr>
+                              </thead>
+                              </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        END PORTLET
+                      </div>
+                    </div> -->
+
+                    <div id="kafka_echart">
+                        <!-- <div class="row">
+                          <div class="col-md-12">
+                            BEGIN PORTLET
+                          <div class="portlet light">
+                            <div class="portlet-title">
+                              <div class="caption">
+                                <span class="caption-subject bold uppercase font-red-sunglo">调度任务统计数据</span>
+                                <span class="caption-helper">每日调度数量统计</span>
+                              </div>
+                              <div class="actions">
+                                <a href="javascript:void" data-value="showDPSchedulerSummary:" class="btn btn-circle btn-icon-only btn-default fullscreen">
+                                </a>
+                              </div>
+                            </div>
+                            <div class="portlet-body">
+                                <div id="schedulerSummaryChart" class="deptJobsChart"></div>
+                            </div>
+                          </div>
+                          END PORTLET
+                          </div>
+                        </div> -->
+                    </div>
+                    <!-- <div class="row">
+                      <div class="col-md-6">
+                        BEGIN Portlet PORTLET
+                      <div class="portlet light">
+                        <div class="portlet-title">
+                          <div class="caption">
+                            <span class="caption-subject bold uppercase font-red-sunglo">任务类型分布图</span>
+                            <span class="caption-helper">不同上线任务类型数量分布</span>
+                          </div>
+                          <div class="actions">
+                            <a href="javascript:void" data-value="showDPTaskTypeRadar:" class="btn btn-circle btn-icon-only btn-default fullscreen">
+                            </a>
+                          </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div id="jobRadarChart" class="mapChart"></div>
+                        </div>
+                      </div>
+                      END PORTLET
+                      </div>
+
+                      <div class="col-md-6">
+                        BEGIN PORTLET
+                      <div class="portlet light">
+                        <div class="portlet-title">
+                          <div class="caption">
+                            <span class="caption-subject bold uppercase font-red-sunglo">用户统计数据</span>
+                            <span class="caption-helper">每日用户统计信息</span>
+                          </div>
+                          <div class="actions">
+                            <a href="javascript:void" data-value="showDPUserSummary:1" class="btn btn-circle btn-icon-only btn-default fullscreen">
+                            </a>
+                          </div>
+                        </div>
+                        <div class="portlet-body">
+                            <div id="userSummaryChart" class="mapChart"></div>
+                        </div>
+                      </div>
+                      END PORTLET
+                      </div>
+                    </div> -->
+
+                </div>
+            </div>
+
+            <hr/>
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+
+
+<!-- BEGIN JAVASCRIPTS (Load javascripts at bottom, this will reduce page load time) -->
+<!-- BEGIN CORE PLUGINS -->
+<!--[if lt IE 9]>
+<script src="/assets/global/plugins/respond.min.js"></script>
+<script src="/assets/global/plugins/excanvas.min.js"></script>
+<![endif]-->
+<script src="/assets/global/plugins/jquery.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-migrate.min.js" type="text/javascript"></script>
+<!-- IMPORTANT! Load jquery-ui.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
+<script src="/assets/global/plugins/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js"
+        type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/jquery.cokie.min.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
+<script src="/assets/global/scripts/underscore-min.js"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+<script src="/assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
+<script src="/assets/global/plugins/messager/bootbox.js"></script>
+<script src="/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"
+        type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"
+        type="text/javascript"></script>
+<script src="/assets/global/plugins/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"
+        type="text/javascript"></script>
+<script src="/assets/global/plugins/select2/select2-3.5.1.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/select2/bootstrap-select.min.js" type="text/javascript"></script>
+<!-- END CORE PLUGINS -->
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+<script src="/assets/global/plugins/amcharts/amcharts.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/amcharts/serial.js" type="text/javascript"></script>
+<script src="/assets/global/plugins/amcharts/themes/light.js" type="text/javascript"></script>
+<!-- <script src="/assets/page/scripts/bakery.min.js" type="text/javascript"></script> -->
+<script src="/assets/global/plugins/echarts/esl.js" type="text/javascript"></script>
+<script src="/assets/global/scripts/Echarts.js" type="text/javascript"></script>
+<!-- END PAGE LEVEL PLUGINS -->
+<!-- BEGIN PAGE LEVEL SCRIPTS -->
+<script src="/assets/global/scripts/metronic.js" type="text/javascript"></script>
+<script src="/assets/global/scripts/custom.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/layout.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/quick-sidebar.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/demo.js" type="text/javascript"></script>
+<script src="/assets/layout/scripts/user-message.js" type="text/javascript"></script>
+<!-- END PAGE LEVEL SCRIPTS -->
+<script>
+jQuery(document).ready(function() {    
+   Metronic.init(); // init metronic core componets
+   Layout.init(); // init layout
+   Demo.init(); // init demo(theme settings page)
+   QuickSidebar.init(); // init quick sidebar
+   UserMessage.init({
+          contextPath: ''
+   });
+   
+   //全局的ajax访问，处理ajax清求时session超时
+   $.ajaxSetup({
+       	contentType:"application/x-www-form-urlencoded;charset=utf-8",
+       	error: function(jqXHR, textStatus, errorThrown){  
+       		var message;
+            switch (jqXHR.status){
+                case(500):  
+                    message = "服务器系统内部错误";  
+                    break;  
+                case(401):  
+                    message = "未登录";  
+                    break;  
+                case(403):  
+                    message = "无权限执行此操作";  
+                    break;  
+                case(408):  
+                    message = "请求超时";  
+                    break;  
+                default:  
+                    message = "未知错误";
+            }  
+            bootbox.alert(message+"!请重新刷新试试，并联系管理员");
+        },
+           complete:function(XMLHttpRequest,textStatus){
+             //通过XMLHttpRequest取得响应头，sessionstatus，
+         	 var sessionstatus=XMLHttpRequest.getResponseHeader("sessionstatus");
+	         if(sessionstatus=="timeout"){
+	             //如果超时就处理 ，指定要跳转的页面(比如登陆页)
+	             //window.location.replace("/login/index.php");
+	             bootbox.confirm({
+				    message: "当前会话过期! 需要重新刷新当前页面吗?",
+				    buttons: {
+				        confirm: {
+				            label: 'Yes',
+				            className: 'btn-success'
+				        },
+				        cancel: {
+				            label: 'No',
+				            className: 'btn-danger'
+				        }
+				    },
+				    callback: function (result) {
+				        if(result){
+				        	 window.location.reload();
+				        }
+				    }
+				 });
+	         }
+        }
+    });
+});
+
+
+</script>
+<!-- END JAVASCRIPTS -->
+</body>
+<!-- END BODY -->
+</html>
+
+<script> 
+  jQuery(document).ready(function() {
+	  $.fn.datetimepicker.dates['zh'] = {  
+	                  days:       ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"],  
+	                  daysShort:  ["日", "一", "二", "三", "四", "五", "六","日"],  
+	                  daysMin:    ["日", "一", "二", "三", "四", "五", "六","日"],  
+	                  months:     ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月","十二月"],  
+	                  monthsShort:  ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],  
+	                  meridiem:    ["上午", "下午"],  
+	                  //suffix:      ["st", "nd", "rd", "th"],  
+	                  today:       "今天"  
+	  }; 
+	  
+	  $(".date").datetimepicker({
+		  language:  'zh', 
+          rtl: Metronic.isRTL(),
+          orientation: "right",
+          autoclose: !0,
+          format: "yyyy-mm-dd hh:ii",
+          startView:2, 
+          minView:0
+      }).on('change',function(){
+
+    	  var startTime = $("#startTime").val();
+    	  var endTime = $("#endTime").val();
+    	  
+    	  var start = startTime+":00";
+    	  var end = endTime+":00";
+    	  var d1 = new Date(start.replace(/\-/g, "\/"));  
+    	  var d2 = new Date(end.replace(/\-/g, "\/"));
+    	  if(d1 <= d2){
+    		  //删除以前的
+    		  $("#auth_name").html("");
+    		  $('.selectpicker').selectpicker('refresh');
+    		  //开始异步查询下拉
+    		  $.ajax({
+    			  async : true,
+    			  type : 'post',
+    			  url : '/kafka/getKafkaSelectData',
+    			  data : {
+    					"startTime" : startTime,
+    					"endTime": endTime
+    				},
+    			  success : function(data){
+    				  dailyStatisticData = data;
+    				  if(data.status != 'success'){
+    					  alert(dailyStatisticData.value);
+    					  $('.selectpicker').selectpicker('refresh');
+    					  return;
+    				  }
+    				  var list = dailyStatisticData.value;
+    				  var optStr = "";
+    				  for(var i = 0;i<list.length;i++){  //循环LIST
+                          var veh = list[i];//获取LIST里面的对象
+                          optStr += '<option value= "'+veh[0]+'">'+veh[1]+'</option>';
+                       }
+    				  $("#auth_name").html(optStr);
+    				  $('.selectpicker').selectpicker('refresh');
+    			  }
+    		  });
+    	  }
+
+         });
+	 //initUserList();
+	 $('.selectpicker').selectpicker('refresh');
+  });
+  
+  var lineOption2 = function (data, name, is_stack) { //data:数据格式：{name：xxx,group:xxx,value:xxx}...
+
+      var stackline_datas = ECharts.ChartDataFormate.FormateGroupData(data, 'line', is_stack);
+
+      var option = {
+
+          legend: {
+
+              data: stackline_datas.category
+
+          },
+          
+          /*dataZoom: {
+              show: true,
+              realtime : true,
+              start : 80
+          },*/
+
+          xAxis: [{
+
+              type: 'category', //X轴均为category，Y轴均为value
+
+              data: stackline_datas.xAxis,
+
+              boundaryGap: false//数值轴两端的空白策略
+
+          }],
+
+          yAxis: [{
+
+              name: name || '',
+
+              type: 'value',
+
+              splitArea: { show: true }
+
+          }],
+
+          series: stackline_datas.series
+
+      };
+
+      return $.extend({}, ECharts.ChartOptionTemplates.CommonLineOption, option);
+
+  }
+  
+  function queryKafkaEchartData(){
+	  $("#searchData").attr('disabled',true);	
+	  $("#searchData").html("查询中...");
+	  
+	  var startTime = $("#startTime").val();
+	  var endTime = $("#endTime").val();
+	  var selectTopic = $("#auth_name").val();
+	  if(selectTopic == null){
+		  alert("请选择要查询的主题");
+		  $("#searchData").html('查找 &nbsp; <i class="m-icon-swapright m-icon-white"></i>');
+		  $("#searchData").attr('disabled',false);
+		  return;
+	  }
+	  
+	  var topics = "";
+	  for(var i = 0;i<selectTopic.length;i++){  //循环LIST
+          var veh = selectTopic[i];//获取LIST里面的对象
+          topics += veh+",";
+       }
+	  
+	  $("#kafka_echart").html("");
+	  var dailyStatisticData;
+	  $.ajax({
+		  async : false,
+		  type : 'post',
+		  url : '/kafka/kafkaMonitor-statistic',
+		  data : {
+				"startTime" : startTime,
+				"endTime": endTime,
+				"selectTopic":topics
+			},
+		  success : function(data){
+			  dailyStatisticData = data;
+			  var map = dailyStatisticData.value;
+			  var index = 0;
+			  
+			  var dataArray = new Array();
+			  var idArray = new Array();
+			  
+			  for(var key in map){
+				  var tid = "kafkaChart"+index;
+				  index++;
+				  
+				  var divStr = '<div class="row"><div class="col-md-12"><div class="portlet light"><div class="portlet-title"><div class="caption">'+
+	                  '<span class="caption-subject bold uppercase font-red-sunglo">'+key+'</span><span class="caption-helper"></span>'+
+	                  '</div><div class="actions"></div></div><div class="portlet-body">'+//<a href="javascript:void" data-value="showDPSchedulerSummary:" class="btn btn-circle btn-icon-only btn-default fullscreen"></a>
+	                  '<div id="'+tid+'" class="deptJobsChart"></div></div></div></div></div>';
+				  $("#kafka_echart").append(divStr);
+				  //初始化图
+				  dataArray.push(map[key]);
+				  idArray.push(tid);
+				  //initKafkaChart(map[key],tid);
+			  }
+			  
+			  for(var i = 0;i<dataArray.length;i++){  //循环LIST
+                  var data = dataArray[i];//获取LIST里面的对象
+                  var kid = idArray[i];
+                  initKafkaChart(data,kid);
+               }
+			  
+			  $("#searchData").html('查找 &nbsp; <i class="m-icon-swapright m-icon-white"></i>');
+			  $("#searchData").attr('disabled',false);
+			  /* for(var key in map){
+				  var items = new Array()
+				  $.each(map[key],function(i,v){
+						delete v.chart;
+						items.push(v);
+				  })
+		    	  var option = lineOption2(items);
+				  var tid = "";
+				  if(key == "hdp_ubu_zhuanzhuan_activity-flume-hdfs-scf-zzactivity"){
+					  tid = "aaaaaaaa";
+				  }
+		    	  var container = $("#"+tid)[0];
+		          opt = ECharts.ChartConfig(container, option);
+		          ECharts.Charts.RenderChart(opt);
+				} */
+		  }
+	  });
+  }
+  
+  
+  var initUserList = function() {
+	    var userList = new Array();
+	    userList.push({id: -1, text: '全部'});
+	    $.post('/user/api/list-user', function(data, status) {
+	    	console.log(data);
+	    	$.each(data.userList, function(i,user){
+	          userList.push({id: user.id, text: user.trueName + "-" + user.userName, selected: false});
+	      });
+	      $('#selUser').select2({
+	        "language": {
+	          "noResults": function() {
+	            return "无搜索结果";
+	          }
+	        },
+	        tags: false,
+	        maximumSelectionLength: 3,  //最多能够选择的个数
+	        placeholder: '选择用户',
+	        data: userList
+	      }).on('change', function(item) {
+	      
+	      });
+	    });
+	  }
+  
+  function initKafkaChart(dataList,chartId){
+	  var items = new Array()
+	  $.each(dataList,function(i,v){
+			delete v.chart;
+			items.push(v);
+	  })
+	  var option = lineOption2(items);
+	  var container = $("#"+chartId)[0];
+      opt = ECharts.ChartConfig(container, option);
+      ECharts.Charts.RenderChart(opt);
+  }
+
+</script>

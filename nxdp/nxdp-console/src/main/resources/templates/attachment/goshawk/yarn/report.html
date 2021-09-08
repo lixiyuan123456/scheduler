@@ -1,0 +1,345 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head>
+    <title th:fragment="html-title">苍鹰系统-报表查找</title>
+    <link href="//assets/global/plugins/x-editable/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"
+          type="text/css">
+    <style type="text/css">
+		.table {
+			width: 100%;
+		}
+
+		.table th {
+			white-space: nowrap;
+			text-align: center;
+		}
+
+		.table td {
+			white-space: nowrap;
+			text-align: center;
+		}
+
+		.table .text-left {
+			text-align: left;
+		}
+
+    </style>
+</head>
+<head th:include="common :: common-html-header"></head>
+<!-- END HEAD -->
+
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a href="/goshawk/index">苍鹰系统</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <a>YARN管理</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <span>报表查询</span>
+                </li>
+            </ul>
+
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp"><span>任务信息</span></div>
+                </div>
+
+                <div class="portlet-body">
+                    <!-- search  form -->
+                    <form class="alert alert-success alert-borderless" id="conditionForm" role="form">
+                        <div class="row form-group">
+
+                            <div class="col-md-4">
+                                <label class="control-label">插入时间：</label>
+                                <div class="input-group input-daterange date" data-provide="datepicker">
+                                    <div class="input-icon">
+                                        <i class="fa fa-calendar"></i>
+                                        <input class="form-control" id="start" name="start" type="text"/>
+                                    </div>
+                                    <span class="input-group-addon"><i class="fa fa-arrow-right"></i></span>
+                                    <div class="input-icon">
+                                        <i class="fa fa-calendar"></i>
+                                        <input class="form-control" id="end" name="end" type="text"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">报表类型：</label>
+                                <select class="form-control" data-live-search="true" data-size="5" id="reportType"
+                                        name="reportType" style="width: 100%;" title="报表类型">
+                                    <option value="1">任务运行超一小时</option>
+                                    <option value="2">MapReduce task数较多</option>
+                                    <option value="3">Spark资源使用较多</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="control-label">&nbsp;</label>
+                                <span class="input-group-btn">
+                  <button class="btn green-haze" id="doSearch" type="button">查找 &nbsp;
+                    <i class="m-icon-swapright m-icon-white"></i>
+                  </button>
+                </span>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- end form -->
+
+                    <div id="overOneHourDiv">
+                        <table class="table table-hover table-advance table-striped" id="overOneHourDataTable"
+                               style="width:100%;">
+                            <thead>
+                            <tr>
+                                <th>任务ID</th>
+                                <th>任务名称</th>
+                                <th>开发者</th>
+                                <th>任务开始时间</th>
+                                <th>任务完成时间</th>
+                                <th>任务执行时间</th>
+                                <th>任务类型</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="mrDiv" style="display: none">
+                        <table class="table table-hover table-advance table-striped" id="mrDataTable"
+                               style="width:100%;">
+                            <thead>
+                            <tr>
+                                <th>任务ID</th>
+                                <th>任务名称</th>
+                                <th>开发者</th>
+                                <th>map task个数</th>
+                                <th>reduce task个数</th>
+                                <th>调优建议</th>
+                                <th>任务类型</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="sparkDiv" style="display: none">
+                        <table class="table table-hover table-advance table-striped" id="sparkDataTable"
+                               style="width:100%;">
+                            <thead>
+                            <tr>
+                                <th>任务ID</th>
+                                <th>任务名称</th>
+                                <th>开发者</th>
+                                <th>总CPU</th>
+                                <th>总内存</th>
+                                <th>executor内存</th>
+                                <th>调优建议</th>
+                                <th>任务类型</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+<!-- BEGIN FOOTER -->
+
+<!-- END FOOTER -->
+
+</body>
+
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+<script src="/assets/page/scripts/workshop/task-list-33b267f1ff.min.js" type="text/javascript"></script>
+
+
+<!-- END BODY -->
+<script th:inline="javascript">
+	var obj = {};
+
+	obj.initFinishDay = function () {
+		$('.date').datepicker({
+			format: 'yyyy-mm-dd',
+			language: 'zh-CN',
+			autoclose: true,
+			opens: 'left'
+		});
+		$('#start').datepicker('setDate', "-1d");
+		$('#end').datepicker('setDate', "-1d");
+	};
+
+	obj.getTableOption = function (columns) {
+		return {
+			"scrollX": true,
+			"autoWidth": false,
+			"columnDefs": [
+				{"width": "10px", "targets": 0},
+				{"width": "10px", "targets": 1}
+			],
+			'serverSide': true,
+			'ordering': false,
+			'searching': false,
+			'ajax': {
+				url: '/goshawk/yarn/report/list.do',
+				data: function (d) {
+					d.columns = null;
+					//d.search = null;
+					d.condition = JSON.stringify($('#conditionForm').serializeObject());
+				}
+			},
+			'columns': columns
+		};
+	};
+
+	obj.reloadTable = function () {
+		var $1 = $("#overOneHourDiv");
+		var $2 = $("#mrDiv");
+		var $3 = $("#sparkDiv");
+		var reportType = $("#reportType").val();
+		if (reportType === "1") {
+			if (obj.overOneHourDataTable) {
+				obj.overOneHourDataTable.ajax.reload(null, false);
+			} else {
+				obj.overOneHourDataTable = $("#overOneHourDataTable").DataTable(obj.getTableOption(obj.overOneHourColumns));
+			}
+			$1.show();
+			$2.hide();
+			$3.hide();
+		} else if (reportType === "2") {
+			if (obj.mrDataTable) {
+				obj.mrDataTable.ajax.reload(null, false);
+			} else {
+				obj.mrDataTable = obj.mrDataTable || $("#mrDataTable").DataTable(obj.getTableOption(obj.mrColumns));
+			}
+			$1.hide();
+			$2.show();
+			$3.hide();
+		} else {
+			if (obj.sparkDataTable) {
+				obj.sparkDataTable.ajax.reload(null, false);
+			} else {
+				obj.sparkDataTable = obj.sparkDataTable || $("#sparkDataTable").DataTable(obj.getTableOption(obj.sparkColumns));
+			}
+			$1.hide();
+			$2.hide();
+			$3.show();
+		}
+	};
+
+	obj.overOneHourColumns = [
+		{data: "jobId"},
+		{
+			data: null,
+			render: function (data, type, full, meta) {
+				var s = data.applicationName || "";
+				var i = s.indexOf("_", 7) + 1;
+				var content = s.substr(i, 20);
+				if (s.length > content) {
+					content += "...";
+				}
+				return '<span title="' + s + '">' + content + '</span>';
+			},
+			className: 'text-left'
+		},
+		{data: 'authorName'},
+		{data: 'startTime'},
+		{data: 'endTime'},
+		{data: 'runTime'},
+		{data: 'applicationType'}
+	];
+
+	obj.mrColumns = [
+		{data: "jobId"},
+		{
+			data: null,
+			render: function (data, type, full, meta) {
+				var s = data.applicationName || "";
+				var i = s.indexOf("_", 7) + 1;
+				var content = s.substr(i, 20);
+				if (s.length > content) {
+					content += "...";
+				}
+				return '<span title="' + s + '">' + content + '</span>';
+			},
+			className: 'text-left'
+		},
+		{data: 'authorName'},
+		{data: 'mapTaskNumber'},
+		{data: 'reduceTaskNumber'},
+		{data: 'tuning'},
+		{data: 'applicationType'}
+	];
+
+	obj.sparkColumns = [
+		{data: "jobId"},
+		{
+			data: null,
+			render: function (data, type, full, meta) {
+				var s = data.applicationName || "";
+				var i = s.indexOf("_", 7) + 1;
+				var content = s.substr(i, 20);
+				if (s.length > content) {
+					content += "...";
+				}
+				return '<span title="' + s + '">' + content + '</span>';
+			},
+			className: 'text-left'
+		},
+		{data: 'authorName'},
+		{data: 'totalCpu'},
+		{data: 'totalMemory'},
+		{data: 'executorMemory'},
+		{data: 'tuning'},
+		{data: 'applicationType'}
+	];
+
+	$("#doSearch").on("click", function () {
+		obj.reloadTable();
+	});
+
+	$(document).ready(function () {
+		obj.initFinishDay();
+		obj.reloadTable();
+		$("#reportType").on("change", function() {
+			obj.reloadTable();
+		})
+	});
+
+</script>
+</html>
+

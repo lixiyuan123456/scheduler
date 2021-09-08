@@ -1,0 +1,451 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+    <link href="/slideout-1.0.1/slideout.css" rel="stylesheet" type="text/css">
+    <link href="/AdminLTE-2.4.10/css/AdminLTE.css" rel="stylesheet" type="text/css">
+    <style type="text/css">
+.modal {
+  background-color: #ffffff;
+}
+
+    </style>
+</head>
+<!-- END HEAD -->
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<section class="content-header">
+    <h1>元数据-控制台</h1>
+    <ol class="breadcrumb">
+        <li><a href="javascript:void();">元数据</a><span class="divider">/</span></li>
+        <li class="active">控制台</li>
+    </ol>
+</section>
+
+<form id="metadataCommonDatabaseQueryForm">
+    <input id="selectedMetadataCommonServerId" name="serverId" style="display:none;" type="text">
+</form>
+<form id="metadataCommonTableQueryForm">
+    <input id="selectedMetadataCommonDatabaseId" name="databaseId" style="display:none;" type="text">
+</form>
+<input id="selectedMetadataCommonTableId" style="display:none;" type="text">
+
+<section class="content">
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h1 class="box-title">服务器</h1>
+            <div class="box-tools pull-right">
+                <button class="btn btn-danger btn-sm" id="metadataCommonServerRegisterBtn" onclick="modalMetadataCommonServerModal();"
+                        type="button">登记服务器
+                </button>
+                <button class="btn btn-primary btn-sm" id="metadataCommonServerRefreshBtn" onclick="refreshMetadataCommonServerDatatable();"
+                        type="button">刷新
+                </button>
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-advance table-striped text-nowrap text-center"
+                       id="metadataCommonServerDatatable" style="width: 100%;">
+                    <thead>
+                    <tr>
+                        <th>&nbsp;&nbsp;&nbsp;</th>
+                        <th>ID</th>
+                        <th>名称</th>
+                        <th>类型</th>
+                        <th>HOST</th>
+                        <th>端口</th>
+                        <th>创建人</th>
+                        <th>更新时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h1 class="box-title">数据库</h1>
+            <div class="box-tools pull-right">
+                <button class="btn btn-primary" onclick="refreshMetadataCommonDatabaseDatatable()" type="button">刷新
+                </button>
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-advance table-striped text-nowrap text-center"
+                       id="metadataCommonDatabaseDatatable" style="width: 100%;">
+                    <thead>
+                    <tr>
+                        <th>&nbsp;&nbsp;&nbsp;</th>
+                        <th>ID</th>
+                        <th>名称</th>
+                        <th>类型</th>
+                        <th>更新时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h1 class="box-title">数据表</h1>
+            <div class="box-tools pull-right">
+                <button class="btn btn-warning" onclick="mirrorSeletedMetadataCommonTables()" type="button">生成镜像
+                </button>
+                <button class="btn btn-primary" onclick="refreshMetadataCommonTableDatatable()" type="button">刷新
+                </button>
+            </div>
+        </div>
+        <div class="box-body">
+            <div class="table-responsive">
+                <table class="datatable table table-hover table-advance table-striped text-nowrap text-center"
+                       id="metadataCommonTableDatatable" style="width: 100%;">
+                    <thead>
+                    <tr>
+                        <th><input id="metadataCommonTableCheckAllCheckbox" type="checkbox"/>全选</th>
+                        <th>ID</th>
+                        <th>表名</th>
+                        <th>类型</th>
+                        <th>更新时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+
+<div class="modal fade" id="metadataCommonServerModal" tabindex="-1">
+    <div class="modal-header">
+        <button aria-hidden="true" class="close" data-dismiss="modal" type="button">×</button>
+        <h3>服务器配置信息</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="metadataCommonServerForm" style="height:100%;">
+            <input name="id" style="display:none;" type="text"/>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">类型：</label>
+                <div class="col-sm-9">
+                    <select class="form-control selectpicker show-tick" data-live-search="true" data-size="5"
+                            name="type" required>
+                        <option value="1">MYSQL</option>
+                        <option value="2">HIVE</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">别名：</label>
+                <div class="col-sm-9">
+                    <input class="form-control" name="name" placeholder="别名" required type="text"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">HOST：</label>
+                <div class="col-sm-9">
+                    <input class="form-control" name="host" placeholder="HOST（不带端口号）" required type="text"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">端口号：</label>
+                <div class="col-sm-9">
+                    <input class="form-control" name="port" placeholder="端口号" required type="text"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">用户名：</label>
+                <div class="col-sm-9">
+                    <input class="form-control" name="username" placeholder="用户名" required type="text"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">密码：</label>
+                <div class="col-sm-9">
+                    <input class="form-control" name="password" placeholder="密码" required type="password"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal" type="button">关闭</button>
+        <button class="btn btn-primary" onclick="saveMetadataCommonServerForm()" type="button">保存</button>
+    </div>
+</div>
+
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+<script src="/AdminLTE-2.4.10/js/adminlte.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+var refreshMetadataCommonServerDatatable = function(){
+  $('#metadataCommonServerDatatable').DataTable().ajax.reload(null,false);
+  toastr.success('刷新成功');
+}
+var refreshMetadataCommonDatabaseDatatable = function(){
+  $('#metadataCommonDatabaseDatatable').DataTable().ajax.reload(null,false);
+  toastr.success('刷新成功');
+}
+var refreshMetadataCommonTableDatatable = function(){
+  $('#metadataCommonTableDatatable').DataTable().ajax.reload(null,false);
+  toastr.success('刷新成功');
+}
+var modalMetadataCommonServerModal = function(serverId){
+  $('#metadataCommonServerForm')[0].reset();
+  $('.selectpicker').selectpicker('refresh');
+  $('#metadataCommonServerForm label.text-danger').remove();
+  if(serverId != null){
+    $.get('/metadata/common/server/find.do',{serverId:serverId},function(re){
+      if(re.status != 'ok'){
+        toastr.error(re.message);
+        return false;
+      }
+      var server = re.data;
+      $('#metadataCommonServerForm input[name="id"]').val(server.id);
+      $('#metadataCommonServerForm select[name="type"]').val(server.type);
+      $('.selectpicker').selectpicker('refresh');
+      $('#metadataCommonServerForm input[name="name"]').val(server.name);
+      $('#metadataCommonServerForm input[name="host"]').val(server.host);
+      $('#metadataCommonServerForm input[name="port"]').val(server.port);
+      $('#metadataCommonServerForm input[name="username"]').val(server.username);
+    });
+  }
+  $('#metadataCommonServerModal').modal('show');
+}
+var saveMetadataCommonServerForm = function(){
+  if(!$('#metadataCommonServerForm').valid()){
+    return false;
+  }
+  $.post('/metadata/common/server/save.do',$('#metadataCommonServerForm').serialize(),function(re){
+    if(re.status != 'ok'){
+      bootbox.alert(re.message);
+      return false;
+    }
+    $('#metadataCommonServerDatatable').DataTable().ajax.reload(null,false);
+    toastr.success('连接信息测试通过并保存成功');
+    $('#metadataCommonServerModal').modal('hide');
+  });
+}
+var syncMetadataCommonDatabasesByServerId = function(serverId){
+  $.post('/metadata/common/database/sync.do',{serverId:serverId},function(re){
+    if(re.status != 'ok'){
+      bootbox.alert(re.message);
+      return false;
+    }
+    $('#metadataCommonDatabaseDatatable').DataTable().ajax.reload(null,false);
+    toastr.success('同步成功');
+  });
+}
+var syncMetadataCommonTablesByDatabaseId = function(databaseId){
+  $.post('/metadata/common/table/sync.do',{databaseId:databaseId},function(re){
+    if(re.status != 'ok'){
+      bootbox.alert(re.message);
+      return false;
+    }
+    $('#metadataCommonTableDatatable').DataTable().ajax.reload(null,false);
+    toastr.success('同步成功');
+  });
+}
+var mirrorMetadataCommonTable = function(tableId){
+  var tableIds = [];
+  tableIds.push(tableId);
+  mirrorMetadataCommonTables(tableIds);
+}
+var mirrorMetadataCommonTables = function(tableIds){
+  $.post('/metadata/common/table/mirror.do',{tableIds:tableIds},function(re){
+    if(re.status != 'ok'){
+      bootbox.alert(re.message);
+      return false;
+    }
+    $('#metadataCommonTableDatatable').DataTable().ajax.reload(null,false);
+    toastr.success('异步生成镜像中，稍后刷新查看');
+  })
+}
+var mirrorSeletedMetadataCommonTables = function(){
+  var tableIds = [];
+  $('#metadataCommonTableDatatable tbody :checkbox:checked').each(function(){
+    tableIds.push($(this).attr('data-id'));
+  });
+  mirrorMetadataCommonTables(tableIds);
+}
+$(function(){
+  $('#selectedMetadataCommonServerId').change(function(){
+    $('#metadataCommonDatabaseDatatable').DataTable().ajax.reload(null,false);
+  });
+  $('#selectedMetadataCommonDatabaseId').change(function(){
+    $('#metadataCommonTableDatatable').DataTable().ajax.reload(null,false);
+  });
+  $('#metadataCommonServerForm').validate({
+    errorClass: 'text-danger',
+    ignore: ".ignore",
+  });
+  $('#metadataCommonTableCheckAllCheckbox').on('change',function(){
+    if(this.checked){
+      $('#metadataCommonTableDatatable :checkbox').attr('checked','checked');
+    }else{
+      $('#metadataCommonTableDatatable :checkbox').removeAttr('checked');
+    }
+  })
+  var serverDatatable = $('#metadataCommonServerDatatable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: true,
+    lengthChange: true,
+    ajax: {
+      url: '/metadata/common/server/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+      },
+    },
+    columns: [
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          return '<input id="checkbox_server_'+data.id+'" type="checkbox" data-id="'+data.id+'">';
+        }
+      },
+      {data: 'id'},
+      {data: 'name'},
+      {
+        data: null,
+        render: function(data,type,full,meta){
+          return data.metadataType;
+        }
+      },
+      {data: 'host'},
+      {data: 'port'},
+      {data: 'creatorName'},
+      {data: 'modifyTime'},
+      {
+        data: null,
+        render: function(data,type,full,meta){
+          var html = '';
+          html += '<button type="button" class="btn btn-default btn-xs" onclick="modalMetadataCommonServerModal('+data.id+')">编辑</button>';
+          html += '<button type="button" class="btn btn-primary btn-xs" onclick="syncMetadataCommonDatabasesByServerId('+data.id+')">同步</button>';
+          return html;
+        }
+      },
+    ],
+  }).on('click','tr',function(){
+    var rowData = $('#metadataCommonServerDatatable').DataTable().row(this).data();
+    $('#metadataCommonServerDatatable input[type="checkbox"]:checked').not('#checkbox_server_'+rowData.id).prop('checked',false);
+    $('#checkbox_server_'+rowData.id).prop('checked',!$('#checkbox_server_'+rowData.id).prop('checked'));
+    $('#selectedMetadataCommonServerId').val(rowData.id).trigger('change');
+  });
+  var databaseDatatable = $('#metadataCommonDatabaseDatatable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: true,
+    lengthChange: true,
+    ajax: {
+      url: '/metadata/common/database/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+        d.condition = JSON.stringify($('#metadataCommonDatabaseQueryForm').serializeJSON());
+      },
+    },
+    columns: [
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          return '<input id="checkbox_database_'+data.id+'" type="checkbox" data-id="'+data.id+'">';
+        }
+      },
+      {data: 'id'},
+      {data: 'name'},
+      {
+        data: null,
+        render: function(data,type,full,meta){
+          return data.metadataType;
+        }
+      },
+      {data: 'modifyTime'},
+      {
+        data: null,
+        render: function(data,type,full,meta){
+          var html = '';
+          html += '<button type="button" class="btn btn-primary btn-xs" onclick="syncMetadataCommonTablesByDatabaseId('+data.id+')">同步</button>';
+          return html;
+        }
+      },
+    ],
+  }).on('click','tr',function(){
+    var rowData = $('#metadataCommonDatabaseDatatable').DataTable().row(this).data();
+    $('#metadataCommonDatabaseDatatable input[type="checkbox"]:checked').not('#checkbox_database_'+rowData.id).prop('checked',false);
+    $('#checkbox_database_'+rowData.id).prop('checked',!$('#checkbox_database_'+rowData.id).prop('checked'));
+    $('#selectedMetadataCommonDatabaseId').val(rowData.id).trigger('change');
+  });
+  var tableDatatable = $('#metadataCommonTableDatatable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: true,
+    lengthChange: true,
+    ajax: {
+      url: '/metadata/common/table/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+        d.condition = JSON.stringify($('#metadataCommonTableQueryForm').serializeJSON());
+      },
+    },
+    columns: [
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          return '<input id="checkbox_table_'+data.id+'" type="checkbox" data-id="'+data.id+'">';
+        }
+      },
+      {data: 'id'},
+      {data: 'name'},
+      {
+        data: null,
+        render: function(data,type,full,meta){
+          return data.metadataType;
+        }
+      },
+      {data: 'modifyTime'},
+      {
+        data: null,
+        render: function(data,type,full,meta){
+          var html = '';
+          html += '<button type="button" class="btn btn-warning btn-xs" data-toggle="tooltip" title="抽取分库分表的MYSQL表到HIVE库需要提前在HIVE库创建镜像映射" onclick="mirrorMetadataCommonTable('+data.id+')">'+(data.mirrored == 0 ? '生成镜像' : '重新生成镜像') +'</button>';
+          return html;
+        }
+      },
+    ],
+  });
+})
+
+</script>
+</html>
+
+
+

@@ -1,0 +1,464 @@
+<html>
+<body>
+<div class="box">
+    <div class="box-body">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">查询</h3>
+            </div>
+            <div class="box-body">
+                <form class="form-horizontal" id="jobQueryForm">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label">代号：</label>
+                            <div class="col-xs-9">
+                                <select class="form-control" id="jobProxyCode" name="proxyCode">
+                                    <option value="0">全部</option>
+                                    <option value="zdp">zdp</option>
+                                    <option value="algo">algo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label">创建人：</label>
+                            <div class="col-xs-9">
+                                <select class="form-control" id="jobCreator" name="creator">
+                                    <option value="0">全部</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <label class="col-xs-3 control-label">名称：</label>
+                            <div class="col-xs-9">
+                                <input class="form-control" id="jobNameLike" name="nameLike" placeholder="名称"
+                                       type="text">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="box-footer text-right">
+                <button class="btn btn-primary" onclick="query4JobDatatable()" type="submit">查询</button>
+            </div>
+        </div>
+        <div class="box box-success">
+            <div class="box-header with-border">
+                <h3 class="box-title">列表</h3>
+                <div class="box-tools">
+                    <div class="text-right">
+                        <button class="btn btn-primary" onclick="toJobEditor()" type="button">新建任务</button>
+                    </div>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-advance table-striped text-nowrap" id="jobDatatable"
+                           style="width:100%;">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>名称</th>
+                            <th>创建人</th>
+                            <th>代号</th>
+                            <th>监控</th>
+                            <th>状态</th>
+                            <!-- <th>描述信息</th> -->
+                            <th>YARN LOG</th>
+                            <th>运行日志</th>
+                            <th>操作</th>
+                            <th>创建时间</th>
+                            <th>修改时间</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="overlay hidden" id="jobLoadingShadow">
+        <i class="fa fa-refresh fa-spin"></i>
+    </div>
+</div>
+
+
+<div class="modal container fade" id="jobRunLogModal" tabindex="-1">
+    <div class="modal-header">
+        <button aria-hidden="true" class="close" data-dismiss="modal" type="button">×</button>
+        <h3>运行日志</h3>
+    </div>
+    <div class="modal-body">
+    <pre>
+      <div id="jobRunLogModalContent" style="overflow-x:scroll;"></div>
+    </pre>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-default" data-dismiss="modal" type="button">关闭</button>
+    </div>
+</div>
+
+
+</body>
+
+
+<script type="text/javascript">
+(function(){
+  $.ajaxSettings.async = false;
+  $('#jobProxyCode').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $('#jobCreator').selectpicker({
+    liveSearch: true,
+    showTick: true,
+    size: 5,
+  });
+  $.get('/user/api/list-user',function(data){
+    if(data.userList){
+      $.each(data.userList,function(i,user){
+        $('#jobCreator').append('<option value="'+user.userName+'">'+user.trueName+'('+user.userName+')'+'</option>');
+      })
+    }
+    $('#jobCreator').selectpicker('val',currentUserPyName);
+    $('#jobCreator').selectpicker('refresh');
+  })
+  $.ajaxSettings.async = true;
+  $('#jobDatatable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: false,
+    lengthChange: true,
+    rowId: 'id',
+    fixedColumns: {
+      leftColumns: 3,
+    },
+    ajax: {
+      url: '/zstream/job/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+        d.condition = JSON.stringify($('#jobQueryForm').serializeJSON());
+      },
+    },
+    columns: [
+      {data: 'id'},
+      {
+        data: null,
+        class: 'text-left',
+        render: function(data, type, full, meta){
+          var html = '';
+          html += '<a href="javascript:viewJobByJobId('+data.id+')" data-toggle="tooltip" title="<pre>'+data.description+'</pre>" data-html="true">'+data.name+'</a>';
+          return html;
+        }
+      },
+      {data: 'creator'},
+      {data: 'proxyCode'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          if(data.status == 1 && data.dashboardUrl != null && data.dashboardUrl != ''){
+            return '<a href="'+data.dashboardUrl+'" target="_blank">任务监控</a>';
+          }
+          return '';
+        }
+      },
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          if(data.status == 0){
+            return '<span class="label label-default">新建</span>';
+          }
+          if(data.status == 1){
+            return '<span class="label label-success">正在运行</span>';
+          }
+          if(data.status == 2){
+            return '<span class="label label-danger">启动失败</span>';
+          }
+          if(data.status == 3){
+            return '<span class="label label-danger">运行时失败</span>';
+          }
+          if(data.status == 9){
+            return '<span class="label label-info">启动中</span>';
+          }
+          if(data.status == -1){
+            return '<span class="label label-warning">KILL</span>';
+          }
+          return data.status;
+        }
+      },
+      /* {
+        data: null,
+        class: 'text-left',
+        render: function(data, type, full, meta){
+          var html = '<div style="width:200px;overflow:hidden;text-overflow:ellipsis;" title="'+data.description+'">';
+          html += data.description;
+          html += '</div>';
+          return html;
+        }
+      }, */
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          if(data.yarnLogUrl != null && data.yarnLogUrl != ''){
+            return '<a href="'+data.yarnLogUrl+'" target="_blank">运行日志</a>';
+          }
+          return '';
+        },
+      },
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          var html = '';
+          /* if(data.lastApplicationId != null && data.lastApplicationId != '' && data.lastApplicationJobId != null && data.lastApplicationJobId != ''){
+            html += '<a href="javascript:void(0);" onclick="viewJobRunLog('+data.id+',\''+data.lastJobVersion+'\''+')">运行日志</a>';
+          } */
+          if(data.status == 1 && data.lastJobVersion != null && data.lastJobVersion != ''){
+            html += '<a href="javascript:void(0);" onclick="viewJobRunLog('+data.id+',\''+data.lastJobVersion+'\''+')">启动日志</a>';
+          }
+          return html;
+        }
+      },
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          var html = '<div>';
+          if(data.status != 1 && data.status != 9){
+            html += '<button type="button" class="btn btn-primary" onclick="editJobByJobId('+data.id+')">编辑</button>';
+            html += '<button type="button" class="btn btn-success" onclick="launchJobByJobId('+data.id+')">启动</button>';
+            html += '<button type="button" class="btn btn-danger" onclick="deleteJobByJobId('+data.id+')">删除</button>';
+          }
+          if(data.status == 1 && data.lastApplicationId != '' && data.lastApplicationJobId != ''){
+            html += '<button type="button" class="btn btn-warning" onclick="killJobByJobId('+data.id+')">停止</button>';
+          }
+          html += '<button type="button" class="btn btn-info" onclick="copyJobByJobId('+data.id+')">复制</button>';
+          html += '</div>';
+          return html;
+        }
+      },
+      {data: 'createTime'},
+      {data: 'modifyTime'},
+    ]
+  });
+})();
+
+function query4JobDatatable(){
+  $('#jobDatatable').DataTable().ajax.reload(null,false);
+}
+function editJobByJobId(jobId){
+  $('#mainBody').load('/zstream/job/editor?jobId='+jobId);
+}
+function launchJobByJobId(jobId){
+  var row = $('#jobDatatable').DataTable().row('#'+jobId).data();
+  console.log(row);
+  var resume = false;
+  //非第一次
+  console.log((row.status) + '###' + (row.jobConfig?row.jobConfig.settings:''));
+  if(row.status != 0 && row.jobConfig && row.jobConfig.settings){
+    var settings = JSON.parse(row.jobConfig.settings);
+    console.log(settings);
+    if(settings.useCheckpoint && settings.useCheckpoint == 'true'){
+      if(settings['sql.checkpoint.interval'] != '' && row.lastApplicationId != null && row.lastApplicationId != ''){
+        resume = true;
+      }
+    }
+  }
+  if(resume){
+    bootbox.dialog({
+      title: '是否从上次停止的地方恢复任务？',
+      message: '是否从上次停止的地方恢复任务？',
+      size: 'large',
+      buttons: {
+        close: {
+          label: '关闭',
+          className: 'btn-default',
+          callback: function(){
+              
+          }
+        },
+        no: {
+          label: '否',
+          className: 'btn-primary',
+          callback: function(){
+            toastr.info('耗时较长，请耐心等待！！！');
+            var req = {id:jobId};
+            $('#jobLoadingShadow').removeClass('hidden');
+            $.post('/zstream/job/launch.do',req,function(re){
+              $('#jobLoadingShadow').addClass('hidden');
+              if(re.status != 'ok'){
+                toastr.error(re.message);
+                return false;
+              }
+              /* $('#jobDatatable').DataTable().ajax.reload(null,false);
+              if(re.data.code == '1'){
+                toastr.error('资源不足，'+re.data.message);
+                return false;
+              }else if(re.data.code == '2'){
+                toastr.error('启动失败，'+re.data.message);
+                return false;
+              }else if(re.data.code == '3'){
+                toastr.success('启动成功');
+                return false;
+              }
+              toastr.error('可能发生了未知的错误，请联系zzdp负责人。'); */
+              $('#jobDatatable').DataTable().ajax.reload(null,false);
+              toastr.success('任务异步启动中，请稍后刷新任务列表查看');
+            })
+          }
+        },
+        yes: {
+          label: '是',
+          className: 'btn-warning',
+          callback: function(){
+            toastr.info('耗时较长，请耐心等待！！！');
+            var req = {id:jobId};
+            req.resume = true;
+            $('#jobLoadingShadow').removeClass('hidden');
+            $.post('/zstream/job/launch.do',req,function(re){
+              $('#jobLoadingShadow').addClass('hidden');
+              if(re.status != 'ok'){
+                toastr.error(re.message);
+                return false;
+              }
+              $('#jobDatatable').DataTable().ajax.reload(null,false);
+              toastr.success('任务异步启动中，请稍后刷新任务列表查看');
+              /* $('#jobDatatable').DataTable().ajax.reload(null,false);
+              if(re.data.code == '1'){
+                toastr.error('资源不足，'+re.data.message);
+                return false;
+              }else if(re.data.code == '2'){
+                toastr.error('启动失败，'+re.data.message);
+                return false;
+              }else if(re.data.code == '3'){
+                toastr.success('启动成功');
+                return false;
+              }
+              toastr.error('可能发生了未知的错误，请联系zzdp负责人。'); */
+            })
+          }
+        }
+      }
+    });
+    /* bootbox.confirm("是否从上次停止的地方恢复任务？", function(result){
+      toastr.info('耗时较长，请耐心等待！！！');
+      var req = {id:jobId};
+      if(result){//从上次停止的地方恢复
+        req.resume = true;
+      }
+      $('#jobLoadingShadow').removeClass('hidden');
+      $.post('/zstream/job/launch.do',req,function(re){
+        $('#jobLoadingShadow').addClass('hidden');
+        if(re.status != 'ok'){
+          toastr.error(re.message);
+          return false;
+        }
+        $('#jobDatatable').DataTable().ajax.reload(null,false);
+        if(re.data.code == '1'){
+          toastr.error('资源不足，'+re.data.message);
+          return false;
+        }else if(re.data.code == '2'){
+          toastr.error('启动失败，'+re.data.message);
+          return false;
+        }else if(re.data.code == '3'){
+          toastr.success('启动成功');
+          return false;
+        }
+        toastr.error('可能发生了未知的错误，请联系zzdp负责人。');
+      })
+    }); */
+  }else{
+    bootbox.confirm("确定启动任务吗？", function(result){
+      if(result){
+        toastr.info('耗时较长，请耐心等待！！！');
+        $('#jobLoadingShadow').removeClass('hidden');
+        $.post('/zstream/job/launch.do',{id:jobId},function(re){
+          $('#jobLoadingShadow').addClass('hidden');
+          if(re.status != 'ok'){
+            toastr.error(re.message);
+            return false;
+          }
+          /* $('#jobDatatable').DataTable().ajax.reload(null,false);
+          if(re.data.code == '1'){
+            toastr.error('资源不足，'+re.data.message);
+            return false;
+          }else if(re.data.code == '2'){
+            toastr.error('启动失败，'+re.data.message);
+            return false;
+          }else if(re.data.code == '3'){
+            toastr.success('启动成功');
+            return false;
+          }
+          toastr.error('可能发生了未知的错误，请联系zzdp负责人。'); */
+          $('#jobDatatable').DataTable().ajax.reload(null,false);
+          toastr.success('任务异步启动中，请稍后刷新任务列表查看');
+        })
+      }
+    });
+  }
+}
+function killJobByJobId(jobId){
+  bootbox.confirm("确定要停止吗？", function(result){ 
+    if(result){
+      toastr.info('耗时较长，请耐心等待！！！');
+      $('#jobLoadingShadow').removeClass('hidden');
+      $.post('/zstream/job/kill.do',{id:jobId},function(re){
+        $('#jobLoadingShadow').addClass('hidden');
+        if(re.status != 'ok'){
+          bootbox.alert('<pre>'+re.message+'</pre>');
+          return false;
+        }
+        $('#jobDatatable').DataTable().ajax.reload(null,false);
+        toastr.success('停止成功');
+      })
+    }
+  });
+}
+function deleteJobByJobId(jobId){
+  bootbox.confirm("确定要删除吗？", function(result){
+    if(result){
+      $('#jobLoadingShadow').removeClass('hidden');
+      $.post('/zstream/job/delete.do',{id:jobId},function(re){
+        $('#jobLoadingShadow').addClass('hidden');
+        if(re.status != 'ok'){
+          toastr.error(re.message);
+          return false;
+        }
+        $('#jobDatatable').DataTable().ajax.reload(null,false);
+        toastr.success('删除成功');
+      })
+    }
+  });
+}
+function copyJobByJobId(jobId){
+  $('#mainBody').load('/zstream/job/editor?jobId='+jobId+'&action=copy');
+}
+function viewJobRunLog(jobId,jobVersion){
+  var request = {
+      jobId: jobId,
+      jobVersion: jobVersion,
+  }
+  $.get('/zstream/job/log.do',request,function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.message);
+      return false;
+    }
+    $('#jobRunLogModalContent').empty();
+    $('#jobRunLogModalContent').text(re.data?re.data.log:'');
+    $('#jobRunLogModal').modal('show');
+  })
+}
+function viewJobByJobId(jobId){
+  //window.open('/zstream/job/editor?jobId='+jobId,"_blank","scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes");
+  //window.open('/zstream/job/editor?jobId='+jobId,"_blank"); 
+  //location.href = '/zstream/job/editor?jobId='+jobId;
+  $('#mainBody').load('/zstream/job/editor?jobId='+jobId+'&action=view');
+}
+
+</script>
+
+
+</html>

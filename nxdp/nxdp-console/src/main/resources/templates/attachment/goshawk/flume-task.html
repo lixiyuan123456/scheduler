@@ -1,0 +1,228 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+<title th:fragment="html-title">转转调度平台</title>
+<style></style>
+</head>
+<!-- END HEAD -->
+
+<body>
+  <!-- BEGIN HEADER -->
+  <div th:replace="common :: common-page-header"></div>
+  <!-- END HEADER -->
+
+  <div class="page-container">
+    <div class="page-content">
+      <div class="container">
+        <!-- BEGIN PAGE BREADCRUMB -->
+        <ul class="breadcrumb">
+          <li><a href="#">集群管理</a> <span class="divider">/</span></li>
+          <li><a href="#">配置管理</a> <span class="divider">/</span></li>
+          <li class="active">Flume任务管理</li>
+        </ul>
+        <!-- END PAGE BREADCRUMB -->
+        <!-- BEGIN PANEL CONTAINER -->
+        <!-- BEGIN BUSINESS CONTENT -->
+        <div class="portlet light bordered" style="display: none;" id="editDiv">
+          <div class="portlet-title">
+            <div class="caption font-green-sharp">
+              <span>登记</span>
+            </div>
+          </div>
+          <div class="portlet-body">
+            <form id="form" class="form-horizontal">
+              <input type="text" name="id" style="display: none;"/>
+              <div class="form-group">
+                <label class="control-label col-xs-2">集群</label>
+                <div class="col-xs-8">
+                  <select class="form-control selectpicker show-tick" data-live-search="true" data-size="5" name="cluster" required></select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-xs-2">Topic</label>
+                <div class="col-xs-8">
+                  <input type="text" class="form-control" name="topic" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-xs-2">GroupId</label>
+                <div class="col-xs-8">
+                  <input type="text" class="form-control" name="consumer" required>
+                </div>
+              </div>
+            </form>
+            <div class="text-center">
+              <button id="saveBtn" type="button" class="btn btn-primary">保存</button>
+            </div>
+          </div>
+        </div>
+        <div class="portlet light bordered">
+          <div class="portlet-title">
+            <div class="caption font-green-sharp">
+              <span>列表</span>
+            </div>
+            <div class="text-right">
+              <button id="createBtn" type="button" class="btn btn-primary">新建</button>
+            </div>
+          </div>
+          <div class="portlet-body">
+            <table class="table table-hover table-advance table-striped" id="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>集群</th>
+                  <th>主题</th>
+                  <th>消费者</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <!-- END BUSINESS CONTENT -->
+        <!-- END PANEL CONTAINER -->
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  <!-- BEGIN PRE-FOOTER -->
+  <div th:include="common :: common-page-footer"></div>
+  <!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+<script th:inline="javascript">
+function loadingClusters(){
+  $.get('/goshawk/flume-task/clusters.do',function(resp){
+    if(resp.status == 'error'){
+      toastr.error(resp.message, '错误');
+      return false;
+    }
+    var options;
+    $.each(resp.data,function(i,e){
+      options += '<option value="'+e.code+'">'+e.name+'</option>';
+    })
+    $('#form select[name="cluster"]').append(options);
+    $('.selectpicker').selectpicker('refresh');
+  })
+}
+
+function submitForm(){
+  if(!$('#form').valid()){
+    return false;
+  }
+  var form = $('#form').serialize();
+  $.post('/goshawk/flume-task/save.do',form,function(re){
+    if(re.status == 'error'){
+      toastr.error(re.message, '错误');
+      return false;
+    }
+    toastr.success('注册成功', '成功');
+    $('#table').DataTable().ajax.reload(null,false);
+  })
+}
+
+function reedit(id){
+  $.get('/goshawk/flume-task/find.do',{id:id},function(re){
+    if(re.status == 'error'){
+      toastr.error(re.message, '错误');
+      return false;
+    }
+    var data = re.data;
+    $('#form input[name="id"]').val(data.id);
+    $('#form select[name="cluster"]').val(data.cluster);
+    $('.selectpicker').selectpicker('refresh');
+    $('#form input[name="topic"]').val(data.topic);
+    $('#form input[name="consumer"]').val(data.consumer);
+    $('#editDiv').show();
+  })
+}
+
+function del(id){
+  $.post('/goshawk/flume-task/delete.do',{id:id},function(re){
+    if(re.status == 'error'){
+      toastr.error(re.message, '错误');
+      return false;
+    }
+    toastr.success('删除成功', '成功');
+    $('#table').DataTable().ajax.reload(null,false);
+  })
+}
+
+function loadingTable(){
+  $('#table').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: false,
+    lengthChange: true,
+    ajax: {
+      url: '/goshawk/flume-task/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+      }
+    },
+    columns: [
+      {data: 'id'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          if(data.cluster == '1'){
+            return '转转';
+          }
+          if(data.cluster == '2'){
+            return '58';
+          }
+        }
+      },
+      {data: 'topic'},
+      {data: 'consumer'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          var html = '';
+          html += '<button class="btn btn-primary" type="button" onclick="reedit('+data.id+')">编辑</button>';
+          html += '<button class="btn btn-danger" type="button" onclick="del('+data.id+')">删除</button>';
+          return html;
+        }
+      },
+    ]
+  })
+}
+
+
+
+$(function(){
+  loadingClusters();
+  loadingTable();
+  //新建
+  $('#createBtn').click(function(){
+    $('#form')[0].reset();
+    $('.selectpicker').selectpicker('refresh');
+    $('#editDiv').show();
+  })
+  //保存
+  $('#saveBtn').click(function(){
+    submitForm();
+    $('#editDiv').hide();
+  })
+})
+</script>
+</html>
+
+
+

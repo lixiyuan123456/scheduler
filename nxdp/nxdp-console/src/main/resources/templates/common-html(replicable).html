@@ -1,0 +1,67 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+<title th:fragment="html-title">转转调度平台</title>
+<style></style>
+</head>
+<!-- END HEAD -->
+
+<body>
+  <!-- BEGIN HEADER -->
+  <div th:replace="common :: common-page-header"></div>
+  <!-- END HEADER -->
+
+  <div class="page-container">
+    <div class="page-content">
+      <div class="container">
+        <!-- BEGIN PAGE BREADCRUMB -->
+        <ol class="breadcrumb">
+          <li><a href="#"></a><span class="divider">/</span></li>
+          <li><a href="#"></a><span class="divider">/</span></li>
+          <li class="active"></li>
+        </ol>
+        <!-- END PAGE BREADCRUMB -->
+        <!-- BEGIN PANEL CONTAINER -->
+        <!-- BEGIN BUSINESS CONTENT -->
+        <div class="portlet light form-fit bordered">
+          <div class="portlet-title">
+            <div class="caption font-green-sharp">
+              <span></span>
+            </div>
+          </div>
+          <div class="portlet-body">
+            <div class="row"></div>
+          </div>
+        </div>
+        <!-- END BUSINESS CONTENT -->
+        <!-- END PANEL CONTAINER -->
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  <!-- BEGIN PRE-FOOTER -->
+  <div th:include="common :: common-page-footer"></div>
+  <!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+<script th:inline="javascript">
+  
+</script>
+</html>
+
+
+

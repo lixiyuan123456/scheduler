@@ -1,0 +1,153 @@
+
+
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>58登录</title>
+    <link rel="stylesheet" href="css/version3/reset.css">
+    <link rel="stylesheet" href="css/version3/style.css">
+</head>
+<body>
+<form id="fm1" action="/login?service=http%3A%2F%2F58dp.58corp.com%2Fassets%2Fpage%2Fimg%2Fworkshop%2Floading-aceb1640f3.gif" method="post">
+    <div class="body" id="body">
+        <div class="bottom"></div>
+    </div>
+    <div class="main">
+        <div class="logo"></div>
+        <div class="word1">统一登录平台</div>
+        <div class="inputBox">
+            <div class="putBox">
+                
+                
+                <input id="username" name="username" class="itext" tabindex="1" placeholder="请输入用户名" name="username" accesskey="n" type="text" value="" autocomplete="off"/>
+            </div>
+            <div class="putBox" style="margin-top: 20px">
+                
+                
+                <input id="password" name="password" class="ipassword" tabindex="2" placeholder="请输入密码" name="password" accesskey="p" type="password" value="" autocomplete="off"/>
+            </div>
+            
+
+            <input type="hidden" name="lt" value="LT-6095315-rqhitWbJb1uLznEZhd3w7yAwhUiBp4-tjtx-123-197"/>
+            <input type="hidden" name="execution" value="857783cf-c0e1-4209-9625-10f8712e5de9_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"/>
+            <input type="hidden" name="_eventId" value="submit"/>
+            <input id="fingerPrint" name="fingerPrint" style="display: none;" type="text" value=""/>
+            <input id="realIp" name="realIp" style="display: none;" type="text" value=""/>
+
+            <button class="loginPut ibutton" onclick="login()" tabindex="3">登录</button>
+
+            <div class="passWord2"><span><a href="https://rpsso.58corp.com/rpwd/refindpwd">忘记密码？</a></span></div>
+        </div>
+    </div>
+<div>
+</div></form>
+</body>
+<script src="js/version3/jquery-1.11.3.min.js"></script>
+<script src="js/version3/jsencrypt.min.js"></script>
+<script src="js/version3/js.js"></script>
+
+<script src="js/fingerprint2.min.js"></script>
+<script language="JavaScript">
+
+    var options = {
+        excludeColorDepth: true,
+        excludeScreenResolution: true,
+        excludeAvailableScreenResolution: true,
+        excludeAddBehavior: true,
+        excludeDoNotTrack: true,
+        excludeAdBlock: true,
+        excludeJsFonts: true,
+        excludePlugins: true,
+        excludeIEPlugins: true,
+        excludeTouchSupport: true
+    };
+
+    new Fingerprint2(options).get(function (result) {
+        //console.log(result);
+        document.getElementById("fingerPrint").value = result;
+    });
+
+    
+
+    function login() {
+        $.ajax({
+            type: "post",
+            url: "resources/getPublicKey",
+            data: "",
+            async: false,
+            success: function (key) {
+                var encryption = new JSEncrypt();
+                encryption.setPublicKey(key);
+                var encryptedPassword = encryption.encrypt($("#password").val());
+                $("#password").val(encryptedPassword);
+                $("#fm1").submit();
+            }
+        });
+    }
+
+    // NOTE: window.RTCPeerConnection is "not a constructor" in FF22/23
+    var RTCPeerConnection = /*window.RTCPeerConnection ||*/ window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+
+    //console.log(RTCPeerConnection);
+
+    if (RTCPeerConnection) (function () {
+        var rtc = new RTCPeerConnection({iceServers: []});
+        if (1 || window.mozRTCPeerConnection) {      // FF [and now Chrome!] needs a channel/stream to proceed
+            rtc.createDataChannel('', {reliable: false});
+        }
+        ;
+
+        rtc.onicecandidate = function (evt) {
+            // convert the candidate to SDP so we can run it through our general parser
+            // see https://twitter.com/lancestout/status/525796175425720320 for details
+            if (evt.candidate) grepSDP("a=" + evt.candidate.candidate);
+        };
+
+        rtc.createOffer(function (offerDesc) {
+            grepSDP(offerDesc.sdp);
+            rtc.setLocalDescription(offerDesc);
+        }, function (e) {
+            console.warn("offer failed", e);
+        });
+
+        var addrs = Object.create(null);
+        addrs["0.0.0.0"] = false;
+
+        function updateDisplay(newAddr) {
+            if (newAddr in addrs) return;
+            else addrs[newAddr] = true;
+            var displayAddrs = Object.keys(addrs).filter(function (k) {
+                return addrs[k];
+            });
+            //10.252.55.91 or perhaps fe80::ffff:ffff:fffe
+            var ipAddr = displayAddrs.join(" or perhaps ") || "n/a";
+            document.getElementById("realIp").value = ipAddr;
+        }
+
+        function grepSDP(sdp) {
+            var hosts = [];
+            sdp.split('\r\n').forEach(function (line) { // c.f. http://tools.ietf.org/html/rfc4566#page-39
+                if (~line.indexOf("a=candidate")) {     // http://tools.ietf.org/html/rfc4566#section-5.13
+                    var parts = line.split(' '),        // http://tools.ietf.org/html/rfc5245#section-15.1
+                        addr = parts[4],
+                        type = parts[7];
+                    if (type === 'host') updateDisplay(addr);
+                } else if (~line.indexOf("c=")) {       // http://tools.ietf.org/html/rfc4566#section-5.7
+                    var parts = line.split(' '),
+                        addr = parts[2];
+                    updateDisplay(addr);
+                }
+            });
+        }
+
+    })(); else {
+        //console.log("ifconfig | grep inet | grep -v inet6 | cut -d\" \" -f2 | tail -n1");
+        //console.log("In Chrome and Firefox your IP should display automatically, by the power of WebRTC skill.");
+    }
+</script>
+</html>

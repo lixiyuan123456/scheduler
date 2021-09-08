@@ -1,0 +1,544 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head>
+<title th:fragment="html-title">flume任务管理</title>
+<style type="text/css">
+.table {
+}
+.table th {
+  white-space: nowrap;
+  text-align: center;
+}
+.table td {
+  white-space: nowrap;
+  text-align: center;
+}
+.table .text-left {
+  text-align: left;
+}
+</style>
+</head>
+<head th:include="common :: common-html-header"></head>
+<!-- END HEAD -->
+
+
+
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a href="/goshawk/index">苍鹰系统</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <a>配置管理</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li class="active">flume任务管理
+                </li>
+            </ul>
+
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span>flume任务管理</span>
+                    </div>
+                    <div class="actions">
+                        <!--
+                        <button type="button" class="btn btn-circle green" >
+                          <i class="fa fa-plus"></i> 重跑勾选
+                        </button>
+                        -->
+                        <!-- <div class="btn-group">
+                            <button type="button" class="btn btn-circle green dropdown-toggle" data-toggle="dropdown" data-hover="dropdown"
+                                    data-delay="1000" data-close-others="true" aria-expanded="false">
+                                <i class="fa fa-refresh"></i> 重跑操作
+                                <i class="fa fa-angle-down"></i>
+                            </button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <li>
+                                    <a href="javascript:void(0)" onclick="TaskList.reRunJob(1)">
+                                        <i class="fa fa-check"></i> 重跑所选Job</a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)" onclick="TaskList.reRunJob(2)">
+                                        <i class="fa fa-refresh"></i> 重跑我的所有Job</a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)" onclick="TaskList.reRunJob(8)">
+                                        <i class="fa fa-history"></i> 重跑所选Job历史</a>
+                                </li>
+                                <li>
+                                    <a href="/workshop/task-rerun-edit">
+                                        <i class="fa fa-cart-plus"></i> 自定义重跑 </a>
+                                </li>
+                                <li>
+                                    <a href="/workshop/task-rerun-list">
+                                        <i class="fa fa-search"></i> 查看历史重跑Task</a>
+                                </li>
+                            </ul>
+                        </div> -->
+                        <!-- <div th:replace="common :: common-shortcut"></div> -->
+                    </div>
+                </div>
+
+                <div class="portlet-body">
+                    <!-- search  form -->
+                    <form role="form" class="alert alert-success alert-borderless">
+                        <div class="row form-group">
+                            <div class="col-md-4"> 
+                                <label class="control-label">URL：</label>
+                                <input id="url_str" name="url_str" class="form-control" style="width: 100%"
+                                        />
+                            </div>
+                             <div class="col-md-4"> 
+                                <label class="control-label">范围：</label>
+                                <input id="range_str" name="range_str" class="form-control" style="width: 100%"/>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="control-label">&nbsp;&nbsp;&nbsp;</label>
+                                <span class="input-group-btn">
+                                <input type="hidden" id="fid">
+                                        <button type="button" id="doSearch" onclick="searchData()" class="btn green-haze">查找 &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
+                                        
+                                </span>
+                                <span class="input-group-btn">
+                                       <button type="button" id="newWhitelist" onclick="saveOrUp(-1)"  class="btn green-haze">新增&nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
+                                </span>
+                            </div>
+                            <!-- <div class="col-md-2">
+                             	<label class="control-label">&nbsp;&nbsp;&nbsp; </label>
+                               		<span class="input-group-btn">
+                                        <button type="button" id="doSearch" class="btn green-haze">查找 &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
+                                    </span>
+                            </div> -->
+                            <!-- <div class="col-md-2">
+                                <label class="control-label">其他筛选：</label>
+                                <input id="otherFilter" name="otherFilter" class="form-control" style="width: 100%"
+                                       data-placeholder="选择其他" />
+                            </div> -->
+                        </div>
+                        <div class="row form-group">
+                            <!-- <div class="col-md-6">
+                                <label class="control-label">标签<span>（<a class="font-red" id="addLabel">点击添加</a>）</span>：</label>
+                                <input id="labels" name="labels" class="form-control" style="width: 100%"
+                                       data-placeholder="选择标签" />
+                            </div> -->
+                            <!-- <div class="col-md-6"> -->
+                            <!-- <div class="col-md-11">
+                                <label class="control-label">&nbsp;</label>
+                                <div class="input-group">
+                                    <div class="input-cont">
+                                        <input type="text" id="kw" placeholder="输入任务关键词" class="form-control">
+                                    </div>
+                                    <span class="input-group-btn">
+                                        <button type="button" id="doSearch" class="btn green-haze">查找 &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
+                                    </span>
+                                    &nbsp;
+                                    <span class="input-group-btn">
+                                        <button type="button" id="doSearch" class="btn green-haze">拉取冷数据 &nbsp; <i class="m-icon-swapright m-icon-white"></i></button>
+                                    </span>
+                                </div>
+                            </div> -->
+                        </div>
+                    </form>
+                    <!-- end form -->
+                    <div class="">
+                    <table class="table table-hover table-advance table-striped" id="dataTable" style="width:100%;">
+                        <thead>
+                        <tr>
+                            <th>URL</th>
+                            <th>范围</th>
+                            <th>操作</th>
+                            <!-- <th>调度状态</th>
+                            <th>运行状态</th>
+                            <th>更新时间</th>
+                            <th>下次运行时间</th>
+                            <th>操 作</th> -->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="editLabels" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false" >
+                <div class="modal-header">
+                    <h4 style="margin-bottom: 1px; margin-top: 1px">Job标签管理</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="alert alert-success alert-borderless" style="margin-bottom: 5px">
+                        <span>已有标签</span>
+                        <hr style="margin: 5px 0"/>
+                        <div style="margin-bottom: 10px" id="allreadyLabels">
+                            <!-- 标签信息再js生成 -->
+                        </div>
+                        <input id="modal-labels" name="labels" class="form-control" style="width: 100%"
+                               data-placeholder="选择标签" />
+                        <span class="help-block">选择添加标签</span>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+                    <button type="button" data-dismiss="modal" id="updateLabels" class="btn blue">保存</button>
+                </div>
+            </div>
+
+            <div id="switchJobRelations" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false" >
+                <div class="modal-header">
+                    <h4 style="margin-bottom: 1px; margin-top: 1px">任务依赖关系切换</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="alert alert-success alert-borderless" style="margin-bottom: 5px">
+                        <span>当前任务</span>
+                        <hr style="margin: 5px 0"/>
+                        <div style="margin-bottom: 10px" id="currentJobName">
+                        </div>
+                        <span>依赖转给下面任务</span>
+                        <hr style="margin: 5px 0"/>
+                        <input id="switchJobName" name="switchJobName" class="form-control" style="width: 60%"/>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+                    <button type="button" data-dismiss="modal" id="updateRelations" class="btn blue">保存</button>
+                </div>
+            </div>
+            
+            <div id="idHtml" style="display: none">
+				<div class="row form-group" style="margin-left: 5%">
+					<div class="input-group input-cont col-md-4">
+						<input type="text" name="urlStr" id="urlstr" placeholder="URL" class="form-control" style="width: 130%" maxlength="250">
+					</div>
+				</div>
+				<div class="row form-group" style="margin-left: 5%">
+					<div class="input-group input-cont col-md-4">
+						<input type="text" name="rangeStr" id="rangestr" placeholder="范围" class="form-control" style="width: 130%" maxlength="250">
+					</div>
+				</div>
+				<!-- <button data-bb-handler="cancel" type="button" class="btn btn-danger">取消</button>
+				<button data-bb-handler="ok" type="button" class="btn btn-info">保存</button> -->
+			</div>
+
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+<!-- BEGIN FOOTER -->
+
+<!-- END FOOTER -->
+
+</body>
+
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+<!-- <script src="/assets/page/scripts/workshop/task-list-33b267f1ff.min.js" type="text/javascript"></script> -->
+
+
+<!-- END BODY -->
+<script th:inline="javascript">
+
+    jQuery(document).ready(function() {
+        /* TaskList.init({
+            contextPath: '',
+            userId: [[${user.id}]]
+        }); */
+        //initJobLevel();
+        initTables();
+    });
+    var waitDelData = [[${waitDelData}]];
+    var reRunThisJob = function(schedulerId) {
+    	/* if(waitDelData!=0){
+    		alert("拉取失败，目前有还有"+waitDelData+"条冷数据正在删除，请稍候操作");
+    		return;
+    	} */
+        bootbox.prompt({
+          title: '<i class="icon-speedometer font-blue"></i> 请选择日期',
+          inputType: 'datetime',
+          callback: function(result){
+            //console.log('run this job: ' + schedulerId + ', at ' + result);
+            if(!_.isNull(result)) {
+           	  /* if(result==""){
+               	alert("请选择冷数据日期");
+               	return ;
+              } */
+              var details = {
+                runMode: 0,
+                runDateTime: result.trim(),
+              };
+              $.ajax({
+                type : "POST",
+                url  : "/goshawk/getColdDataByTask.do",
+                async: false,
+                data : {
+                  "coldTime" : result.trim()
+                },
+                dataType : 'json',
+                success : function(data) {
+                  
+                  if (data.errorCode == 0) {
+                    toastr['success']('操作成功', '提示');
+                    /* var page = self.oTable.page.info().page;
+                    self.oTable.page(page).draw(false); */
+                  } else {
+                    toastr['error']('', data.message);
+                  }
+                },
+                error: function(e) {
+                  toastr['error']('运行失败' + e.statusText, '错误');
+                }
+              });
+
+            }
+          }
+        });
+      }
+    
+    var oTable;
+    var initTables = function() {
+    	var table = $('#dataTable');
+        oTable = table.DataTable({
+          'serverSide' : true,
+          'ordering' : false,
+          'searching' : false,
+          'scrollX' : true,
+          'ajax' : {
+            url : '/goshawk/searchFlumeTaskManage.do',
+            data : function(d){
+              d.columns = null;
+              //d.search = null;
+              d['urlStr'] = $("#url_str").val();
+              d['rangeStr'] = $("#range_str").val();
+            },
+            dataSrc : function(rs) {
+              return rs.data;
+            },
+          },
+          'columns' : [
+            /* { data: null,
+              render: function(data, type, full, meta){
+                var innerHtml = "<input type='checkbox'  data-set='" + data.id + "' data-status='"+data.is_del+"' class='checkboxes' style='width: 15px; height: 15px;' />";
+                return innerHtml;
+              }
+            }, */
+            { data : null,
+              className : 'text-left',
+              render: function(data, type, full, meta) {
+                var dir = data.url_str;
+                return dir;
+              }
+            },
+            { data : "range_str"},
+            { data : null,
+              render: function(data, type, full, meta) {
+                var innerHtml = '<a href="javascript:" onclick="editFlume(\''+data.id+'\')">编辑</a>&nbsp;&nbsp;<a href="javascript:delColdData('+data.id+')">删除</a>';
+                /* if (data.is_del == 0) {
+                  innerHtml = "<span class='label bg-yellow'>未删除</span>"
+                } else if (data.is_del == 2) {
+                  innerHtml = "<span class='label bg-green'>删除成功</span>"
+                } else if (data.is_del == 3) {
+                  innerHtml = "<span class='label bg-red' style='cursor: pointer' title='错误提示："+data.error+"' >删除失败</span>"
+                } else if (data.is_del == 1) {
+                  innerHtml = "<span class='label bg-grey'>删除中</span>"
+                } */
+                return innerHtml;
+              }
+            },
+          ]
+        });
+        
+      };
+      
+      //0未删除 1删除中 2 删除成功 3删除失败
+      var initJobLevel = function() {
+    	    self.jobLevels = [{id: -1, text: '全部'}, {id: 0, text: '未删除'}, {id: 1, text: '删除中'},
+    	                    {id: 2, text: '删除成功'},{id: 3, text: '删除失败'}];
+    	    $('#cold_status').select2({
+    	      minimumResultsForSearch:-1,
+    	      "language": {
+    	        "noResults": function() {
+    	          return "无搜索结果";
+    	        }
+    	      },
+    	      placeholder: '选择冷数据状态',
+    	      data: self.jobLevels
+    	    }).on('change', function(item) {
+    	      /* self.searchForm.jobLevel = $(this).val();
+    	      self.oTable.ajax.reload(); */
+    	    });
+    	    $('#cold_status').val(-1).trigger('change');
+    	  };
+    	  
+    var clickedAll = function(obj){
+    	
+    	var isChe = $(obj).attr("checked");
+    	if(isChe == "checked"){
+    		//选中所有
+    		$(".checkboxes").each(function(){
+    			$(this).attr("checked", 'checked');
+    		});
+    	}else{
+    		//取消选中
+    		$(".checkboxes").each(function(){
+    			$(this).prop("checked", false);
+    		});
+    	}
+    }
+    
+    var delColdData = function(fid) {
+    	
+    	var sure = confirm('是否确定删除该flume管理数据？');
+    	if(sure){
+    		$.ajax({
+    			"type":"POST",
+    			"data":{
+    				fid:fid
+    			},
+    			"url":"/goshawk/delFlumeManage.do",
+    			success:function (data) {
+    				if(data.errorCode==0){
+    					toastr['success']('删除成功', '提示');
+    					oTable.ajax.reload();
+    				}else{
+    					toastr['error'](data.message, '提示');
+    					oTable.ajax.reload();
+    				}
+    				
+    			},
+    			error:function() {
+    				alert("未知错误");
+    			}
+    		});
+    	}
+    }
+    
+    function searchData(){
+    	oTable.ajax.reload();
+    }
+    
+    var newWhitelistHtml = "";
+    function editFlume(fid){
+    	$.ajax({
+			"type":"POST",
+			'async': false,
+			"data":{
+				fid:fid
+			},
+			"url":"/goshawk/getFlumeManageDetail.do",
+			success:function (data) {
+				$("#urlstr").attr("value",data.url_str); 
+				$("#rangestr").attr("value",data.range_str);
+			},
+			error:function() {
+				alert("未知错误");
+			}
+		});
+    	saveOrUp(fid);
+    }
+
+	//创建HIVE表
+	function saveOrUp(id){
+		var titleStr = "";
+		var labelStr = "";
+		var mess = "";
+		if(id==-1){
+			$("#fid").val("");
+			$("#urlstr").attr("value",""); 
+			$("#rangestr").attr("value","");
+			titleStr = "添加Flume管理数据";
+			labelStr = "保存";
+		}else{
+			$("#fid").val(id);
+			//查询数据
+			titleStr = "修改Flume管理数据"
+			labelStr = "更新";
+		}
+		
+		newWhitelistHtml = '<form id="hiddenForm" enctype="application/json" class=""alert alert-success alert-borderless>'
+				+ $("#idHtml").html()
+				+ '</form>';
+		bootbox.dialog({
+			title: titleStr,
+			message: newWhitelistHtml,
+			size: "large",
+			buttons: {
+				cancel: {
+					label: "取消",
+					className: 'btn-danger'
+				},
+				ok: {
+					label: labelStr,
+					className: 'btn-info',
+					callback: function () {
+						//console.log(JSON.stringify($('#hiddenForm').serializeObject()));
+						//var data = JSON.stringify($('#hiddenForm').serializeObject());
+						//alert($('#hiddenForm').serializeObject().urlStr);
+						var urlStr = $('#hiddenForm').serializeObject().urlStr;
+						var rangeStr = $('#hiddenForm').serializeObject().rangeStr;
+						if(urlStr == ""){
+							alert("URL不能为空");
+							$("#urlStr").focus();
+							return false;
+						}
+						if(rangeStr==""){
+							alert("范围不能为空");
+							$("#rangeStr").focus();
+							return false;
+						}
+						
+						var data = {}
+						data.fid = $("#fid").val();
+						data.urlStr = urlStr;
+						data.rangeStr = rangeStr;
+						
+						$.ajax({
+							'url': '/goshawk/saveOrUpdateFlumeManage.do',
+							'type': 'POST',
+							'async': true,
+							'data': data,
+							'success': function (resp) {
+								if (resp.status === "ok") {
+									toastr.success(resp.msg, labelStr+"成功");
+									$('#dataTable').DataTable().ajax.reload(null, false);
+								} else {
+									toastr.error(resp.msg, labelStr+'失败');
+								}
+							}
+						});
+					}
+				}
+			}
+		})
+	}
+	/* $('#newWhitelist').click(function (id) {
+		
+		
+	}); */
+    
+
+</script>
+</html>
+

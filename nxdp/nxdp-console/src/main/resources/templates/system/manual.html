@@ -1,0 +1,69 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head>
+    <title th:fragment="html-title">人工干预</title>
+</head>
+<head th:include="common :: common-html-header"></head>
+<!-- END HEAD -->
+
+<body>
+<!-- BEGIN PAGE HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END PAGE HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <!-- BEGIN PAGE CONTENT -->
+    <div class="page-content">
+        <!-- BEGIN CONTAINER -->
+        <div class="container">
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a>系统设置</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li class="active">人工干预</li>
+            </ul>
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span>人工干预</span>
+                    </div>
+                    <div class="actions"></div>
+                </div>
+                <div class="portlet-body">
+                    <!-- BEGIN 内容 -->
+                    <a class="btn btn-primary active" href="javascript:;" id="sync-accounts-button" role="button">同步账户到HUE</a>
+                    <!-- END 内容 -->
+                </div>
+            </div>
+        </div>
+        <!-- END CONTAINER -->
+    </div>
+    <!-- END PAGE CONTENT -->
+</div>
+<!-- END PAGE CONTAINER -->
+
+
+<!-- BEGIN FOOTER -->
+<div th:replace="common :: common-page-footer"></div>
+<!-- END FOOTER -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+</body>
+<!-- END BODY -->
+</html>
+<script type="text/javascript">
+$(function(){
+	$('#sync-accounts-button').click(function(){
+		$.post('/system/manual/sync-all-users-to-hue.do',function(data){
+			toastr['success']('操作成功', '提示');
+		});
+	})
+})
+
+</script>

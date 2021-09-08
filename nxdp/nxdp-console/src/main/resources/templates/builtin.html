@@ -1,0 +1,259 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+<title th:fragment="html-title">转转调度平台</title>
+<style></style>
+</head>
+<!-- END HEAD -->
+
+<body>
+  <!-- BEGIN HEADER -->
+  <div th:replace="common :: common-page-header"></div>
+  <!-- END HEADER -->
+
+  <div class="page-container">
+    <div class="page-content">
+      <div class="container">
+        <!-- BEGIN PAGE BREADCRUMB -->
+        <ul class="breadcrumb">
+          <li><a href="#">数据开发</a> <span class="divider">/</span></li>
+          <li><a href="/workshop/task-list">任务列表</a> <span class="divider">/</span></li>
+          <li class="active">内置变量</li>
+        </ul>
+        <!-- END PAGE BREADCRUMB -->
+        <!-- BEGIN PANEL CONTAINER -->
+        <!-- BEGIN BUSINESS CONTENT -->
+        <div class="portlet light bordered">
+          <div class="portlet-title">
+            <div class="caption font-green-sharp">
+              <span>内置变量</span>
+            </div>
+          </div>
+          <div class="portlet-body">
+            <blockquote>
+              <p>调度平台任务脚本中支持的变量替换</p>
+              <footer>系统自动调度按当前执行时间作为关联时间去计算任务中用到的变量；</footer>
+              <footer>用户手动重跑，按选择的重跑时间作为关联时间去计算任务中用到的变量；</footer>
+              <footer>$bash{***}的变量默认就是当前系统时间作为关联时间，如果需要按用户选择重跑时间去动态改变，可以这样编写$bash{date -d'${dateSuffix}' +%Y%m%d}；</footer>
+            </blockquote>
+
+            <div class="table-responsive">
+              <table class="table table-hover table-advance table-bordered" style="width: 100%;">
+                <tr>
+                  <th>变量</th>
+                  <th>例子</th>
+                  <th>说明</th>
+                </tr>
+                <tr>
+                  <td>${tempCatalog}</td>
+                  <td>/tmp/dw_tmp_file/</td>
+                  <td>临时目录</td>
+                </tr>
+                <tr>
+                  <td>${outFileSuffix}</td>
+                  <td>2014-04-03，如果手动选择，则为选择日期-1天</td>
+                  <td>导出文件名的后缀，昨天日期</td>
+                </tr>
+                <tr class="bg-success">
+                  <td>$bash{date +%Y%m%d -d '${dealDate} +1 day'}<span class="text-danger"><strong>&nbsp;*&nbsp;</strong></span></td>
+                  <td>-3</td>
+                  <td>相对于当天（今天）的日期差值，过去时为负数，将来时为正数</td>
+                </tr>
+                <tr>
+                  <td>${startDate}</td>
+                  <td>'2014-04-03'</td>
+                  <td>昨天日期，如果手动选择，则为选择日期-1天</td>
+                </tr>
+                <tr>
+                  <td>${dateSuffix}</td>
+                  <td>20140403</td>
+                  <td>默认任务执行的前一天，如果手动选择，则为选择日期-1天</td>
+                </tr>
+                <tr>
+                  <td>${dateHourSuffix}</td>
+                  <td>2015061117</td>
+                  <td>当前日期小时后缀</td>
+                </tr>
+                <tr>
+                  <td>${dateBeforeOneHourSuffix}</td>
+                  <td>2015061116</td>
+                  <td>当前日期前一小时后缀</td>
+                </tr>
+                <tr>
+                  <td>${monthSuffix}</td>
+                  <td>201404</td>
+                  <td>月份后缀</td>
+                </tr>
+                <tr>
+                  <td>${lastMonthSuffix}</td>
+                  <td>201403</td>
+                  <td>上个月份后缀</td>
+                </tr>
+                <!-- <tr>
+                  <td>?</td>
+                  <td>2014-04-03</td>
+                  <td><s>以JDBC参数方式传入，昨天日期，废弃使用</s></td>
+                </tr> -->
+                <tr>
+                  <td>${today}</td>
+                  <td>'2015-08-24'</td>
+                  <td>当日，如果手动选择，则为选择日期</td>
+                </tr>
+                <tr>
+                  <td>${todayDateTime}</td>
+                  <td>yyyy-MM-dd HH:mm:ss</td>
+                  <td>当前日期时间，如果手动选择，则为选择日期时间</td>
+                </tr>
+                <tr>
+                  <td>${todaySuffix}</td>
+                  <td>20150824</td>
+                  <td>当日，如果手动选择则为选择日期</td>
+                </tr>
+                <tr>
+                  <td>${dealDate}</td>
+                  <td>'2014-04-03'</td>
+                  <td>昨日，如果手动选择，则为选择日期-1天</td>
+                </tr>
+                <tr>
+                  <td>${monthId}</td>
+                  <td>'2014M04'</td>
+                  <td>昨日的月，如果手动选择，则为选择日期-1天的月份</td>
+                </tr>
+                <tr>
+                  <td>${monthBegin}</td>
+                  <td>'2014-04-01'</td>
+                  <td>昨日的月初，如果手动选择，则为选择日期-1天的月初</td>
+                </tr>
+                <tr>
+                  <td>${monthEnd}</td>
+                  <td>'2014-04-30'</td>
+                  <td>昨日的月末，如果手动选择，则为选择日期-1天的月末</td>
+                </tr>
+                <tr>
+                  <td>${monthBeginSuffix}</td>
+                  <td>20140401</td>
+                  <td>昨日的月初，如果手动选择，则为选择日期-1天的月初</td>
+                </tr>
+                <tr>
+                  <td>${monthEndSuffix}</td>
+                  <td>20140430</td>
+                  <td>昨日的月末，如果手动选择，则为选择日期-1天的月末</td>
+                </tr>
+                <tr>
+                  <td>${weekId}</td>
+                  <td>'2014W15'</td>
+                  <td>昨日周WeekId，如果手动选择，则为选择日期-1天的周WeekId</td>
+                </tr>
+                <tr>
+                  <td>${weekBegin}</td>
+                  <td>'2014-04-06'(周日)</td>
+                  <td>跨年了，该值就变成20**-01-01，如果手动选择，则为选择日期-1天的周日</td>
+                </tr>
+                <tr>
+                  <td>${weekEnd}</td>
+                  <td>'2014-04-12'(周六)</td>
+                  <td>跨年了，该值变成20**-12-31</td>
+                </tr>
+                <tr>
+                  <td>${weekBeginSuffix}</td>
+                  <td>20140406(周日)</td>
+                  <td>跨年了，该值就变成20**0101</td>
+                </tr>
+                <tr>
+                  <td>${weekEndSuffix}</td>
+                  <td>20140412(周六)</td>
+                  <td>跨年了，该值变成20**1231</td>
+                </tr>
+
+
+                <tr>
+                  <td>${weekBeginCn}</td>
+                  <td>'2015-08-24'(周一)</td>
+                  <td>昨日相对的周一，如果手动选择，则为选择日期-1天的周一</td>
+                </tr>
+                <tr>
+                  <td>${weekEndCn}</td>
+                  <td>'2015-08-30'(周日)</td>
+                  <td>昨日相对的周日，如果手动选择，则为选择日期-1天的周日</td>
+                </tr>
+                <tr>
+                  <td>${weekBeginCnSuffix}</td>
+                  <td>20150824(周一)</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>${weekEndCnSuffix}</td>
+                  <td>20150830(周日)</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>${sevenDaysBefore}</td>
+                  <td>date_sub(?,interval 7 day)</td>
+                  <td>取七天前日期</td>
+                </tr>
+                <tr>
+                  <td>${sevenDaysBeforeSuffix}</td>
+                  <td>日期格式是 yyyyMMdd</td>
+                  <td>取7天前日期</td>
+                </tr>
+                <tr>
+                  <td>${thirtyDaysBeforeSuffix}</td>
+                  <td>日期格式是 yyyyMMdd</td>
+                  <td>取30天前日期</td>
+                </tr>
+                <tr>
+                  <td>${sixtyDaysBeforeSuffix}</td>
+                  <td>日期格式是 yyyyMMdd</td>
+                  <td>取60天前日期</td>
+                </tr>
+                <tr>
+                  <td>${monthOnlySuffix}</td>
+                  <td>monthOfYear</td>
+                  <td>日期的月份(06)</td>
+                </tr>
+                <tr>
+                  <td>$bash{date +%Y%m%d -d '-1 hour'}</td>
+                  <td>{}中的bash日期表达式用户自定义</td>
+                  <td>按表达式解析为准</td>
+                </tr>
+                <tr>
+                  <td>${dataFile}</td>
+                  <td>按一定规则生成，含module_name</td>
+                  <td>数据文件路径</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- END BUSINESS CONTENT -->
+        <!-- END PANEL CONTAINER -->
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  <!-- BEGIN PRE-FOOTER -->
+  <div th:include="common :: common-page-footer"></div>
+  <!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+<script th:inline="javascript">
+  
+</script>
+</html>
+
+
+

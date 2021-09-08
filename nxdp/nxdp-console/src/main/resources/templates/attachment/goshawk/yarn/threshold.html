@@ -1,0 +1,248 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head>
+    <title th:fragment="html-title">数据开发-阈值列表</title>
+</head>
+<head th:include="common :: common-html-header"></head>
+<!-- END HEAD -->
+
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a href="/goshawk/index">苍鹰系统</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <a>YARN管理</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li class="active">阈值管理
+                </li>
+            </ul>
+
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span>阈值信息</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-info" onclick="addThreshold()">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="portlet-body">
+                    <div class="portlet-body row form-group" id="thresholds">
+
+
+                        <div>
+                            <div class="col-md-3"><label class="control-label">key：</label></div>
+                            <div class="col-md-3"><label class="control-label">name：</label></div>
+                            <div class="col-md-3"><label class="control-label">value：</label></div>
+                            <div class="col-md-3"><label class="control-label">操作：</label></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+<!-- BEGIN FOOTER -->
+
+<!-- END FOOTER -->
+</body>
+
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+<!-- END BODY -->
+<script th:inline="javascript">
+	function plus(thresholdId) {
+		var input = $("#threshold-value-" + thresholdId);
+		var currValue = parseInt(input.val());
+		var _value = currValue || 0;
+		input.val(_value + 1);
+	}
+
+	function minus(thresholdId) {
+		var input = $("#threshold-value-" + thresholdId);
+		var currValue = parseInt(input.val());
+		var _value = currValue || 0;
+		var newValue = _value - 1;
+		if (newValue > 0) {
+			input.val(newValue);
+		}
+	}
+
+	function digitOnly(self) {
+		var value = $(self).val();
+		var _value = value.replace(/[^\d]/g, "") || 0;
+		$(self).val(_value);
+	}
+
+	function addThreshold(threshold) {
+		var newThreshold = !threshold;
+		var t = threshold || {};
+
+		var id = t.id || Math.round(Math.random() * 1000000);
+		var key = t.key || "";
+		var name = t.name || "";
+		var value = t.value || "0";
+
+		var html = ""
+				+ '<div new-threshold="' + newThreshold + '" id="threshold-' + id + '">'
+				+ '<div class="col-md-3">'
+				+ '<input type="text" class="form-control" id="threshold-key-' + id + '" value="' + key + '">'
+				+ '</div>'
+				+ '<div class="col-md-3">'
+				+ '<input type="text" class="form-control" id="threshold-name-' + id + '" value="' + name + '">'
+				+ '</div>'
+				+ '<div class="col-md-3">'
+				+ '<input type="button" class="form-control" value="-" style="width: 12%;display: inline" onclick="minus(' + id + ')"/>'
+				+ '<input type="text" class="form-control" id="threshold-value-' + id + '" value="' + value + '" style="width: 76%;display: inline" oninput="digitOnly(this)"/>'
+				+ '<input type="button" class="form-control" value="+" style="width: 12%;display: inline" onclick="plus(' + id + ')"/>'
+				+ '</div>'
+				+ '<div class="col-md-3">'
+				+ '<button class="btn btn-info" onclick="remove(' + id + ')">'
+				+ '<span class="glyphicon glyphicon-minus"></span>'
+				+ '</button>'
+				+ '<button class="btn btn-info" onclick="save(' + id + ')">'
+				+ '<span class="glyphicon">保存</span>'
+				+ '</button>'
+				+ '</div>'
+				+ '</div>';
+		$("#thresholds").append(html);
+	}
+
+	function remove(thresholdId) {
+		var elmt = $("#threshold-" + thresholdId);
+		var t = getThreshold(thresholdId);
+
+		if (confirm("确认删除" + t.name + "吗")) {
+			if (t.isNew) {
+				elmt.remove();
+			} else {
+				$.ajax({
+					'url': '/goshawk/yarn/threshold/delete.do',
+					'type': 'POST',
+					'async': true,
+					'dataType': 'json',
+					'data': "thresholdId=" + t.id,
+					'success': function (result) {
+						if (result.status === "ok") {
+							elmt.remove();
+						} else {
+							alert(result.error);
+						}
+					}
+				})
+			}
+		}
+	}
+
+	function getThreshold(thresholdId) {
+		var elmt = $("#threshold-" + thresholdId);
+		var t = {};
+		t.isNew = elmt.attr("new-threshold") === "true";
+		t.id = parseInt(thresholdId);
+		t.key = $("#threshold-key-" + thresholdId).val();
+		t.name = $("#threshold-name-" + thresholdId).val();
+		t.value = parseInt($("#threshold-value-" + thresholdId).val());
+		console.log(t);
+		return t;
+	}
+
+	function save(thresholdId) {
+		var elmt = $("#threshold-" + thresholdId);
+		var t = getThreshold(thresholdId);
+		if (t.isNew) {
+			delete t.id;
+		}
+		if (!t.key) {
+			alert("key不能为空");
+			$("#threshold-key-" + thresholdId).select();
+			return;
+		}
+		if (!t.name) {
+			alert("name不能为空");
+			$("#threshold-name-" + thresholdId).select();
+			return;
+		}
+		if (t.value <= 0) {
+			alert("value必须大于0");
+			$("#threshold-value-" + thresholdId).select();
+			return;
+		}
+
+		$.ajax({
+			'url': '/goshawk/yarn/threshold/saveOrUpdate.do',
+			'contentType': "application/json;charset=UTF-8",
+			'type': 'POST',
+			'async': true,
+			'dataType': 'json',
+			'data': JSON.stringify(t),
+			'success': function (result) {
+				if (result.status === "ok") {
+					alert("保存成功");
+				} else {
+					alert(result.error);
+				}
+			}
+		});
+	}
+
+	$(document).ready(function () {
+		$.ajax({
+			'url': '/goshawk/yarn/threshold/list.do',
+			'type': 'GET',
+			'async': true,
+			'dataType': 'json',
+			'success': function (result) {
+				if (result.status === "ok") {
+					result.data.forEach(function (t) {
+						addThreshold(t);
+					})
+				} else {
+					alert(result.error);
+				}
+			}
+		})
+	});
+
+</script>
+<style type="text/css">
+	.btn-info {
+		color: #fff;
+		background-color: #FF5959;
+		border-color: #b59279;
+		margin-bottom: 10px;
+	}
+
+	.portlet.light .portlet-body {
+		padding-top: 0px;
+	}
+
+</style>
+</html>
+

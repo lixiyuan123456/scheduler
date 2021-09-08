@@ -1,0 +1,12 @@
+## python 依赖 ##
+
+需要安装yum install mysql-devel.x86_64
+
+
+MySQLdb -- pip install MySQL-python
+# 无法在线安装则可以离线安装，copy以下文件到/usr/local/lib/python2.7/site-packages目录
+_mysql.so
+_mysql_exceptions.py
+MySQLdb
+
+或者 执行 yum install MySQL-python

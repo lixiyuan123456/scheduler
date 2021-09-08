@@ -1,0 +1,639 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+<title th:fragment="html-title">转转调度平台</title>
+<style></style>
+</head>
+<!-- END HEAD -->
+
+
+
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <!-- BEGIN PAGE BREADCRUMB -->
+            <ul class="breadcrumb">
+              <li><a href="/goshawk/index">苍鹰系统</a> <span class="divider">/</span></li>
+              <li><a href="#">HDFS</a> <span class="divider">/</span></li>
+              <li class="active">冷数据</li>
+            </ul>
+            <!-- END PAGE BREADCRUMB -->
+            
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span>冷数据信息</span>
+                    </div>
+                    <div class="text-right">
+                        <button class="btn btn-large btn-success" type="button" id="displayColdListBtn">查看白名单</button>
+                    </div>
+                </div>
+
+                <div class="portlet-body">
+                    <!-- search  form -->
+                    <form role="form" class="alert alert-success alert-borderless">
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label class="control-label">冷数据Dir：</label>
+                                <div class="input-group">
+                                  <input id="cold_dir" name="cold_dir" class="form-control" style="width: 500px;" placeholder="请输入冷数据路径" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">状态：</label>
+                                <div class="input-group">
+                                    <input id="cold_status" name="cold_status" class="form-control" style="width: 100px;" placeholder="选择状态" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">删除中冷数据个数：</label>
+                                <input disabled="disabled" class="form-control" th:attr="value=${waitDelData}" />
+                            </div>
+                        </div>
+                        <div class="controls" style="margin-top: 25px;">
+                          <div class="text-right">
+                            <button type="button" id="doSearch" onclick="searchData()" class="btn btn-info">查找</button>
+                            <button type="button" onclick="reRunThisJob(3,12312312)" class="btn btn-primary">拉取冷数据</button>
+                          </div>
+                        </div>
+                    </form>
+                    <!-- end form -->
+                    
+                    
+                    <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h4>冷数据列表</h4>
+                        <div class="text-right" style="margin-top: -40px;">
+                          <button type="button" onclick="deleteAllColds()" class="btn btn-warning">全部删除</button>
+                          <button type="button" onclick="delColdData()" class="btn btn-warning">删除选中冷数据</button>
+                          <button type="button" onclick="deleteSelectedColds()" class="btn btn-danger">强制删除选中冷数据</button>
+                        </div>
+                      </div>
+                      <div class="panel-body">
+                        <table class="table table-hover table-advance table-striped" id="dataTable" style="width:100%;">
+                            <thead>
+                            <tr>
+                                <th><input type="checkbox" class="group-checkable" title="全选" onclick="clickedAll(this)"/></th>
+                                <th>路径</th>
+                                <th>时间</th>
+                                <th>状态</th>
+                                <!-- <th>调度状态</th>
+                                <th>运行状态</th>
+                                <th>更新时间</th>
+                                <th>下次运行时间</th>
+                                <th>操 作</th> -->
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="editLabels" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false" >
+                <div class="modal-header">
+                    <h4 style="margin-bottom: 1px; margin-top: 1px">Job标签管理</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="alert alert-success alert-borderless" style="margin-bottom: 5px">
+                        <span>已有标签</span>
+                        <hr style="margin: 5px 0"/>
+                        <div style="margin-bottom: 10px" id="allreadyLabels">
+                            <!-- 标签信息再js生成 -->
+                        </div>
+                        <input id="modal-labels" name="labels" class="form-control" style="width: 100%"
+                               data-placeholder="选择标签" />
+                        <span class="help-block">选择添加标签</span>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+                    <button type="button" data-dismiss="modal" id="updateLabels" class="btn blue">保存</button>
+                </div>
+            </div>
+
+            <div id="switchJobRelations" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false" >
+                <div class="modal-header">
+                    <h4 style="margin-bottom: 1px; margin-top: 1px">任务依赖关系切换</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="alert alert-success alert-borderless" style="margin-bottom: 5px">
+                        <span>当前任务</span>
+                        <hr style="margin: 5px 0"/>
+                        <div style="margin-bottom: 10px" id="currentJobName">
+                        </div>
+                        <span>依赖转给下面任务</span>
+                        <hr style="margin: 5px 0"/>
+                        <input id="switchJobName" name="switchJobName" class="form-control" style="width: 60%"/>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+                    <button type="button" data-dismiss="modal" id="updateRelations" class="btn blue">保存</button>
+                </div>
+            </div>
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+<!-- BEGIN FOOTER -->
+
+<!-- END FOOTER -->
+
+
+
+
+<div id="coldWhiteListModal" class="modal container fade" data-backdrop="static" data-keyboard="false" style="max-height: 80%;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+    <h4 class="modal-title">白名单列表</h4>
+  </div>
+  <div class="modal-body">
+    <div class="panel panel-default">
+      <div class="panel-heading">快速筛选</div>
+      <div class="panel-body">
+        <div class="form-inline" id="coldWhiteListQueryConditon">
+          <div class="form-group">
+            <label class="control-label">白名单关键词：</label>
+            <div class="input-group">
+              <input type="text" class="form-control" name="keywords" style="width: 540px;" placeholder="白名单关键词"/>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" id="coldWhiteListQueryConditonQueryBtn" style="float: right;">查询</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">列表</div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-hover table-advance table-bordered" id="coldWhiteListTable" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>白名单关键词</th>
+                <th>创建人</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer"></div>
+</div>
+
+
+
+
+</body>
+
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+<!-- <script src="/assets/page/scripts/workshop/task-list-33b267f1ff.min.js" type="text/javascript"></script> -->
+
+
+<!-- END BODY -->
+<script th:inline="javascript">
+
+var currentUserName = [[${session.current_user.userName}]];
+
+    jQuery(document).ready(function() {
+        /* TaskList.init({
+            contextPath: '',
+            userId: [[${user.id}]]
+        }); */
+        initJobLevel();
+        initTables();
+    });
+    var waitDelData = [[${waitDelData}]];
+    var reRunThisJob = function(schedulerId) {
+    	/* if(waitDelData!=0){
+    		alert("拉取失败，目前有还有"+waitDelData+"条冷数据正在删除，请稍候操作");
+    		return;
+    	} */
+        bootbox.prompt({
+          title: '<i class="icon-speedometer font-blue"></i> 请选择日期',
+          inputType: 'datetime',
+          callback: function(result){
+            //console.log('run this job: ' + schedulerId + ', at ' + result);
+            if(!_.isNull(result)) {
+           	  /* if(result==""){
+               	alert("请选择冷数据日期");
+               	return ;
+              } */
+              var details = {
+                runMode: 0,
+                runDateTime: result.trim(),
+              };
+              $.ajax({
+                type : "POST",
+                url  : "/goshawk/getColdDataByTask.do",
+                async: false,
+                data : {
+                  "coldTime" : result.trim()
+                },
+                dataType : 'json',
+                success : function(data) {
+                  
+                  if (data.errorCode == 0) {
+                    toastr['success']('操作成功', '提示');
+                    /* var page = self.oTable.page.info().page;
+                    self.oTable.page(page).draw(false); */
+                  } else {
+                    toastr['error']('', data.message);
+                  }
+                },
+                error: function(e) {
+                  toastr['error']('运行失败' + e.statusText, '错误');
+                }
+              });
+
+            }
+          }
+        });
+      }
+    
+    var oTable;
+    var initTables = function() {
+    	var table = $('#dataTable');
+        oTable = table.DataTable({
+          'serverSide' : true,
+          'ordering' : false,
+          'searching' : false,
+          'scrollX' : true,
+          'lengthMenu' : [ 500, 1000, 1500, 2000, 5000 ],
+          'ajax' : {
+            url : '/goshawk/search-colddata.do',
+            data : function(d){
+              d.columns = null;
+              d.search = null;
+              d['isDel'] = $("#cold_status").val();
+              d['coldDir'] = $("#cold_dir").val();
+            },
+            dataSrc : function(rs) {
+              return rs.data;
+            },
+          },
+          'columns' : [
+            { data: null,
+              render: function(data, type, full, meta){
+                var innerHtml = "<input type='checkbox'  data-set='" + data.id + "' data-status='"+data.is_del+"' class='checkboxes' style='width: 15px; height: 15px;' name='ids' value='"+data.id+"'/>";
+                return innerHtml;
+              }
+            },
+            { data : null,
+              className : 'text-left',
+              render: function(data, type, full, meta) {
+                var dir = data.dir;
+                /*if (jobName && jobName.length > 40) {
+                  jobName = jobName.substring(0, 35) + '...';
+                }*/
+
+                /* var innerHtml = "";
+                if (data.jobType == 1) {
+                  innerHtml = "<span class='server-icon extract-icon tooltips' data-original-title='数据抽取脚本' data-toggle='tooltip'></span>"
+                } else if (data.jobType == 2) {
+                  innerHtml = "<span class='server-icon mysql-icon tooltips' data-original-title='MySQL脚本' data-toggle='tooltip'></span>"
+                } else if (data.jobType == 3) {
+                  innerHtml = "<span class='server-icon hive-icon tooltips' data-original-title='hive脚本' data-toggle='tooltip'></span>"
+                } else if (data.jobType == 4) {
+                  innerHtml = "<span class='server-icon mapreduce-icon tooltips' data-original-title='MR脚本' data-toggle='tooltip'></span>"
+                } else if (data.jobType == 5) {
+                  innerHtml = "<span class='server-icon bash-icon tooltips' data-original-title='shell脚本' data-toggle='tooltip'></span>"
+                } else if (data.jobType == 7) {
+                  innerHtml = "<span class='server-icon spark-icon tooltips' data-original-title='spark脚本' data-toggle='tooltip'></span>"
+                } else if (data.jobType == 8) {
+                  innerHtml = "<span class='server-icon storm-icon tooltips' data-original-title='storm脚本' data-toggle='tooltip'></span>"
+                } else if (data.jobType == 9) {
+                  innerHtml = "<span class='server-icon wcrontab-icon tooltips' data-original-title='Wcrontab' data-toggle='tooltip'></span>"
+                } else if (data.jobType == 10) {
+                  innerHtml = "<span class='fa fa-table tooltips' data-original-title='WTable Dump' data-toggle='tooltip'></span>";
+                } else if (data.jobType == 12) {
+                  innerHtml = "<span class='fa spark-icon tooltips' data-original-title='Spark-Streaming' data-toggle='tooltip'></span>";
+                } else if (data.jobType == 13) {
+                  innerHtml = "<span class='fa icon-check tooltips' data-original-title='HDFS-Check' data-toggle='tooltip'></span>";
+                }  else if (data.jobType == 14) {
+                  innerHtml = "<span class='fa icon-bar-chart tooltips' data-original-title='MiniReport' data-toggle='tooltip'></span>";
+                } else if (data.jobType == 16) {
+                  innerHtml = "<span class='fa spark-icon tooltips' data-original-title='SPARK-SQL' data-toggle='tooltip'></span>";
+                } else if (data.jobType == 17) {
+                  innerHtml = "<span class='fa fa-table' data-original-title='Hive2WTable' data-toggle='tooltip'></span>";
+                } else if (data.jobType == 18) {
+                  innerHtml = "<span class='fa fa-table' data-original-title='Hive2TList' data-toggle='tooltip'></span>";
+                } else if (data.jobType == 21) {
+                  innerHtml = "<span class='server-icon bash-icon tooltips' data-original-title='shell脚本' data-toggle='tooltip'></span>"
+                } else {
+                  innerHtml = "<span class='label bg-grey'>其它</span>"
+                } */
+
+                return dir;
+              }
+            },
+            { data : "atimeStr"},
+            { data : null,
+              render: function(data, type, full, meta) {
+                var innerHtml = "";
+                if (data.is_del == 0) {
+                  innerHtml = "<span class='label bg-yellow'>未删除</span>"
+                } else if (data.is_del == 2) {
+                  innerHtml = "<span class='label bg-green'>删除成功</span>"
+                } else if (data.is_del == 3) {
+                  innerHtml = "<span class='label bg-red' style='cursor: pointer' title='错误提示："+data.error+"' >删除失败</span>"
+                } else if (data.is_del == 1) {
+                  innerHtml = "<span class='label bg-grey'>删除中</span>"
+                }
+                return innerHtml;
+              }
+            },
+            /* { data : null,
+              render: function(data, type, full, meta) {
+                var innerHtml = "";
+                if (data.jobState == 0) {
+                  innerHtml = "<span class='label bg-yellow'>未调度</span>"
+                } else if (data.jobState == 1) {
+                  innerHtml = "<span class='label bg-yellow-casablanca'>等待信号</span>"
+                } else if (data.jobState == 2) {
+                  innerHtml = "<span class='label bg-blue'>正在运行</span>"
+                } else if (data.jobState == 3) {
+                  innerHtml = "<span class='label bg-green'>运行成功</span>"
+                } else if (data.jobState == 4) {
+                  innerHtml = "<span class='label bg-red'>运行失败</span>"
+                } else if (data.jobState == 5) {
+                  innerHtml = "<span class='label bg-red-intense'>被kill</span>"
+                } else if (data.jobState == 6) {
+                  innerHtml = "<span class='label bg-yellow-casablanca'>等待资源</span>";
+                } else if (data.jobState == 7) {
+                  innerHtml = "<span class='label bg-red-thunderbird'>解析失败</span>";
+                } else if (data.jobState == 8) {
+                  innerHtml = "<span class='label bg-yellow-lemon'>暂停</span>";
+                } else if (data.jobState == 9) {
+                  innerHtml = "<span class='label bg-yellow-casablanca'>重复提交</span>";
+                } else if (data.jobState == 10) {
+                  innerHtml = "<span class='label bg-red-intense'>运行中断</span>";
+                } else if (data.jobState == 99) {
+                    innerHtml = "<span class='label bg-red-intense'>killing</span>";
+                }
+                return innerHtml;
+              }
+            },
+            { data : "updateTime"},
+            { data : "nextFireTime"},
+            { data: null,
+              render: function(data, type, full, meta){
+                var innerHtml1 = '<a href="javascript:;" onclick="TaskList.reRunJob(3,'+data.jobId+')" class="btn btn-sm btn-success" title="运行" data-toggle="tooltip" data-placement="top"><i class="icon-control-play"></i></a>';
+                if (data.jobState == 1) { //job提交运行，取消等待
+                  innerHtml1 = '<a href="javascript:;" onclick="TaskList.reRunJob(6,'+data.jobId+')" class="btn btn-sm btn-info" title="取消等待" data-toggle="tooltip" data-placement="top"><i class="icon-action-undo"></i></a>';
+                }
+                if (data.jobState == 2) { //job正在运行，是否kill
+                  innerHtml1 = '<a href="javascript:;" onclick="TaskList.reRunJob(7,'+data.jobId+')" class="btn btn-sm btn-danger" title="终止" data-toggle="tooltip" data-placement="top"><i class="icon-control-pause"></i></a>';
+                }
+                var innerHtml2 = '<a href="javascript:;" onclick="TaskList.reRunJob(4,'+data.jobId+')" class="btn btn-sm btn-danger" title="重跑" data-toggle="tooltip" data-placement="top"><i class="icon-control-end"></i></a>';
+
+                var innerHtml3 = '<a href="javascript:;" onclick="TaskList.reRunJob(5,'+data.jobId+')" class="btn btn-sm btn-danger" title="编辑" data-toggle="tooltip" data-placement="top"><i class="icon-note"></i></a>';
+
+                var options = '';
+                options += '<div class="dropdown" title="编辑" data-toggle="tooltip" data-placement="top" style="display: inline-block;">';
+                options += '<a id="dropdown-title" href="javascript:;"class="btn btn-sm btn-success" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="icon-note"></i></a>';
+                options += '<ul class="dropdown-menu" aria-labelledby="dropdown-title">';
+                options += '<li><a href="javascript:;" onclick="TaskList.editJob(1,'+data.jobId+','+data.jobId+',\''+ data.runTime+'\')"><i class="fa fa-arrow-circle-up font-blue"></i>上线</a></li>';
+                options += '<li><a href="javascript:;" onclick="TaskList.editJob(2,'+data.jobId+','+data.jobId+',\''+ data.runTime+'\')"><i class="fa fa-arrow-circle-down font-yellow"></i>下线</a></li>';
+                options += '<li><a target="_blank" href="'+ self.contextPath + '/dev/add/edit?id=' + data.jobId +'"><i class="fa fa-pencil font-green"></i>编辑详情</a></li>';
+                options += '<li><a href="javascript:;" onclick="TaskList.editJob(7, ' + data.jobId + ', ' + data.jobId + ', \'' + ((_.isNull(data.labels) || data.labels == 'null' || _.isUndefined(data.labels)) ? '' : data.labels)  + '\')"><i class="fa fa-tags font-green">标签管理</i></a></li>';
+                options += '<li><a href="javascript:;" onclick="TaskList.editJob(8, ' + data.jobId + ', ' + data.jobId + ', \'' + data.jobName + '\')"><i class="fa fa-exchange font-green"></i>依赖切换</a></li>';
+                options += '<li><a href="javascript:;" onclick="TaskList.editJob(3, ' + data.jobId + ', ' + data.jobId + ', \'' + data.runTime + '\')"><i class="fa fa-trash-o font-red"></i>删除</a></li>';
+                options += '<li><a href="javascript:;" onclick=""><i class=""></i></a></li>';
+                options += '<li><a href="javascript:;" onclick=""><i class=""></i></a></li>';
+                options += '</div>';
+
+                if (data.jobType == 14 && self.userRole !=3) {
+                  return innerHtml1 + innerHtml2;
+                }
+
+                return innerHtml1 + innerHtml2 + options; //innerHtml3;
+              }
+            }, */
+          ]
+        });
+        
+      };
+      
+      //0未删除 1删除中 2 删除成功 3删除失败
+      var initJobLevel = function() {
+    	    self.jobLevels = [{id: -1, text: '全部'}, {id: 0, text: '未删除'}, {id: 1, text: '删除中'},
+    	                    {id: 2, text: '删除成功'},{id: 3, text: '删除失败'}];
+    	    $('#cold_status').select2({
+    	      minimumResultsForSearch:-1,
+    	      "language": {
+    	        "noResults": function() {
+    	          return "无搜索结果";
+    	        }
+    	      },
+    	      placeholder: '选择冷数据状态',
+    	      data: self.jobLevels
+    	    }).on('change', function(item) {
+    	      /* self.searchForm.jobLevel = $(this).val();
+    	      self.oTable.ajax.reload(); */
+    	    });
+    	    $('#cold_status').val(-1).trigger('change');
+    	  };
+    	  
+    var clickedAll = function(obj){
+    	
+    	var isChe = $(obj).attr("checked");
+    	if(isChe == "checked"){
+    		//选中所有
+    		$(".checkboxes").each(function(){
+    			$(this).attr("checked", 'checked');
+    		});
+    	}else{
+    		//取消选中
+    		$(".checkboxes").each(function(){
+    			$(this).prop("checked", false);
+    		});
+    	}
+    }
+    
+    var delColdData = function() {
+    	
+    	var delIds = "";
+    	var flag = true;
+    	$(".checkboxes").each(function(){
+			var chex = $(this).attr("checked");
+			if(chex == "checked"){
+				//选中了
+				var status = $(this).attr("data-status");
+				if(status!=0 && status != 3){
+					flag = false;
+					return;
+				}
+				delIds += $(this).attr("data-set")+",";
+			}
+		});
+    	
+    	if(!flag){
+    		alert('删除失败，请勿删除删除中或删除成功的冷数据');
+    		return;
+    	}
+    	
+    	if(delIds==""){
+    		alert("请选择选中要删除的冷数据");
+    		return;
+    	}
+    	var sure = confirm('是否确定删除选中的冷数据？');
+    	if(sure){
+    		$.ajax({
+    			"type":"POST",
+    			"data":{
+    				ids:delIds
+    			},
+    			"url":"/goshawk/delColdData.do",
+    			success:function (data) {
+    				if(data.errorCode==0){
+    					toastr['success']('提交成功，请稍候刷新页面查看删除结果!', '提示');
+    					oTable.ajax.reload();
+    				}else{
+    					toastr['error'](data.message, '提示');
+    					oTable.ajax.reload();
+    				}
+    				
+    			},
+    			error:function() {
+    				alert("未知错误");
+    			}
+    		});
+    	}
+    }
+    
+    function searchData(){
+    	oTable.ajax.reload();
+    }
+</script>
+
+<script type="text/javascript">
+//白名单列表
+function displayColdWhiteList(){
+  $('#coldWhiteListTable').DataTable({
+    serverSide: true,
+    ordering: false,
+    searching: false,
+    //lengthChange: false,
+    ajax: {
+      url: '/goshawk/cluster/hdfs/coldWhite/list.do',
+      data: function(d){
+        d.columns = null;
+        //d.search = null;
+        d.keywords = $('#coldWhiteListQueryConditon input[name="keywords"]').val();
+      }
+    },
+    columns: [
+      {data: 'id'},
+      {data: 'keywords'},
+      {data: 'creator'},
+      {data: 'createTime'},
+      {
+        data: null,
+        render: function(data, type, full, meta){
+          if(data.creator == currentUserName){
+            return '<button type="button" class="btn btn-danger" onclick="deleteColdWhiteById('+data.id+')">删除</button>';
+          }
+          return '';
+        }
+      },
+    ]
+  })
+}
+//按ID删除白名单
+function deleteColdWhiteById(id){
+  $.post('/goshawk/cluster/hdfs/coldWhite/delete.do',{coldWhiteId:id},function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.message,'错误');
+      return false;
+    }
+    $('#coldWhiteListTable').DataTable().ajax.reload(null,false);
+    toastr.success('删除成功','成功');
+  })
+}
+
+//点击全部删除
+function deleteAllColds(){
+  var dirLike = $('#cold_dir').val();
+  var status = $('#cold_status').val();
+  if(status == 1 || status == 2){
+    toastr.error('存在正在删除、已删除的冷数据。','删除失败');
+    return false;
+  }
+  var data = {};
+  if(dirLike != ''){
+    data.dirLike = dirLike;
+  }
+  if(status != -1){
+    data.status = status;
+  }
+  $.post('/goshawk/cluster/hdfs/cold/deleteAll.do',data,function(re){
+    if(re.status != 'ok'){
+      toastr.error(re.message,'删除失败');
+      return false;
+    }
+    $('#dataTable').DataTable().ajax.reload(null,true);
+    toastr.success('删除成功','成功');
+  })
+}
+
+//点击强制删除选中冷数据
+function deleteSelectedColds(){
+  bootbox.confirm("强制删除选中冷数据？？？", function(result){ 
+    if(result){
+      $.post('/goshawk/cluster/hdfs/cold/forceDelete.do',$('.checkboxes:checked').serialize(),function(re){
+        if(re.status != 'ok'){
+          toastr.error(re.message,'删除失败');
+          return false;
+        }
+        $('#dataTable').DataTable().ajax.reload(null,true);
+        toastr.success('删除成功','成功');
+      })
+    }
+  });
+}
+
+$(function(){
+  //查询白名单列表
+  displayColdWhiteList();
+  //点击查看白名单
+  $('#displayColdListBtn').click(function(){
+    $('#coldWhiteListTable').DataTable().ajax.reload(null,true);
+    $('#coldWhiteListModal').modal('show');
+  })
+  //白名单列表查询按钮
+  $('#coldWhiteListQueryConditonQueryBtn').click(function(){
+    $('#coldWhiteListTable').DataTable().ajax.reload(null,true);
+    toastr.success('查询成功','成功');
+  })
+})
+</script>
+</html>
+

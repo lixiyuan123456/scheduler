@@ -1,0 +1,104 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head th:include="common :: common-html-header"></head>
+<head>
+<title th:fragment="html-title">转转调度平台</title>
+<style></style>
+</head>
+<!-- END HEAD -->
+
+<body>
+  <!-- BEGIN HEADER -->
+  <div th:replace="common :: common-page-header"></div>
+  <!-- END HEADER -->
+
+  <div class="page-container">
+    <div class="page-content">
+      <div class="container">
+        <!-- BEGIN PAGE BREADCRUMB -->
+        <ol class="breadcrumb">
+          <li>
+            <a href="#"></a>
+            <span class="divider">/</span>
+          </li>
+          <li>
+            <a href="#"></a>
+            <span class="divider">/</span>
+          </li>
+          <li class="active"></li>
+        </ol>
+        <!-- END PAGE BREADCRUMB -->
+        <!-- BEGIN PANEL CONTAINER -->
+        <!-- BEGIN BUSINESS CONTENT -->
+        <div class="portlet light form-fit bordered">
+          <div class="portlet-title">
+            <div class="caption font-green-sharp">
+              <span>播放器</span>
+            </div>
+          </div>
+          <div class="portlet-body">
+            <video id="video-player" autoplay muted controls="controls" preload="auto" loop="loop" style="width: 100%;height:300px;"></video>
+          </div>
+        </div>
+        <!-- END BUSINESS CONTENT -->
+        <!-- END PANEL CONTAINER -->
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  <!-- BEGIN PRE-FOOTER -->
+  <div th:include="common :: common-page-footer"></div>
+  <!-- END PRE-FOOTER -->
+</body>
+<!-- END BODY -->
+
+<script type="text/javascript" src="https://lib.baomitu.com/jquery/1.12.4/jquery.js"></script>
+<script type="text/javascript" src="https://lib.baomitu.com/socket.io/2.3.0/socket.io.js"></script>
+<script type="text/javascript">
+  var queue = [];
+  var sourceBuffer;
+
+  var video = document.getElementById('video-player');
+  var mediaSource = new MediaSource();
+  video.src = URL.createObjectURL(mediaSource);
+  mediaSource.addEventListener('sourceopen', function(e) {
+    sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+    //sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.4d401f,mp4a.40.2"');
+    sourceBuffer.addEventListener('update', function() {
+      if (queue.length > 0 && !sourceBuffer.updating) {
+        sourceBuffer.appendBuffer(queue.shift());
+      }
+    });
+  });
+
+  var socket = new WebSocket('ws://zzdp.zhuanspirit.com:18888/video-server');
+  socket.binaryType = 'arraybuffer';
+  socket.onopen = function(event) {
+    socket.send('Hello Server!');
+  };
+  socket.onclose = function(event) {
+    console.log('Byebye Server!');
+  };
+  socket.addEventListener('message', function(e) {
+    if (typeof e.data !== 'string') {
+      if (sourceBuffer.updating || queue.length > 0) {
+        queue.push(e.data);
+      } else {
+        sourceBuffer.appendBuffer(e.data);
+      }
+    }
+  }, false);
+</script>
+</html>
+
+
+

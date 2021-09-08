@@ -1,0 +1,433 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head>
+    <title th:fragment="html-title">元数据-服务器配置</title>
+    <link href="/assets/global/plugins/jstree/dist/themes/default/style.min.css" rel="stylesheet" type="text/css">
+</head>
+<head th:include="common :: common-html-header">
+</head>
+<!-- END HEAD -->
+
+<body>
+
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <style>
+      .table>tbody>tr>th,td {
+        white-space: nowrap;
+      }
+
+            </style>
+            <div class="container">
+                <!-- BEGIN PAGE BREADCRUMB -->
+                <ul class="page-breadcrumb breadcrumb">
+                    <li>
+                        <a href="#">元数据</a><i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        服务器配置
+                    </li>
+                </ul>
+                <!-- END PAGE BREADCRUMB -->
+                <!-- BEGIN PAGE CONTENT INNER -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="portlet light">
+                            <div class="portlet-body">
+                                <div class="input-group">
+                                    <input class="form-control" id="searchServer" placeholder="搜索服务器"/>
+                                    <span class="input-group-addon">
+                  <i class="fa fa-search"></i>
+                </span>
+                                </div>
+                                <img alt="" id="loading" src="/assets/page/img/workshop/loading-aceb1640f3.gif"
+                                     style="width:90%"/>
+                                <div id="serverTree"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="portlet light">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    <i class="fa fa-server font-green-sharp"></i>
+                                    <span class="servers caption-subject font-green-sharp bold uppercase">服务器列表</span>
+                                    <span class="databases caption-subject font-green-sharp bold uppercase">数据库列表</span>
+                                    <span class="tables caption-subject font-green-sharp bold uppercase">所有表</span>
+                                    <span class="tableDetail caption-subject font-green-sharp bold"
+                                          id="showTableName"></span>
+                                </div>
+                                <div class="actions">
+                                    <a class="servers btn blue btn-sm" href="javascript:void(0);"
+                                       id="addServer">添加服务器</a>
+                                    <a class="databases btn blue btn-sm" href="javascript:void(0);"
+                                       onclick="ServerList.backServer()"><i class="fa fa-undo"></i>返回</a>
+                                    <a class="databases btn blue btn-sm" href="javascript:void(0);"
+                                       id="databaseRefresh"><i class="fa fa-refresh"></i> 刷新</a>
+                                    <a class="tables btn blue btn-sm" href="javascript:void(0);"
+                                       onclick="ServerList.backDatabase()"><i class="fa fa-undo"></i>返回</a>
+                                    <a class="tableDetail btn blue btn-sm" href="javascript:void(0);"
+                                       onclick="ServerList.backReferer()"><i class="fa fa-undo"></i>返回</a>
+                                    <a class="tableDetail btn blue btn-sm" href="javascript:void(0);"
+                                       id="tableDetailRefresh"><i class="fa fa-refresh"></i> 刷新</a>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <div class="servers">
+                                    <table class="table table-bordered" id="dataTable">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>别名</th>
+                                            <th>类型</th>
+                                            <th>主机名</th>
+                                            <th>端口</th>
+                                            <th>用户名</th>
+                                            <th>创建人</th>
+                                            <th>更新时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="databases">
+                                    <table class="table table-hover table-advance table-striped" id="dataTable1">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>数据库名称</th>
+                                            <th>表数量</th>
+                                            <th>更新时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tables">
+                                    <table class="table table-hover table-advance table-striped" id="dataTable2">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tableDetail" id="divInfo">
+                                    <div class="table-scrollable">
+                                        <table class="table table-hover table-advance table-striped" id="dataTable3">
+                                            <thead>
+                                            <tr>
+                                                <th>服务器</th>
+                                                <th>数据库</th>
+                                                <th>表名</th>
+                                                <th>字段数</th>
+                                                <th>记录数</th>
+                                                <th>表容量</th>
+                                                <th>状态</th>
+                                                <th>更新时间</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <br/>
+                                    <span class="caption-subject font-green-sharp bold"
+                                          style="font-size: 15px;">字段信息：</span>
+                                    <div class="table-scrollable" style="max-height: 460px;overflow-y: auto;">
+                                        <table class="table table-hover table-advance table-striped" id="dataTable4">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>字段名称</th>
+                                                <th>数据类型</th>
+                                                <th>分析类型</th>
+                                                <th>NULL值数量</th>
+                                                <th>NULL值比例</th>
+                                                <th>唯一值数量</th>
+                                                <th>唯一值比例</th>
+                                                <th>最小值或最小长度</th>
+                                                <th>平均值或平均长度</th>
+                                                <th>标准差</th>
+                                                <th>更新时间</th>
+                                                <th>操作</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END PAGE CONTENT INNER -->
+            </div>
+
+            <div class="modal fade" data-backdrop="static" data-keyboard="false" data-width="600" id="serverEdit">
+                <div class="modal-header">
+                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button"></button>
+                    <h4 class="modal-title"><span class="title font-green">新增</span></h4>
+                </div>
+
+                <div class="modal-body" style="overflow: auto;">
+                    <form class="form-horizontal" id="serverForm">
+                        <input name="server.id" style="display:none" type="text" value="">
+                        <input name="server.createdBy" style="display:none" type="text" value="">
+                        <input name="server.dept_id" style="display:none" type="text" value="">
+                        <div class="form-body">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">
+                                    存储类型
+                                    <span aria-required="true" class="required">
+                    * </span>
+                                </label>
+                                <div class="col-md-7">
+                                    <select class="form-control" id="serverType" name="server.serverType">
+                                        <option value="2">Hive</option>
+                                        <option value="1">Mysql</option>
+                                        <option value="3">WTable</option>
+                                        <option value="4">WList</option>
+                                    </select>
+                                    <span class="help-block">MySQL服务器请确保开通<b class="text-danger">10.126.*</b>,<b
+                                            class="text-danger">10.135.*</b>,<b class="text-danger">10.136.*</b>,<b
+                                            class="text-danger">10.28.*</b>,<b class="text-danger">10.148.*</b>网段</span>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">
+                                    应用类型
+                                    <span aria-required="true" class="required">
+                    * </span>
+                                </label>
+                                <div class="col-md-7">
+                                    <select class="form-control" id="serverLogicType" name="server.server_logicType">
+                                        <option value="2">数据仓库</option>
+                                        <option value="1">数据源</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">
+                                    别名
+                                    <span aria-required="true" class="required">
+                    * </span>
+                                </label>
+                                <div class="col-md-7">
+                                    <input class="form-control" name="server.name"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label" id="serverHostLabel">主机名<span aria-required="true"
+                                                                                                    class="required">
+                    * </span></label>
+                                <div class="col-md-7">
+                                    <input class="form-control" name="server.host"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">端口<span aria-required="true" class="required">
+                    * </span></label>
+                                <div class="col-md-7">
+                                    <input class="form-control" name="server.port" placeholder="例如：3306"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label" id="editUsernameLable">用户名<span aria-required="true"
+                                                                                                      class="required">
+                    * </span></label>
+                                <div class="col-md-7">
+                                    <input class="form-control" id="editUsername" name="server.username"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">密码<span aria-required="true" class="required">
+                    * </span></label>
+                                <div class="col-md-7">
+                                    <input class="form-control" name="server.password" type="password"/>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" type="button">关闭</button>
+                    <button class="btn blue" id="serverSave" type="button">保存</button>
+                </div>
+            </div>
+
+            <div class="modal fade" data-width="800" id="colDtlShow" tabindex="-1">
+                <div class="modal-header">
+                    <button aria-hidden="true" class="close" data-dismiss="modal" type="button"></button>
+                    <h4 class="modal-title">字段：<span class="col font-green"></span></h4>
+                </div>
+                <div class="modal-body" style="overflow: auto;">
+                    <span class="caption-subject font-green-sharp" style="font-size: 16px;">基本信息</span>
+                    <table class="table table-hover table-advance table-striped" id="basicColInfo">
+                        <thead>
+                        <tr>
+                            <th>数据类型</th>
+                            <th>记录数</th>
+                            <th>NULL值数量</th>
+                            <th>比例</th>
+                            <th>唯一值数量</th>
+                            <th>比例</th>
+                            <th>分析类型</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div id="part1">
+                        <span class="caption-subject font-green-sharp" style="font-size: 16px;">数值分析</span>
+                        <table class="table table-hover table-advance table-striped">
+                            <tr>
+                                <th width="25%">最小值</th>
+                                <th width="25%">最大值</th>
+                                <th width="25%">平均值</th>
+                                <th width="25%">标准差</th>
+                            </tr>
+                            <tr id="valid">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div id="divNumericTop10"
+                                         style="width: 520px; height: 300px; margin: 0px auto;"></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Bottom 10</th>
+                                <td colspan="3">
+                                    <div id="divNumericBottom10"></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="part2">
+                        <span class="caption-subject font-green-sharp" style="font-size: 16px;">字符串分析</span>
+                        <div class="table-scrollable" style="border: 0px solid #dddddd;">
+                            <table class="table table-hover table-advance table-striped">
+                                <tr>
+                                    <th width="33%">最小长度</th>
+                                    <th width="33%">最大长度</th>
+                                    <th width="33%">平均长度</th>
+                                </tr>
+                                <tr id="valid">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">
+                                        <div id="divStringTop10"
+                                             style="width: 520px; height: 300px; margin: 0px auto;"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Bottom 10</th>
+                                    <td colspan="2">
+                                        <div id="divStringBottom10"></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="part3">
+                        <span class="caption-subject font-green-sharp" style="font-size: 16px;">日期类型分析</span>
+                        <div class="table-scrollable" style="border: 0px solid #dddddd;">
+                            <table class="table table-hover table-advance table-striped">
+                                <tr>
+                                    <th colspan="2">最小值</th>
+                                    <th colspan="2">最大值</th>
+                                </tr>
+                                <tr id="valid1">
+                                    <td colspan="2"></td>
+                                    <td colspan="2"></td>
+                                </tr>
+                                <tr>
+                                    <th width="25%">最小日期</th>
+                                    <th width="25%">最大日期</th>
+                                    <th width="25%">最小时间</th>
+                                    <th width="25%">最大时间</th>
+                                </tr>
+                                <tr id="valid2">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        <div id="divDatetimeTop10"
+                                             style="width: 520px; height: 300px; margin: 0px auto;"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Bottom 10</th>
+                                    <td colspan="3">
+                                        <div id="divDatetimeBottom10"></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+
+
+</body>
+<!-- END BODY -->
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+<script src="/assets/page/scripts/settings/server-list-e7400c7d4e.min.js" type="text/javascript"></script>
+<script th:inline="javascript">
+
+    jQuery(document).ready(function() {
+    	ServerList.init({
+            contextPath: '',
+            user : {
+            	id : [[${user.id}]],
+            	name : [[${user.trueName}]],
+            	deptId : ''
+            }
+        });
+    });
+
+
+</script>
+</html>

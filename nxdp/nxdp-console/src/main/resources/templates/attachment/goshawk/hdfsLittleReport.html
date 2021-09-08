@@ -1,0 +1,597 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- BEGIN HEAD -->
+<head>
+<title th:fragment="html-title">hdfs小文件报表</title>
+<style type="text/css">
+.table {
+}
+.table th {
+  white-space: nowrap;
+  text-align: center;
+}
+.table td {
+  white-space: nowrap;
+  text-align: center;
+}
+.table .text-left {
+  text-align: left;
+}
+</style>
+</head>
+<head th:include="common :: common-html-header"></head>
+<!-- END HEAD -->
+
+
+
+
+<body>
+<!-- BEGIN HEADER -->
+<div th:replace="common :: common-page-header"></div>
+<!-- END HEADER -->
+
+<!-- BEGIN PAGE CONTAINER -->
+<div class="page-container">
+    <div class="page-content">
+        <!-- BEGIN PAGE HEAD -->
+        <div class="container">
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a href="/goshawk/index">苍鹰系统</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li>
+                    <a>HDFS管理</a>
+                    <i class="fa fa-circle"></i>
+                </li>
+                <li class="active">小文件统计
+                </li>
+            </ul>
+
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-green-sharp">
+                        <span>小文件数报表信息</span>
+                    </div>
+                    <div class="actions">
+                    </div>
+                </div>
+
+                <div class="portlet-body" >
+                    <div class="col-md-13" id="chart3_div">
+		            <div class="portlet light">
+		              <div class="portlet-title">
+		                <div class="caption font-dark">
+		                  <span class="caption-subject bold uppercase font-red-sunglo">各组目录小文件统计</span>
+		                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+		                </div>
+		                <div class="actions">
+		                  <a href="javascript:initFirstReport(1)"  class="btn btn-circle btn-default btn-sm" onclick="getCountData()">小文件总量</a>
+		                  <a href="javascript:initFirstReport(2)"  class="btn btn-circle btn-default btn-sm">小文件增量</a>
+		                </div>
+		              </div>
+		              <div class="portlet-body">
+		                  <div id="littleDir" class="CSSAnimationChart"></div>
+		              </div>
+		            </div>
+		            <!-- END PORTLET-->
+		            </div>
+                    <!-- end form -->
+                    <div class="">
+                    <table class="table table-hover table-advance table-striped" id="dataTable" style="width:100%;">
+                        <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>用户目录</th>
+                            <th>小文件总量</th>
+                            <th>小文件增量</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tableTbody">
+                        
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+                
+                <div class="portlet-body" id="portlet-body">
+                    <div class="col-md-13" id="chart3_div">
+		            <div class="portlet light">
+		              <div class="portlet-title">
+		                <div class="caption font-dark">
+		                  <span class="caption-subject bold uppercase font-red-sunglo">各组子目录小文件增量统计</span>
+		                  <!-- <span class="caption-helper">当日上线任务运行状态</span> -->
+		                </div>
+		                <!-- <div class="actions">
+		                  <a href="javascript:getLittleCountData(0)"  class="btn btn-circle btn-default btn-sm" onclick="getCountData()">总量</a>
+		                  <a href="javascript:getLittleCountData(1)"  class="btn btn-circle btn-default btn-sm">增量</a>
+		                </div> -->
+		              </div>
+		              <div class="portlet-body">
+		                  <div id="hdfsFileDetail" class="CSSAnimationChart"></div>
+		              </div>
+		            </div>
+		            <!-- END PORTLET-->
+		            </div>
+                    <!-- end form -->
+                    <div class="">
+                    <table class="table table-hover table-advance table-striped" id="dataTable2" style="width:100%;">
+                        <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>用户</th>
+                            <th>小文件总量</th>
+                            <th>小文件增量</th>
+                            <th>middata</th>
+                            <th>middata增量</th>
+                            <th>rawdata</th>
+                            <th>rawdata增量</th>
+                            <th>resultdata</th>
+                            <th>resultdata增量</th>
+                            <th>warehouse</th>
+                            <th>warehouse增量</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tableTbody2">
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="editLabels" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false" >
+                <div class="modal-header">
+                    <h4 style="margin-bottom: 1px; margin-top: 1px">Job标签管理</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="alert alert-success alert-borderless" style="margin-bottom: 5px">
+                        <span>已有标签</span>
+                        <hr style="margin: 5px 0"/>
+                        <div style="margin-bottom: 10px" id="allreadyLabels">
+                            <!-- 标签信息再js生成 -->
+                        </div>
+                        <input id="modal-labels" name="labels" class="form-control" style="width: 100%"
+                               data-placeholder="选择标签" />
+                        <span class="help-block">选择添加标签</span>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+                    <button type="button" data-dismiss="modal" id="updateLabels" class="btn blue">保存</button>
+                </div>
+            </div>
+
+            <div id="switchJobRelations" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false" >
+                <div class="modal-header">
+                    <h4 style="margin-bottom: 1px; margin-top: 1px">任务依赖关系切换</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="alert alert-success alert-borderless" style="margin-bottom: 5px">
+                        <span>当前任务</span>
+                        <hr style="margin: 5px 0"/>
+                        <div style="margin-bottom: 10px" id="currentJobName">
+                        </div>
+                        <span>依赖转给下面任务</span>
+                        <hr style="margin: 5px 0"/>
+                        <input id="switchJobName" name="switchJobName" class="form-control" style="width: 60%"/>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" class="btn btn-default">取消</button>
+                    <button type="button" data-dismiss="modal" id="updateRelations" class="btn blue">保存</button>
+                </div>
+            </div>
+
+        </div>
+        <!-- END PAGE CONTENT -->
+    </div>
+</div>
+<!-- END PAGE CONTAINER -->
+
+
+
+<!-- BEGIN PRE-FOOTER -->
+<div th:include="common :: common-page-footer"></div>
+<!-- END PRE-FOOTER -->
+<!-- BEGIN FOOTER -->
+
+<!-- END FOOTER -->
+
+</body>
+
+
+<!-- BEGIN JAVASCRIPT -->
+<div th:replace="common :: common-html-javascripts"></div>
+<!-- END JAVASCRIPT -->
+
+<!-- <script src="/assets/page/scripts/workshop/task-list-33b267f1ff.min.js" type="text/javascript"></script> -->
+
+
+<!-- END BODY -->
+<script src="/assets/global/scripts/echarts.common.min.js" type="text/javascript"></script>
+<script th:inline="javascript">
+
+//折线图
+function getBrokenLineOption(xData,legendData,seriesData){
+	  var option = {
+			    tooltip: {
+			        trigger: 'axis'
+			    },
+			    legend: {
+			        data:legendData
+			    },
+			    grid: {
+			        left: '3%',
+			        right: '4%',
+			        bottom: '3%',
+			        containLabel: true
+			    },
+			    toolbox: {
+			        feature: {
+			            saveAsImage: {}
+			        }
+			    },
+			    xAxis: {
+			        type: 'category',
+			        boundaryGap: false,
+			        data: xData
+			    },
+			    yAxis: {
+			        type: 'value'
+			    },
+			    series: seriesData
+			};
+	  return option;
+}
+
+    jQuery(document).ready(function() {
+        /* TaskList.init({
+            contextPath: '',
+            userId: [[${user.id}]]
+        }); */
+        //initJobLevel();
+        $("#portlet-body").hide();
+    	initFirstTable();
+        
+    });
+    var waitDelData = [[${waitDelData}]];
+    var reRunThisJob = function(schedulerId) {
+    	if(waitDelData!=0){
+    		alert("拉取失败，目前有还有"+waitDelData+"条冷数据正在删除，请稍候操作");
+    		return;
+    	}
+        bootbox.prompt({
+          title: '<i class="icon-speedometer font-blue"></i> 请选择日期',
+          inputType: 'datetime',
+          callback: function(result){
+            //console.log('run this job: ' + schedulerId + ', at ' + result);
+            if(!_.isNull(result)) {
+           	  /* if(result==""){
+               	alert("请选择冷数据日期");
+               	return ;
+              } */
+              var details = {
+                runMode: 0,
+                runDateTime: result.trim(),
+              };
+              $.ajax({
+                type : "POST",
+                url  : "/goshawk/getColdDataByTask.do",
+                async: false,
+                data : {
+                  "coldTime" : result.trim()
+                },
+                dataType : 'json',
+                success : function(data) {
+                  
+                  if (data.errorCode == 0) {
+                    toastr['success']('操作成功', '提示');
+                    /* var page = self.oTable.page.info().page;
+                    self.oTable.page(page).draw(false); */
+                  } else {
+                    toastr['error']('', data.message);
+                  }
+                },
+                error: function(e) {
+                  toastr['error']('运行失败' + e.statusText, '错误');
+                }
+              });
+
+            }
+          }
+        });
+      }
+    
+    var oTable;
+    var initTables = function() {
+    	var table = $('#dataTable');
+        oTable = table.DataTable({
+          'serverSide' : true,
+          'ordering' : false,
+          'searching' : false,
+          'scrollX' : true,
+          'ajax' : {
+            url : '/goshawk/search-colddata.do',
+            data : function(d){
+              d.columns = null;
+              //d.search = null;
+              d['isDel'] = $("#cold_status").val();
+              d['coldDir'] = $("#cold_dir").val();
+            },
+            dataSrc : function(rs) {
+              return rs.data;
+            },
+          },
+          'columns' : [
+            { data: null,
+              render: function(data, type, full, meta){
+                var innerHtml = "<input type='checkbox'  data-set='" + data.id + "' data-status='"+data.is_del+"' class='checkboxes' style='width: 15px; height: 15px;' />";
+                return innerHtml;
+              }
+            },
+            { data : null,
+              className : 'text-left',
+              render: function(data, type, full, meta) {
+                var dir = data.dir;
+                return dir;
+              }
+            },
+            { data : "atimeStr"},
+            { data : null,
+              render: function(data, type, full, meta) {
+                var innerHtml = "";
+                if (data.is_del == 0) {
+                  innerHtml = "<span class='label bg-yellow'>未删除</span>"
+                } else if (data.is_del == 2) {
+                  innerHtml = "<span class='label bg-green'>删除成功</span>"
+                } else if (data.is_del == 3) {
+                  innerHtml = "<span class='label bg-red' style='cursor: pointer' title='错误提示："+data.error+"' >删除失败</span>"
+                } else if (data.is_del == 1) {
+                  innerHtml = "<span class='label bg-grey'>删除中</span>"
+                }
+                return innerHtml;
+              }
+            },
+          ]
+        });
+        
+      };
+      
+      //0未删除 1删除中 2 删除成功 3删除失败
+      var initJobLevel = function() {
+    	    self.jobLevels = [{id: -1, text: '全部'}, {id: 0, text: '未删除'}, {id: 1, text: '删除中'},
+    	                    {id: 2, text: '删除成功'},{id: 3, text: '删除失败'}];
+    	    $('#cold_status').select2({
+    	      minimumResultsForSearch:-1,
+    	      "language": {
+    	        "noResults": function() {
+    	          return "无搜索结果";
+    	        }
+    	      },
+    	      placeholder: '选择冷数据状态',
+    	      data: self.jobLevels
+    	    }).on('change', function(item) {
+    	      /* self.searchForm.jobLevel = $(this).val();
+    	      self.oTable.ajax.reload(); */
+    	    });
+    	    $('#cold_status').val(-1).trigger('change');
+    	  };
+    	  
+    var clickedAll = function(obj){
+    	
+    	var isChe = $(obj).attr("checked");
+    	if(isChe == "checked"){
+    		//选中所有
+    		$(".checkboxes").each(function(){
+    			$(this).attr("checked", 'checked');
+    		});
+    	}else{
+    		//取消选中
+    		$(".checkboxes").each(function(){
+    			$(this).prop("checked", false);
+    		});
+    	}
+    }
+    
+    var delColdData = function() {
+    	
+    	var delIds = "";
+    	var flag = true;
+    	$(".checkboxes").each(function(){
+			var chex = $(this).attr("checked");
+			if(chex == "checked"){
+				//选中了
+				var status = $(this).attr("data-status");
+				if(status!=0 && status != 3){
+					flag = false;
+					return;
+				}
+				delIds += $(this).attr("data-set")+",";
+			}
+		});
+    	
+    	if(!flag){
+    		alert('删除失败，请勿删除删除中或删除成功的冷数据');
+    		return;
+    	}
+    	
+    	if(delIds==""){
+    		alert("请选择选中要删除的冷数据");
+    		return;
+    	}
+    	var sure = confirm('是否确定删除选中的冷数据？');
+    	if(sure){
+    		$.ajax({
+    			"type":"POST",
+    			"data":{
+    				ids:delIds
+    			},
+    			"url":"/goshawk/delColdData.do",
+    			success:function (data) {
+    				if(data.errorCode==0){
+    					toastr['success']('删除成功，请稍候刷新页面查看删除结果!', '提示');
+    					oTable.ajax.reload();
+    				}else{
+    					toastr['error'](data.message, '提示');
+    					oTable.ajax.reload();
+    				}
+    				
+    			},
+    			error:function() {
+    				alert("未知错误");
+    			}
+    		});
+    	}
+    }
+    
+    var xData = {};
+    var teamData = {};
+    var yNumData = {};
+    var yIncreData = {};
+    
+    function initFirstTable(){
+    	var data = {};
+    	data.menuType = 2;
+    	$.ajax({
+			"type":"POST",
+			"url":"/goshawk/searchHdfsFileNum.do",
+			"data":data,
+			success:function (data) {
+				//加载列表数据
+				var tableStr = "";
+				for(var i = 0;i<data.data.length;i++){
+					var tableData = data.data[i];
+					tableStr += "<tr>";
+					tableStr += "<td>"+tableData.dt+"</td>";
+					tableStr += "<td><a href='javascript:getTeamHdfsDetail(\""+tableData.dt+"\",\""+tableData.dir+"\")'>"+tableData.dir+"</a></td>";
+					tableStr += "<td>"+tableData.fileNum+"</td>";
+					tableStr += "<td>"+tableData.incre+"</td>";
+					tableStr += "</tr>";
+				}
+				$("#tableTbody").html(tableStr);
+				$('#dataTable').dataTable({
+					"sScrollX":"100%",
+		            "sScrollXInner":"100%",
+					"bLengthChange":true, 
+					"bSort":false ,
+				  	"bPaginage":true,
+				  	"bFilter":true,
+				  	"paging" : true,
+				  	"info":true,
+				  	"scrollY":"400px"
+				});
+				
+				xData = data.xData;
+				teamData = data.teamData;
+				yNumData = data.yNumData;
+				yIncreData = data.yIncreData;
+				//加载图表
+				initFirstReport(1);
+			},
+			error:function() {
+				alert("未知错误");
+			}
+		});
+    	
+    }
+    
+    
+    function initFirstReport(type){
+    	var dataList = {};
+    	
+    	if(type == 1){
+    		//全量数据
+    		dataList = yNumData;
+    		
+    	}else if(type == 2){
+    		//增量数据
+    		dataList = yIncreData;
+    	}
+    	
+    	var myChart3 = echarts.init(document.getElementById('littleDir')); 
+		var seriesData = new Array();
+		for(var i=0;i<dataList.length;i++){
+			var mrData = {};
+			mrData.name = teamData[i];
+			mrData.type = "line";
+			//mrData.barGap = 0;
+			mrData.data = dataList[i];
+			seriesData[i] = mrData;
+		}
+		var option3 = getBrokenLineOption(xData,teamData,seriesData);
+		myChart3.setOption(option3);
+    }
+    
+    var table2;
+    function getTeamHdfsDetail(maxDate,dirStr){
+    	$("#portlet-body").show();
+    	//hdfsFileDetail
+    	var data = {};
+    	data.dirStr = dirStr;
+    	data.maxDate = maxDate;
+    	data.menuType = 2;
+    	$.ajax({
+			"type":"POST",
+			"url":"/goshawk/searchHdfsFileNumDetail.do",
+			"data":data,
+			success:function (data) {
+				//加载列表数据
+				var tableStr = "";
+				for(var i = 0;i<data.tableData.length;i++){
+					var tableData = data.tableData[i];
+					tableStr += "<tr>";
+					tableStr += "<td>"+tableData.dt+"</td>";
+					tableStr += "<td>"+tableData.dir+"</td>";
+					tableStr += "<td>"+tableData.totalNum+"</td>";
+					tableStr += "<td>"+tableData.totalIncr+"</td>";
+					tableStr += "<td>"+tableData.num0+"</td>";
+					tableStr += "<td>"+tableData.incNum0+"</td>";
+					tableStr += "<td>"+tableData.num1+"</td>";
+					tableStr += "<td>"+tableData.incNum1+"</td>";
+					tableStr += "<td>"+tableData.num2+"</td>";
+					tableStr += "<td>"+tableData.incNum2+"</td>";
+					tableStr += "<td>"+tableData.num3+"</td>";
+					tableStr += "<td>"+tableData.incNum3+"</td>";
+					tableStr += "</tr>";
+				}
+				
+				$("#tableTbody2").html(tableStr);
+				if(table2==undefined){
+					table2 = $('#dataTable2').dataTable({
+						"sScrollX":"100%",
+			            "sScrollXInner":"100%",
+						"bLengthChange":true, 
+						"bSort":false ,
+					  	"bPaginage":true,
+					  	"bFilter":true,
+					  	"paging" : true,
+					  	"info":true,
+					  	"scrollY":"400px"
+					});
+				}
+				
+				
+				var myChart3 = echarts.init(document.getElementById('hdfsFileDetail')); 
+				var seriesData = new Array();
+				for(var i=0;i<data.yData.length;i++){
+					var mrData = {};
+					mrData.name = data.subDirData[i];
+					mrData.type = "line";
+					//mrData.barGap = 0;
+					mrData.data = data.yData[i];
+					seriesData[i] = mrData;
+				}
+				var option3 = getBrokenLineOption(data.xData,data.subDirData,seriesData);
+				myChart3.setOption(option3);
+				location.href = "#portlet-body";
+			},
+			error:function() {
+				alert("未知错误");
+			}
+		});
+    }
+    
+
+</script>
+</html>
+
